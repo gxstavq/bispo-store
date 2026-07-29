@@ -118,7 +118,7 @@ export function CheckoutForm({ products }: { products: Product[] }) {
         setAddressLookupMessage(
           needsDetails
             ? "Cidade encontrada. Complete os campos que não vieram preenchidos para este CEP."
-            : "Endereço encontrado. Informe somente o número e, se houver, o apartamento.",
+            : "Endereço encontrado. Informe o número e o complemento. Se necessário, você pode corrigir os campos preenchidos.",
         );
       } catch (caught) {
         if (controller.signal.aborted) return;
@@ -242,11 +242,11 @@ export function CheckoutForm({ products }: { products: Product[] }) {
                 {addressLookupMessage}
               </div>
             )}
-            <label className="span-2">Rua<input required autoComplete="address-line1" className={addressLookupStatus === "success" && !!data.street ? "address-autofilled" : ""} readOnly={addressLookupStatus === "success" && !!data.street} value={data.street} onChange={(e) => update("street", e.target.value)} placeholder={addressLookupStatus === "loading" ? "Consultando CEP..." : "Preenchida automaticamente pelo CEP"} /></label>
+            <label className="span-2">Rua<input required autoComplete="address-line1" className={addressLookupStatus === "success" && !!data.street ? "address-autofilled" : ""} value={data.street} onChange={(e) => update("street", e.target.value)} placeholder={addressLookupStatus === "loading" ? "Consultando CEP..." : "Preenchida automaticamente pelo CEP"} /></label>
             <label>Número<input required autoComplete="address-line2" value={data.number} onChange={(e) => update("number", e.target.value)} placeholder="Número da residência" /></label>
             <label>Complemento / apartamento<input autoComplete="address-line3" value={data.complement} onChange={(e) => update("complement", e.target.value)} placeholder="Opcional" /></label>
-            <label>Bairro<input required autoComplete="address-level3" className={addressLookupStatus === "success" && !!data.district ? "address-autofilled" : ""} readOnly={addressLookupStatus === "success" && !!data.district} value={data.district} onChange={(e) => update("district", e.target.value)} placeholder={addressLookupStatus === "loading" ? "Consultando CEP..." : "Preenchido automaticamente"} /></label>
-            <label>Cidade<input required autoComplete="address-level2" className={addressLookupStatus === "success" && !!data.city ? "address-autofilled" : ""} readOnly={addressLookupStatus === "success" && !!data.city} value={data.city} onChange={(e) => update("city", e.target.value)} placeholder={addressLookupStatus === "loading" ? "Consultando CEP..." : "Preenchida automaticamente"} /></label>
+            <label>Bairro<input required autoComplete="address-level3" className={addressLookupStatus === "success" && !!data.district ? "address-autofilled" : ""} value={data.district} onChange={(e) => update("district", e.target.value)} placeholder={addressLookupStatus === "loading" ? "Consultando CEP..." : "Preenchido automaticamente"} /></label>
+            <label>Cidade<input required autoComplete="address-level2" className={addressLookupStatus === "success" && !!data.city ? "address-autofilled" : ""} value={data.city} onChange={(e) => update("city", e.target.value)} placeholder={addressLookupStatus === "loading" ? "Consultando CEP..." : "Preenchida automaticamente"} /></label>
             <label className="span-2">Ponto de referência<input value={data.reference} onChange={(e) => update("reference", e.target.value)} /></label>
           </div>
         </section>

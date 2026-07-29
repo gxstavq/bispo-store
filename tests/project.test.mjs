@@ -103,7 +103,8 @@ test("checkout consulta o CEP no servidor e preenche o endereço automaticamente
   const service = readFileSync(join(root, "services", "address", "viacep.ts"), "utf8");
   assert.match(checkout, /\/api\/address\/cep\?postalCode=/);
   assert.match(checkout, /Buscando endereço/);
-  assert.match(checkout, /readOnly=\{addressLookupStatus === "success"/);
+  assert.match(checkout, /Se necessário, você pode corrigir os campos preenchidos/);
+  assert.doesNotMatch(checkout, /readOnly=\{addressLookupStatus === "success"/);
   assert.match(checkout, /Complemento \/ apartamento/);
   assert.match(route, /postal-code-lookup/);
   assert.match(route, /limit: 30/);
