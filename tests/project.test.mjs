@@ -55,6 +55,7 @@ test("homologação Netlify bloqueia indexação em todas as camadas", () => {
   assert.match(nextConfig, /X-Robots-Tag/);
   assert.match(nextConfig, /noindex, nofollow, noarchive, nosnippet/);
   assert.match(netlify, /npm run build -- --webpack/);
+  assert.match(netlify, /ignore = "node scripts\/netlify-ignore-build\.mjs"/);
   assert.doesNotMatch(netlify, /NEXT_DISABLE_NETLIFY_EDGE|NETLIFY_NEXT_PLUGIN_SKIP/);
   assert.doesNotMatch(netlify, /SUPABASE|PAGBANK|MELHOR_ENVIO|STORE_CNPJ/);
 });

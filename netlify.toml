@@ -1,5 +1,6 @@
 [build]
   command = "npm run build -- --webpack"
+  ignore = "node scripts/netlify-ignore-build.mjs"
 
 [build.environment]
   NODE_VERSION = "22"
