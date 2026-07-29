@@ -275,6 +275,10 @@ img { max-width: 100%; }
 .span-2 { grid-column: 1 / -1; }
 input, select, textarea { border-radius: 0; }
 .form-grid input, .form-grid select, .form-section textarea, .contact-form input, .contact-form select, .contact-form textarea, .admin-form-section input, .admin-form-section select, .admin-form-section textarea, .status-control select { min-height: 45px; padding: 10px 12px; border: 1px solid #cfcdc7; background: #fbfaf7; outline: 0; text-transform: none; }
+.form-grid input.address-autofilled { border-color: #a9c9b3; background: #f1f8f3; color: #25372b; cursor: default; }
+.address-lookup-status { padding: 11px 13px; border: 1px solid #c9dfcf; background: #f1f8f3; color: #315c3d; font-size: 11px; font-weight: 700; line-height: 1.45; }
+.address-lookup-status--loading { border-color: #d9d4c7; background: #f7f5ef; color: #666156; }
+.address-lookup-status--error { border-color: #edb7ba; background: #fff2f3; color: var(--red-dark); }
 textarea { resize: vertical; }
 .checkout-product { padding: 14px 0; display: grid; grid-template-columns: 25px 1fr auto; gap: 8px; border-bottom: 1px solid var(--line); font-size: 12px; }
 .checkout-product div { display: flex; flex-direction: column; }

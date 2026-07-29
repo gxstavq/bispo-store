@@ -97,6 +97,21 @@ test("checkout oferece análise local e cotação Melhor Envio Sandbox", () => {
   assert.match(checkout, /nenhuma cobrança será criada agora/i);
 });
 
+test("checkout consulta o CEP no servidor e preenche o endereço automaticamente", () => {
+  const checkout = readFileSync(join(root, "components", "checkout-form.tsx"), "utf8");
+  const route = readFileSync(join(root, "app", "api", "address", "cep", "route.ts"), "utf8");
+  const service = readFileSync(join(root, "services", "address", "viacep.ts"), "utf8");
+  assert.match(checkout, /\/api\/address\/cep\?postalCode=/);
+  assert.match(checkout, /Buscando endereço/);
+  assert.match(checkout, /readOnly=\{addressLookupStatus === "success"/);
+  assert.match(checkout, /Complemento \/ apartamento/);
+  assert.match(route, /postal-code-lookup/);
+  assert.match(route, /limit: 30/);
+  assert.match(service, /https:\/\/viacep\.com\.br/);
+  assert.match(service, /state !== "SP"/);
+  assert.doesNotMatch(service, /NEXT_PUBLIC_/);
+});
+
 test("migration preserva dados antigos e arquiva categorias fora da operação", () => {
   assert.equal(localProducts.length, 110);
   const archived = localProducts.filter((product) => ["camisetas", "moletons", "calcas-shorts"].includes(product.category));

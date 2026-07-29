@@ -2,7 +2,7 @@
 
 import { ArrowRight, LockKeyhole, MessageCircle, ShoppingBag, Truck } from "lucide-react";
 import { useRouter } from "next/navigation";
-import { FormEvent, useMemo, useState } from "react";
+import { FormEvent, useEffect, useMemo, useState } from "react";
 import { formatCurrency, whatsappUrl } from "@/lib/format";
 import {
   createOrder,
@@ -17,6 +17,22 @@ const initialData: CheckoutData = {
   district: "", city: "", state: "SP", reference: "", notes: "", deliveryChoice: "local_delivery_review",
 };
 
+type AddressLookupStatus = "idle" | "loading" | "success" | "error";
+
+type AddressLookupResponse = {
+  postalCode?: string;
+  street?: string;
+  district?: string;
+  city?: string;
+  state?: "SP";
+  error?: string;
+};
+
+function formatPostalCode(value: string) {
+  const digits = value.replace(/\D/g, "").slice(0, 8);
+  return digits.length > 5 ? `${digits.slice(0, 5)}-${digits.slice(5)}` : digits;
+}
+
 export function CheckoutForm({ products }: { products: Product[] }) {
   const router = useRouter();
   const { items, clearCart } = useStore();
@@ -27,6 +43,8 @@ export function CheckoutForm({ products }: { products: Product[] }) {
   const [submitting, setSubmitting] = useState(false);
   const [createdOrderId, setCreatedOrderId] = useState("");
   const [error, setError] = useState("");
+  const [addressLookupStatus, setAddressLookupStatus] = useState<AddressLookupStatus>("idle");
+  const [addressLookupMessage, setAddressLookupMessage] = useState("");
   const cartKey = JSON.stringify(items.map(({ productId, size, color, quantity }) => ({
     productId, size, color, quantity,
   })));
@@ -38,13 +56,86 @@ export function CheckoutForm({ products }: { products: Product[] }) {
   }, 0), [items, products]);
 
   const update = (field: keyof CheckoutData, value: string) => {
+    if (field === "cep") {
+      setAddressLookupStatus("idle");
+      setAddressLookupMessage("");
+    }
     setData((current) => {
-      if (field === "cep" || field === "deliveryChoice") {
-        return { ...current, [field]: value, selectedShippingQuoteId: undefined };
+      if (field === "cep") {
+        return {
+          ...current,
+          cep: formatPostalCode(value),
+          street: "",
+          district: "",
+          city: "",
+          state: "SP",
+          selectedShippingQuoteId: undefined,
+        };
+      }
+      if (field === "deliveryChoice") {
+        return {
+          ...current,
+          deliveryChoice: value as CheckoutData["deliveryChoice"],
+          selectedShippingQuoteId: undefined,
+        };
       }
       return { ...current, [field]: value };
     });
   };
+
+  useEffect(() => {
+    const postalCode = data.cep.replace(/\D/g, "");
+    if (postalCode.length !== 8) {
+      return;
+    }
+
+    const controller = new AbortController();
+    const timer = window.setTimeout(async () => {
+      setAddressLookupStatus("loading");
+      setAddressLookupMessage("Buscando endereço...");
+      try {
+        const response = await fetch(
+          `/api/address/cep?postalCode=${encodeURIComponent(postalCode)}`,
+          { signal: controller.signal },
+        );
+        const result = await response.json() as AddressLookupResponse;
+        if (!response.ok || !result.city) {
+          throw new Error(result.error ?? "Não foi possível encontrar este endereço.");
+        }
+        setData((current) => {
+          if (current.cep.replace(/\D/g, "") !== postalCode) return current;
+          return {
+            ...current,
+            cep: formatPostalCode(result.postalCode ?? postalCode),
+            street: result.street ?? "",
+            district: result.district ?? "",
+            city: result.city ?? "",
+            state: "SP",
+          };
+        });
+        const needsDetails = !result.street || !result.district;
+        setAddressLookupStatus("success");
+        setAddressLookupMessage(
+          needsDetails
+            ? "Cidade encontrada. Complete os campos que não vieram preenchidos para este CEP."
+            : "Endereço encontrado. Informe somente o número e, se houver, o apartamento.",
+        );
+      } catch (caught) {
+        if (controller.signal.aborted) return;
+        setAddressLookupStatus("error");
+        setAddressLookupMessage(
+          caught instanceof Error
+            ? `${caught.message} Você pode completar o endereço manualmente.`
+            : "Não foi possível consultar o CEP. Complete o endereço manualmente.",
+        );
+      }
+    }, 350);
+
+    return () => {
+      window.clearTimeout(timer);
+      controller.abort();
+    };
+  }, [data.cep]);
 
   const calculateShipping = async () => {
     setQuoting(true);
@@ -140,13 +231,22 @@ export function CheckoutForm({ products }: { products: Product[] }) {
         <section className="form-section">
           <div className="form-section__title"><span>02</span><div><h2>Entrega</h2><p>Endereço limitado ao estado de São Paulo.</p></div></div>
           <div className="form-grid">
-            <label>CEP<input required value={data.cep} onChange={(e) => update("cep", e.target.value)} placeholder="00000-000" /></label>
+            <label>CEP<input required inputMode="numeric" autoComplete="postal-code" maxLength={9} value={data.cep} onChange={(e) => update("cep", e.target.value)} placeholder="00000-000" /></label>
             <label>Estado<select value="SP" disabled><option>São Paulo (SP)</option></select></label>
-            <label className="span-2">Rua<input required value={data.street} onChange={(e) => update("street", e.target.value)} /></label>
-            <label>Número<input required value={data.number} onChange={(e) => update("number", e.target.value)} /></label>
-            <label>Complemento<input value={data.complement} onChange={(e) => update("complement", e.target.value)} /></label>
-            <label>Bairro<input required value={data.district} onChange={(e) => update("district", e.target.value)} /></label>
-            <label>Cidade<input required value={data.city} onChange={(e) => update("city", e.target.value)} /></label>
+            {addressLookupMessage && (
+              <div
+                className={`address-lookup-status address-lookup-status--${addressLookupStatus} span-2`}
+                role={addressLookupStatus === "error" ? "alert" : "status"}
+                aria-live="polite"
+              >
+                {addressLookupMessage}
+              </div>
+            )}
+            <label className="span-2">Rua<input required autoComplete="address-line1" className={addressLookupStatus === "success" && !!data.street ? "address-autofilled" : ""} readOnly={addressLookupStatus === "success" && !!data.street} value={data.street} onChange={(e) => update("street", e.target.value)} placeholder={addressLookupStatus === "loading" ? "Consultando CEP..." : "Preenchida automaticamente pelo CEP"} /></label>
+            <label>Número<input required autoComplete="address-line2" value={data.number} onChange={(e) => update("number", e.target.value)} placeholder="Número da residência" /></label>
+            <label>Complemento / apartamento<input autoComplete="address-line3" value={data.complement} onChange={(e) => update("complement", e.target.value)} placeholder="Opcional" /></label>
+            <label>Bairro<input required autoComplete="address-level3" className={addressLookupStatus === "success" && !!data.district ? "address-autofilled" : ""} readOnly={addressLookupStatus === "success" && !!data.district} value={data.district} onChange={(e) => update("district", e.target.value)} placeholder={addressLookupStatus === "loading" ? "Consultando CEP..." : "Preenchido automaticamente"} /></label>
+            <label>Cidade<input required autoComplete="address-level2" className={addressLookupStatus === "success" && !!data.city ? "address-autofilled" : ""} readOnly={addressLookupStatus === "success" && !!data.city} value={data.city} onChange={(e) => update("city", e.target.value)} placeholder={addressLookupStatus === "loading" ? "Consultando CEP..." : "Preenchida automaticamente"} /></label>
             <label className="span-2">Ponto de referência<input value={data.reference} onChange={(e) => update("reference", e.target.value)} /></label>
           </div>
         </section>
