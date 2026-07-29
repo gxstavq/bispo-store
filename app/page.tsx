@@ -10,7 +10,7 @@ import { productRepository } from "@/repositories/product-repository";
 
 export const metadata: Metadata = {
   title: "Moda urbana com presença",
-  description: "Descubra a coleção demonstrativa de tênis, calças e conjuntos da Bispo Store.",
+  description: "Descubra a coleção de tênis, calças e conjuntos da Bispo Store.",
 };
 export const dynamic = "force-dynamic";
 
@@ -29,25 +29,21 @@ export default async function Home() {
       <section className="hero">
         <div className="container hero-grid">
           <div className="hero-copy">
-            <span className="hero-kicker">BISPO DROP 001 · DEMONSTRAÇÃO</span>
+            <span className="hero-kicker">BISPO DROP 001 · MODA URBANA</span>
             <h1>Vista sua<br /><em>presença.</em></h1>
             <p>Tênis, calças e conjuntos para quem não passa despercebido. Uma curadoria urbana com atitude, conforto e identidade própria.</p>
             <div className="hero-actions">
               <Link href="/catalogo" className="button button--light">Explorar coleção <ArrowRight size={19} /></Link>
               <Link href="/categoria/tenis" className="button button--ghost">Ver sneakers</Link>
             </div>
-            <div className="hero-meta">
-              <span><strong>{active.length}</strong> produtos demo</span>
-              <span><strong>SP</strong> área de entrega</span>
-              <span><strong>01</strong> nova fase</span>
-            </div>
+            <div className="hero-delivery-message">ENTREGAS PARA TODO O BRASIL</div>
           </div>
           <div className="hero-art">
             <div className="hero-art__type">MOVE<br />WITH<br />PURPOSE</div>
             {heroProduct
-              ? <ProductVisual product={heroProduct} label={heroProduct.coverImage ?? "DROP 001"} priority />
-              : <div className="empty-state"><strong>Catálogo conectado.</strong><p>Configure o Supabase e execute a migração dos produtos para preencher a vitrine.</p></div>}
-            <span className="hero-art__note">Imagem ilustrativa · Produto fictício</span>
+              ? <ProductVisual product={heroProduct} label={heroProduct.coverImage ?? "DROP 001"} priority showStatus={false} />
+              : <div className="empty-state"><strong>Curadoria Bispo Store.</strong><p>Tênis, calças e conjuntos com identidade urbana.</p></div>}
+            <span className="hero-art__note">CURADORIA BISPO STORE</span>
           </div>
         </div>
       </section>
@@ -68,7 +64,7 @@ export default async function Home() {
 
       <section className="section container">
         <SectionTitle eyebrow="Acabou de chegar" title="Lançamentos" href="/catalogo?filtro=lancamentos" />
-        <ProductGrid products={launches} />
+        <ProductGrid products={launches} showInternalLabels={false} />
       </section>
 
       <section className="manifesto-band">
@@ -81,7 +77,7 @@ export default async function Home() {
 
       <section className="section container">
         <SectionTitle eyebrow="Da sola ao topo" title="Tênis em destaque" href="/categoria/tenis" />
-        <ProductGrid products={sneakers} />
+        <ProductGrid products={sneakers} showInternalLabels={false} />
       </section>
 
       <section className="editorial container">
@@ -91,12 +87,12 @@ export default async function Home() {
             <span />
             <strong>BISPO<br />STREET<br />UNIFORM</strong>
           </div>
-          <small>IMAGEM CONCEITUAL DEMONSTRATIVA</small>
+          <small>EDITORIAL BISPO STORE</small>
         </div>
         <div className="editorial__copy">
           <span className="eyebrow eyebrow--red">Além do básico</span>
           <h2>Peças para criar seu próprio uniforme.</h2>
-          <p>Modelagens confortáveis, paleta versátil e detalhes que seguram o look. A coleção de demonstração foi desenhada para mostrar como a futura curadoria da Bispo pode ganhar vida.</p>
+          <p>Modelagens confortáveis, paleta versátil e detalhes que seguram o look. Uma curadoria urbana feita para criar combinações com presença.</p>
           <Link href="/categoria/conjuntos" className="button button--dark">Ver conjuntos <ArrowRight size={18} /></Link>
         </div>
       </section>
@@ -104,29 +100,29 @@ export default async function Home() {
       <section className="section section--muted">
         <div className="container">
           <SectionTitle eyebrow="Base do guarda-roupa" title="Calças" href="/categoria/calcas" />
-          {pants.length ? <ProductGrid products={pants} /> : <div className="empty-state"><strong>Categoria preparada.</strong><p>Novas calças poderão ser cadastradas pelo painel.</p></div>}
+          {pants.length ? <ProductGrid products={pants} showInternalLabels={false} /> : <div className="empty-state"><strong>Calças Bispo Store.</strong><p>Modelagens urbanas para completar o visual.</p></div>}
         </div>
       </section>
 
       <section className="section container">
         <SectionTitle eyebrow="Visual coordenado" title="Conjuntos" href="/categoria/conjuntos" />
-        {sets.length ? <ProductGrid products={sets} /> : <div className="empty-state"><strong>Categoria preparada.</strong><p>Novos conjuntos poderão ser cadastrados pelo painel.</p></div>}
+        {sets.length ? <ProductGrid products={sets} showInternalLabels={false} /> : <div className="empty-state"><strong>Conjuntos Bispo Store.</strong><p>Combinações coordenadas com identidade urbana.</p></div>}
       </section>
 
       <section className="section container">
-        <SectionTitle eyebrow="Preço de apresentação" title="Ofertas da semana" href="/catalogo?filtro=ofertas" />
-        <ProductGrid products={offers} />
+        <SectionTitle eyebrow="Seleção especial" title="Ofertas da semana" href="/catalogo?filtro=ofertas" />
+        <ProductGrid products={offers} showInternalLabels={false} />
       </section>
 
       <section className="section container">
         <SectionTitle eyebrow="Escolhas da comunidade" title="Mais vendidos" href="/catalogo" />
-        <ProductGrid products={bestSellers} />
+        <ProductGrid products={bestSellers} showInternalLabels={false} />
       </section>
 
       <section className="benefits">
         <div className="container benefits-grid">
-          <div><MapPin /><strong>Frete para todo o Brasil</strong><p>Cotação pelo CEP com opções do Melhor Envio Sandbox.</p></div>
-          <div><ShieldCheck /><strong>Compra acompanhada</strong><p>Pedido demonstrativo com comunicação clara pelo WhatsApp.</p></div>
+          <div><MapPin /><strong>Frete para todo o Brasil</strong><p>Cotação pelo CEP com opções de transportadoras.</p></div>
+          <div><ShieldCheck /><strong>Compra acompanhada</strong><p>Comunicação clara pelo WhatsApp em todas as etapas.</p></div>
           <div><BadgeCheck /><strong>Curadoria Bispo</strong><p>Seleção visual voltada para sneakers e moda urbana.</p></div>
           <div><Headphones /><strong>Atendimento direto</strong><p>Converse com a loja antes e depois de finalizar o pedido.</p></div>
         </div>

@@ -30,7 +30,7 @@ export function Header() {
   return (
     <>
       <div className="announcement">
-        <span>DROP DE APRESENTAÇÃO · PRODUTOS E VALORES FICTÍCIOS</span>
+        <span>BISPO STORE · MODA URBANA E SNEAKERS</span>
         <span className="announcement__desktop">FRETE PARA TODO O BRASIL</span>
       </div>
       <header className="site-header">
@@ -74,7 +74,7 @@ export function Header() {
             <Link href="/acompanhar-pedido" onClick={() => setMobileOpen(false)}>Acompanhar pedido</Link>
             <Link href="/contato" onClick={() => setMobileOpen(false)}>Contato</Link>
           </nav>
-          <p>Versão de demonstração · Bispo Store</p>
+          <p>Bispo Store · Vista sua presença</p>
         </div>
       )}
     </>

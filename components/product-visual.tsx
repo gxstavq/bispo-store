@@ -6,11 +6,13 @@ export function ProductVisual({
   label,
   compact = false,
   priority = false,
+  showStatus = true,
 }: {
   product: Product;
   label?: string;
   compact?: boolean;
   priority?: boolean;
+  showStatus?: boolean;
 }) {
   const fullPhoto = label && (label.startsWith("/") || /^https?:\/\//.test(label))
     ? label
@@ -39,7 +41,7 @@ export function ProductVisual({
           quality={85}
           unoptimized
         />
-        {product.needsReview && <span className="review-stamp">CADASTRO PENDENTE</span>}
+        {showStatus && product.needsReview && <span className="review-stamp">CADASTRO PENDENTE</span>}
       </div>
     );
   }
@@ -49,9 +51,9 @@ export function ProductVisual({
       className={`product-visual product-visual--${product.visual.type} ${compact ? "product-visual--compact" : ""}`}
       style={{ "--accent": product.visual.accent, "--secondary": product.visual.secondary } as React.CSSProperties}
       role="img"
-      aria-label={`Imagem demonstrativa de ${product.name}${label ? ` — ${label}` : ""}`}
+      aria-label={`${showStatus ? "Imagem demonstrativa" : "Imagem"} de ${product.name}${label ? ` — ${label}` : ""}`}
     >
-      <span className="demo-stamp">IMAGEM DEMO</span>
+      {showStatus && <span className="demo-stamp">IMAGEM DEMO</span>}
       <span className="visual-orbit" />
       {product.visual.type === "shoe" && (
         <span className="shoe-shape"><i /><b /></span>

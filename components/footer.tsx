@@ -10,7 +10,7 @@ export function Footer() {
         <div className="footer-brand">
           <Image src="/logo-bispo-store.png" width={120} height={120} alt="Bispo Store" />
           <p>Moda urbana e sneakers escolhidos para quem transforma presença em assinatura.</p>
-          <span className="demo-pill">PROJETO DEMONSTRATIVO</span>
+          <span className="demo-pill">BISPO STORE</span>
         </div>
         <div>
           <h3>Comprar</h3>
@@ -30,13 +30,13 @@ export function Footer() {
         <div>
           <h3>Fale com a Bispo</h3>
           <a href={whatsappUrl("Olá! Preciso de ajuda com a loja.")} target="_blank" rel="noreferrer"><MessageCircle size={16} /> WhatsApp</a>
-          <a href="#" aria-label="Instagram demonstrativo"><Instagram size={16} /> Instagram</a>
+          <a href="#" aria-label="Instagram da Bispo Store"><Instagram size={16} /> Instagram</a>
           <span><MapPin size={16} /> Avenida São Miguel, 5046</span>
         </div>
       </div>
       <div className="container footer-bottom">
         <span>© 2026 Bispo Store. Todos os direitos reservados.</span>
-        <span>Dados, produtos e preços fictícios para apresentação.</span>
+        <span>Moda urbana, sneakers e atitude em cada escolha.</span>
       </div>
     </footer>
   );

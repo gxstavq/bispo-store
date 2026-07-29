@@ -43,6 +43,17 @@ test("todas as rotas públicas essenciais existem", () => {
   assert.equal(existsSync(join(root, "app", "categoria", "roupas", "page.tsx")), false);
 });
 
+test("home exibe entrega nacional sem contadores ou mensagens provisórias", () => {
+  const home = readFileSync(join(root, "app", "page.tsx"), "utf8");
+  const header = readFileSync(join(root, "components", "header.tsx"), "utf8");
+  const footer = readFileSync(join(root, "components", "footer.tsx"), "utf8");
+  assert.match(home, /hero-delivery-message">ENTREGAS PARA TODO O BRASIL/);
+  assert.doesNotMatch(home, /active\.length|produtos demo|área de entrega|nova fase/i);
+  assert.doesNotMatch(home, /demonstra|fictí|provis|preço de apresentação/i);
+  assert.doesNotMatch(header, /produtos e valores fictícios|versão de demonstração/i);
+  assert.doesNotMatch(footer, /projeto demonstrativo|produtos e preços fictícios/i);
+});
+
 test("homologação Netlify bloqueia indexação em todas as camadas", () => {
   const robots = readFileSync(join(root, "app", "robots.ts"), "utf8");
   const layout = readFileSync(join(root, "app", "layout.tsx"), "utf8");
