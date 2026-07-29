@@ -8,6 +8,7 @@ import type {
   ProductCategory,
   ProductStatus,
 } from "@/types/commerce";
+import { isBrazilianState } from "@/lib/brazilian-states";
 import { RequestValidationError } from "@/lib/security/request";
 
 const uuidPattern = /^[0-9a-f]{8}-[0-9a-f]{4}-[1-8][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
@@ -102,9 +103,13 @@ export function validateCheckoutData(value: unknown): CheckoutData {
   if (whatsapp.length < 10 || whatsapp.length > 15) throw new RequestValidationError("WhatsApp inválido.");
   const email = textValue(input.email, "E-mail", 254);
   if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) throw new RequestValidationError("E-mail inválido.");
-  if (input.state !== "SP") throw new RequestValidationError("O endereço deve estar no estado de São Paulo.");
+  const state = String(input.state ?? "").toUpperCase();
+  if (!isBrazilianState(state)) throw new RequestValidationError("Selecione uma UF válida.");
   if (input.deliveryChoice !== "local_delivery_review" && input.deliveryChoice !== "shipping_quote") {
     throw new RequestValidationError("Opção de entrega inválida.");
+  }
+  if (input.deliveryChoice === "local_delivery_review" && state !== "SP") {
+    throw new RequestValidationError("A análise de entrega local está disponível somente para endereços em SP.");
   }
   const selectedQuote = input.selectedShippingQuoteId;
   if (input.deliveryChoice === "shipping_quote") {
@@ -124,7 +129,7 @@ export function validateCheckoutData(value: unknown): CheckoutData {
     complement: optionalText(input.complement, "Complemento", 120),
     district: textValue(input.district, "Bairro", 120),
     city: textValue(input.city, "Cidade", 120),
-    state: "SP",
+    state,
     reference: optionalText(input.reference, "Referência", 250),
     notes: optionalText(input.notes, "Observações", 2000),
     deliveryChoice: input.deliveryChoice,

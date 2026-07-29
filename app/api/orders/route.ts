@@ -4,6 +4,7 @@ import { assertSameOrigin, readJsonBody, validationErrorResponse } from "@/lib/s
 import { createSupabaseServerClient } from "@/lib/supabase/server";
 import { validateCartItems, validateCheckoutData } from "@/lib/validation/commerce";
 import { orderRepository } from "@/repositories/order-repository";
+import { lookupPostalAddress, PostalCodeLookupError } from "@/services/address/viacep";
 import type { CartItem, CheckoutData } from "@/types/commerce";
 
 export const runtime = "nodejs";
@@ -47,8 +48,23 @@ export async function POST(request: NextRequest) {
   if (!input.items?.length || !input.customer) {
     return NextResponse.json({ error: "Itens e dados do cliente são obrigatórios." }, { status: 400 });
   }
-  if (input.customer.state !== "SP") {
-    return NextResponse.json({ error: "O endereço deve estar no estado de São Paulo." }, { status: 400 });
+
+  try {
+    const resolvedAddress = await lookupPostalAddress(input.customer.cep);
+    input.customer = { ...input.customer, state: resolvedAddress.state };
+  } catch (error) {
+    if (error instanceof PostalCodeLookupError) {
+      return NextResponse.json({ error: error.message }, { status: error.status });
+    }
+    return NextResponse.json({
+      error: "Não foi possível validar o CEP antes de criar o pedido.",
+    }, { status: 503 });
+  }
+
+  if (input.customer.deliveryChoice === "local_delivery_review" && input.customer.state !== "SP") {
+    return NextResponse.json({
+      error: "A análise de entrega local está disponível somente para endereços em SP.",
+    }, { status: 400 });
   }
 
   const { data, error } = await supabase.rpc("create_customer_order", {
@@ -64,7 +80,7 @@ export async function POST(request: NextRequest) {
       complement: input.customer.complement,
       district: input.customer.district,
       city: input.customer.city,
-      state: "SP",
+      state: input.customer.state,
       reference: input.customer.reference,
     },
     cart_items: input.items.map((item) => ({

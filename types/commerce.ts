@@ -92,7 +92,7 @@ export interface CheckoutData {
   complement: string;
   district: string;
   city: string;
-  state: "SP";
+  state: string;
   reference: string;
   notes: string;
   deliveryChoice: DeliveryChoice;

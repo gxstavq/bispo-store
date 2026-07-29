@@ -53,7 +53,7 @@ type OrderRecord = {
     complement: string | null;
     district: string;
     city: string;
-    state: "SP";
+    state: string;
     reference: string | null;
   } | Array<{
     postal_code: string;
@@ -62,7 +62,7 @@ type OrderRecord = {
     complement: string | null;
     district: string;
     city: string;
-    state: "SP";
+    state: string;
     reference: string | null;
   }>;
   order_items: Array<{

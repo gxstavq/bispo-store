@@ -1,5 +1,7 @@
 import "server-only";
 
+import { isBrazilianState } from "@/lib/brazilian-states";
+
 const VIA_CEP_ORIGIN = "https://viacep.com.br";
 const REQUEST_TIMEOUT_MS = 5_000;
 
@@ -18,7 +20,7 @@ export type PostalAddress = {
   street: string;
   district: string;
   city: string;
-  state: "SP";
+  state: string;
 };
 
 export class PostalCodeLookupError extends Error {
@@ -87,10 +89,10 @@ export async function lookupPostalAddress(
   }
 
   const state = stringField(result.uf).toUpperCase();
-  if (state !== "SP") {
+  if (!isBrazilianState(state)) {
     throw new PostalCodeLookupError(
-      "A Bispo Store realiza entregas somente no estado de São Paulo.",
-      400,
+      "Não foi possível identificar a UF deste CEP.",
+      422,
     );
   }
 
@@ -107,6 +109,6 @@ export async function lookupPostalAddress(
     street: stringField(result.logradouro),
     district: stringField(result.bairro),
     city,
-    state: "SP",
+    state,
   };
 }

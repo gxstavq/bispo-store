@@ -16,7 +16,7 @@ export default function ContactPage() {
           <div className="contact-methods">
             <a href={whatsappUrl("Olá! Preciso de ajuda com a loja.")} target="_blank" rel="noreferrer"><MessageCircle /><div><span>WhatsApp</span><strong>Número configurado por variável de ambiente</strong></div></a>
             <div><Mail /><div><span>E-mail comercial</span><strong>bispostorebr@hotmail.com</strong></div></div>
-            <div><MapPin /><div><span>Atendimento</span><strong>Estado de São Paulo</strong></div></div>
+            <div><MapPin /><div><span>Atendimento</span><strong>Todo o Brasil</strong></div></div>
             <div><Clock3 /><div><span>Horário sugerido</span><strong>Seg. a sáb. · 9h às 18h</strong></div></div>
           </div>
         </div>

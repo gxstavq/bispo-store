@@ -89,12 +89,13 @@ test("painel possui persistência Supabase, Storage e operações CRUD protegida
 
 test("checkout oferece análise local e cotação Melhor Envio Sandbox", () => {
   const checkout = readFileSync(join(root, "components", "checkout-form.tsx"), "utf8");
-  assert.match(checkout, /São Paulo \(SP\)/);
+  assert.match(checkout, /brazilianStates\.map/);
   assert.match(checkout, /Solicitar análise de entrega local grátis em até 5 km/);
+  assert.match(checkout, /disabled=\{!localDeliveryCanBeRequested\}/);
   assert.match(checkout, /Calcular frete para meu endereço/);
   assert.match(checkout, /\/api\/shipping\/quotes/);
   assert.match(checkout, /createPaymentCheckout/);
-  assert.match(checkout, /nenhuma cobrança será criada agora/i);
+  assert.match(checkout, /Nada será cobrado ou liberado automaticamente/i);
 });
 
 test("checkout consulta o CEP no servidor e preenche o endereço automaticamente", () => {
@@ -109,8 +110,27 @@ test("checkout consulta o CEP no servidor e preenche o endereço automaticamente
   assert.match(route, /postal-code-lookup/);
   assert.match(route, /limit: 30/);
   assert.match(service, /https:\/\/viacep\.com\.br/);
-  assert.match(service, /state !== "SP"/);
+  assert.match(service, /isBrazilianState/);
+  assert.doesNotMatch(service, /state !== "SP"/);
+  assert.match(checkout, /resolvedState === "SP"/);
   assert.doesNotMatch(service, /NEXT_PUBLIC_/);
+});
+
+test("envio nacional preserva entrega local apenas para SP e possui migration retrocompatível", () => {
+  const validation = readFileSync(join(root, "lib", "validation", "commerce.ts"), "utf8");
+  const orderRoute = readFileSync(join(root, "app", "api", "orders", "route.ts"), "utf8");
+  const migration = readFileSync(
+    join(root, "supabase", "migrations", "20260729150000_nationwide_shipping.sql"),
+    "utf8",
+  );
+  assert.match(validation, /isBrazilianState/);
+  assert.match(validation, /deliveryChoice === "local_delivery_review" && state !== "SP"/);
+  assert.match(orderRoute, /deliveryChoice === "local_delivery_review"/);
+  assert.match(orderRoute, /state: input\.customer\.state/);
+  assert.match(migration, /addresses_state_br_uf_check/);
+  assert.match(migration, /local_delivery_unavailable_for_state/);
+  assert.match(migration, /address_state/);
+  assert.doesNotMatch(migration, /drop table|truncate table|delete from/i);
 });
 
 test("migration preserva dados antigos e arquiva categorias fora da operação", () => {

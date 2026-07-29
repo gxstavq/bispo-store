@@ -31,7 +31,7 @@ export function Header() {
     <>
       <div className="announcement">
         <span>DROP DE APRESENTAÇÃO · PRODUTOS E VALORES FICTÍCIOS</span>
-        <span className="announcement__desktop">ENTREGAS SOMENTE EM SÃO PAULO</span>
+        <span className="announcement__desktop">FRETE PARA TODO O BRASIL</span>
       </div>
       <header className="site-header">
         <div className="container header-main">

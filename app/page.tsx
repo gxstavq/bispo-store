@@ -125,7 +125,7 @@ export default async function Home() {
 
       <section className="benefits">
         <div className="container benefits-grid">
-          <div><MapPin /><strong>Entrega em São Paulo</strong><p>Atendimento focado no estado de SP nesta primeira fase.</p></div>
+          <div><MapPin /><strong>Frete para todo o Brasil</strong><p>Cotação pelo CEP com opções do Melhor Envio Sandbox.</p></div>
           <div><ShieldCheck /><strong>Compra acompanhada</strong><p>Pedido demonstrativo com comunicação clara pelo WhatsApp.</p></div>
           <div><BadgeCheck /><strong>Curadoria Bispo</strong><p>Seleção visual voltada para sneakers e moda urbana.</p></div>
           <div><Headphones /><strong>Atendimento direto</strong><p>Converse com a loja antes e depois de finalizar o pedido.</p></div>

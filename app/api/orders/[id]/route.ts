@@ -36,7 +36,7 @@ export async function PATCH(request: NextRequest, { params }: { params: Promise<
   const supabase = await createSupabaseServerClient();
   const { data: row } = await supabase
     .from("orders")
-    .select("id, status, subtotal, shipping_amount")
+    .select("id, status, subtotal, shipping_amount, delivery_choice, addresses!inner(state)")
     .eq("order_number", id)
     .single();
   if (!row) return NextResponse.json({ error: "Pedido não encontrado." }, { status: 404 });
@@ -63,6 +63,12 @@ export async function PATCH(request: NextRequest, { params }: { params: Promise<
   let quote: { amount: number; service_name: string } | null = null;
 
   if (input.action === "approve_local") {
+    const address = Array.isArray(row.addresses) ? row.addresses[0] : row.addresses;
+    if (row.delivery_choice !== "local_delivery_review" || address?.state !== "SP") {
+      return NextResponse.json({
+        error: "Entrega local grátis somente pode ser aprovada para pedidos elegíveis em SP.",
+      }, { status: 400 });
+    }
     orderUpdate = { status: "local_delivery_approved", shipping_amount: 0, shipping_status: "free_approved", payment_status: "not_generated" };
     decision = "local_approved";
   } else if (input.action === "reject_local") {

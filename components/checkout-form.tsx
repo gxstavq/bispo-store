@@ -3,6 +3,7 @@
 import { ArrowRight, LockKeyhole, MessageCircle, ShoppingBag, Truck } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { FormEvent, useEffect, useMemo, useState } from "react";
+import { brazilianStates } from "@/lib/brazilian-states";
 import { formatCurrency, whatsappUrl } from "@/lib/format";
 import {
   createOrder,
@@ -14,7 +15,7 @@ import { useStore } from "./store-provider";
 
 const initialData: CheckoutData = {
   fullName: "", whatsapp: "", email: "", cep: "", street: "", number: "", complement: "",
-  district: "", city: "", state: "SP", reference: "", notes: "", deliveryChoice: "local_delivery_review",
+  district: "", city: "", state: "", reference: "", notes: "", deliveryChoice: "shipping_quote",
 };
 
 type AddressLookupStatus = "idle" | "loading" | "success" | "error";
@@ -24,7 +25,7 @@ type AddressLookupResponse = {
   street?: string;
   district?: string;
   city?: string;
-  state?: "SP";
+  state?: string;
   error?: string;
 };
 
@@ -50,6 +51,7 @@ export function CheckoutForm({ products }: { products: Product[] }) {
   })));
   const selectedQuote = quotes.find((quote) => quote.id === data.selectedShippingQuoteId);
   const quoteIsCurrent = quotedCartKey === `${data.cep.replace(/\D/g, "")}:${cartKey}`;
+  const localDeliveryCanBeRequested = data.state === "SP";
   const subtotal = useMemo(() => items.reduce((sum, item) => {
     const product = products.find((candidate) => candidate.id === item.productId);
     return sum + (product?.promotionalPrice ?? product?.price ?? 0) * item.quantity;
@@ -68,11 +70,22 @@ export function CheckoutForm({ products }: { products: Product[] }) {
           street: "",
           district: "",
           city: "",
-          state: "SP",
+          state: "",
+          deliveryChoice: "shipping_quote",
+          selectedShippingQuoteId: undefined,
+        };
+      }
+      if (field === "state") {
+        const state = value.toUpperCase();
+        return {
+          ...current,
+          state,
+          deliveryChoice: state === "SP" ? current.deliveryChoice : "shipping_quote",
           selectedShippingQuoteId: undefined,
         };
       }
       if (field === "deliveryChoice") {
+        if (value === "local_delivery_review" && current.state !== "SP") return current;
         return {
           ...current,
           deliveryChoice: value as CheckoutData["deliveryChoice"],
@@ -99,9 +112,10 @@ export function CheckoutForm({ products }: { products: Product[] }) {
           { signal: controller.signal },
         );
         const result = await response.json() as AddressLookupResponse;
-        if (!response.ok || !result.city) {
+        if (!response.ok || !result.city || !result.state) {
           throw new Error(result.error ?? "Não foi possível encontrar este endereço.");
         }
+        const resolvedState = result.state;
         setData((current) => {
           if (current.cep.replace(/\D/g, "") !== postalCode) return current;
           return {
@@ -110,7 +124,11 @@ export function CheckoutForm({ products }: { products: Product[] }) {
             street: result.street ?? "",
             district: result.district ?? "",
             city: result.city ?? "",
-            state: "SP",
+            state: resolvedState,
+            deliveryChoice: resolvedState === "SP"
+              ? current.deliveryChoice
+              : "shipping_quote",
+            selectedShippingQuoteId: undefined,
           };
         });
         const needsDetails = !result.street || !result.district;
@@ -229,10 +247,13 @@ export function CheckoutForm({ products }: { products: Product[] }) {
           </div>
         </section>
         <section className="form-section">
-          <div className="form-section__title"><span>02</span><div><h2>Entrega</h2><p>Endereço limitado ao estado de São Paulo.</p></div></div>
+          <div className="form-section__title"><span>02</span><div><h2>Entrega</h2><p>Informe um CEP de qualquer estado brasileiro.</p></div></div>
           <div className="form-grid">
             <label>CEP<input required inputMode="numeric" autoComplete="postal-code" maxLength={9} value={data.cep} onChange={(e) => update("cep", e.target.value)} placeholder="00000-000" /></label>
-            <label>Estado<select value="SP" disabled><option>São Paulo (SP)</option></select></label>
+            <label>UF<select required autoComplete="address-level1" value={data.state} onChange={(e) => update("state", e.target.value)}>
+              <option value="">Selecione</option>
+              {brazilianStates.map(({ code, name }) => <option value={code} key={code}>{name} ({code})</option>)}
+            </select></label>
             {addressLookupMessage && (
               <div
                 className={`address-lookup-status address-lookup-status--${addressLookupStatus} span-2`}
@@ -253,9 +274,9 @@ export function CheckoutForm({ products }: { products: Product[] }) {
         <section className="form-section">
           <div className="form-section__title"><span>03</span><div><h2>Como deseja receber?</h2><p>O frete é sempre confirmado no servidor.</p></div></div>
           <div className="delivery-choice-grid">
-            <label className={data.deliveryChoice === "local_delivery_review" ? "delivery-choice is-selected" : "delivery-choice"}>
-              <input type="radio" name="deliveryChoice" checked={data.deliveryChoice === "local_delivery_review"} onChange={() => update("deliveryChoice", "local_delivery_review")} />
-              <span><strong>Solicitar análise de entrega local grátis em até 5 km</strong><small>A gratuidade não é automática. A loja analisará o endereço antes de liberar o pagamento.</small></span>
+            <label className={`delivery-choice${data.deliveryChoice === "local_delivery_review" ? " is-selected" : ""}${!localDeliveryCanBeRequested ? " is-disabled" : ""}`}>
+              <input type="radio" name="deliveryChoice" disabled={!localDeliveryCanBeRequested} checked={data.deliveryChoice === "local_delivery_review"} onChange={() => update("deliveryChoice", "local_delivery_review")} />
+              <span><strong>Solicitar análise de entrega local grátis em até 5 km</strong><small>{localDeliveryCanBeRequested ? "Disponível para análise em SP. A gratuidade só será aprovada pela loja após confirmar o raio de 5 km." : "Disponível somente para endereços em SP que forem aprovados dentro do raio de 5 km."}</small></span>
             </label>
             <label className={data.deliveryChoice === "shipping_quote" ? "delivery-choice is-selected" : "delivery-choice"}>
               <input type="radio" name="deliveryChoice" checked={data.deliveryChoice === "shipping_quote"} onChange={() => update("deliveryChoice", "shipping_quote")} />
@@ -263,7 +284,7 @@ export function CheckoutForm({ products }: { products: Product[] }) {
             </label>
           </div>
           {data.deliveryChoice === "local_delivery_review" ? (
-            <div className="local-delivery-warning"><Truck /><div><strong>Entrega grátis sujeita à confirmação da Bispo Store.</strong><p>O pedido será criado sem frete e sem pagamento. Após a análise, a loja libera o link Sandbox.</p><a href={whatsappUrl("Olá! Tenho uma dúvida sobre a análise de entrega local grátis.")} target="_blank" rel="noreferrer"><MessageCircle size={16} /> Tirar dúvida pelo WhatsApp</a></div></div>
+            <div className="local-delivery-warning"><Truck /><div><strong>Entrega grátis sujeita à confirmação da Bispo Store.</strong><p>A loja verificará se o endereço fica dentro do raio de 5 km. Nada será cobrado ou liberado automaticamente.</p><a href={whatsappUrl("Olá! Tenho uma dúvida sobre a análise de entrega local grátis.")} target="_blank" rel="noreferrer"><MessageCircle size={16} /> Tirar dúvida pelo WhatsApp</a></div></div>
           ) : (
             <div className="shipping-quotes">
               <button className="button button--dark" type="button" disabled={quoting || data.cep.replace(/\D/g, "").length !== 8} onClick={() => void calculateShipping()}>

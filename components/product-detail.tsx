@@ -84,7 +84,7 @@ export function ProductDetail({ product }: { product: Product }) {
 
         <div className="shipping-note">
           <Truck />
-          <div><strong>Entrega em São Paulo</strong><p>No checkout, solicite análise de entrega local grátis em até 5 km ou a seleção posterior de um frete convencional.</p></div>
+          <div><strong>Entrega em todo o Brasil</strong><p>Calcule o frete pelo CEP. Em SP, também é possível solicitar análise de entrega local grátis em até 5 km.</p></div>
         </div>
         <a className="whatsapp-product" href={whatsappUrl(`Olá! Tenho uma dúvida sobre o produto ${product.name}.`)} target="_blank" rel="noreferrer">
           <MessageCircle size={19} /> Tirar dúvida sobre este produto

@@ -97,6 +97,7 @@ export function OrderManagementPanel({
       </div>
       <div className="decision-actions">
         {pendingReview && <>
+          <small>Confirme a gratuidade somente após verificar manualmente que o endereço está dentro do raio de 5 km.</small>
           <button className="button button--dark" disabled={saving} onClick={() => void apply("approve_local")}><Check size={17} /> Confirmar entrega grátis</button>
           <button className="button button--outline-danger" disabled={saving} onClick={() => void apply("reject_local")}><CircleX size={17} /> Recusar entrega grátis</button>
         </>}
