@@ -220,4 +220,6 @@ data/products.local.json     origem preservada para migração e conferência
 
 ## Netlify
 
-O projeto mantém `netlify.toml`. Ao preparar uma futura homologação, cadastre as variáveis de ambiente no painel da Netlify e não em arquivos versionados. A publicação não faz parte desta etapa.
+O projeto mantém `netlify.toml` com build Next.js/OpenNext no ambiente Linux do Netlify. As variáveis de ambiente são cadastradas no Netlify e nunca em arquivos versionados.
+
+Enquanto a homologação estiver em revisão, `scripts/netlify-ignore-build.mjs` bloqueia o contexto `production` e permite somente Deploy Previews originados de pull requests. Remova essa trava apenas após autorização explícita para atualizar a URL principal.
