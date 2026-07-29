@@ -1,0 +1,146 @@
+import type { Metadata } from "next";
+import Link from "next/link";
+import { ArrowRight, BadgeCheck, Headphones, MapPin, ShieldCheck } from "lucide-react";
+import { ProductGrid } from "@/components/product-grid";
+import { ProductVisual } from "@/components/product-visual";
+import { PublicShell } from "@/components/public-shell";
+import { SectionTitle } from "@/components/section-title";
+import { whatsappUrl } from "@/lib/format";
+import { productRepository } from "@/repositories/product-repository";
+
+export const metadata: Metadata = {
+  title: "Moda urbana com presença",
+  description: "Descubra a coleção demonstrativa de tênis, calças e conjuntos da Bispo Store.",
+};
+export const dynamic = "force-dynamic";
+
+export default async function Home() {
+  const active = await productRepository.list();
+  const sneakers = active.filter((product) => product.category === "tenis").slice(0, 4);
+  const pants = active.filter((product) => product.category === "calcas").slice(0, 4);
+  const sets = active.filter((product) => product.category === "conjuntos").slice(0, 4);
+  const launches = active.filter((product) => product.isNew).slice(0, 4);
+  const offers = active.filter((product) => product.promotionalPrice).slice(0, 4);
+  const bestSellers = active.filter((product) => product.featured).slice(0, 4);
+  const heroProduct = active[0];
+
+  return (
+    <PublicShell>
+      <section className="hero">
+        <div className="container hero-grid">
+          <div className="hero-copy">
+            <span className="hero-kicker">BISPO DROP 001 · DEMONSTRAÇÃO</span>
+            <h1>Vista sua<br /><em>presença.</em></h1>
+            <p>Tênis, calças e conjuntos para quem não passa despercebido. Uma curadoria urbana com atitude, conforto e identidade própria.</p>
+            <div className="hero-actions">
+              <Link href="/catalogo" className="button button--light">Explorar coleção <ArrowRight size={19} /></Link>
+              <Link href="/categoria/tenis" className="button button--ghost">Ver sneakers</Link>
+            </div>
+            <div className="hero-meta">
+              <span><strong>{active.length}</strong> produtos demo</span>
+              <span><strong>SP</strong> área de entrega</span>
+              <span><strong>01</strong> nova fase</span>
+            </div>
+          </div>
+          <div className="hero-art">
+            <div className="hero-art__type">MOVE<br />WITH<br />PURPOSE</div>
+            {heroProduct
+              ? <ProductVisual product={heroProduct} label={heroProduct.coverImage ?? "DROP 001"} priority />
+              : <div className="empty-state"><strong>Catálogo conectado.</strong><p>Configure o Supabase e execute a migração dos produtos para preencher a vitrine.</p></div>}
+            <span className="hero-art__note">Imagem ilustrativa · Produto fictício</span>
+          </div>
+        </div>
+      </section>
+
+      <section className="category-strip">
+        <div className="container category-strip__grid">
+          <Link href="/categoria/tenis" className="category-card category-card--red">
+            <span>01</span><div><small>PASSO FIRME</small><strong>SNEAKERS</strong></div><ArrowRight />
+          </Link>
+          <Link href="/categoria/calcas" className="category-card category-card--light">
+            <span>02</span><div><small>BASE DO VISUAL</small><strong>CALÇAS</strong></div><ArrowRight />
+          </Link>
+          <Link href="/categoria/conjuntos" className="category-card category-card--dark">
+            <span>03</span><div><small>LOOK COMPLETO</small><strong>CONJUNTOS</strong></div><ArrowRight />
+          </Link>
+        </div>
+      </section>
+
+      <section className="section container">
+        <SectionTitle eyebrow="Acabou de chegar" title="Lançamentos" href="/catalogo?filtro=lancamentos" />
+        <ProductGrid products={launches} />
+      </section>
+
+      <section className="manifesto-band">
+        <div className="container">
+          <span>ORIGINAL NO JEITO</span><i />
+          <span>FORTE NA PRESENÇA</span><i />
+          <span>FEITO PARA A RUA</span>
+        </div>
+      </section>
+
+      <section className="section container">
+        <SectionTitle eyebrow="Da sola ao topo" title="Tênis em destaque" href="/categoria/tenis" />
+        <ProductGrid products={sneakers} />
+      </section>
+
+      <section className="editorial container">
+        <div className="editorial__visual">
+          <span className="editorial__number">B/01</span>
+          <div className="editorial__figure">
+            <span />
+            <strong>BISPO<br />STREET<br />UNIFORM</strong>
+          </div>
+          <small>IMAGEM CONCEITUAL DEMONSTRATIVA</small>
+        </div>
+        <div className="editorial__copy">
+          <span className="eyebrow eyebrow--red">Além do básico</span>
+          <h2>Peças para criar seu próprio uniforme.</h2>
+          <p>Modelagens confortáveis, paleta versátil e detalhes que seguram o look. A coleção de demonstração foi desenhada para mostrar como a futura curadoria da Bispo pode ganhar vida.</p>
+          <Link href="/categoria/conjuntos" className="button button--dark">Ver conjuntos <ArrowRight size={18} /></Link>
+        </div>
+      </section>
+
+      <section className="section section--muted">
+        <div className="container">
+          <SectionTitle eyebrow="Base do guarda-roupa" title="Calças" href="/categoria/calcas" />
+          {pants.length ? <ProductGrid products={pants} /> : <div className="empty-state"><strong>Categoria preparada.</strong><p>Novas calças poderão ser cadastradas pelo painel.</p></div>}
+        </div>
+      </section>
+
+      <section className="section container">
+        <SectionTitle eyebrow="Visual coordenado" title="Conjuntos" href="/categoria/conjuntos" />
+        {sets.length ? <ProductGrid products={sets} /> : <div className="empty-state"><strong>Categoria preparada.</strong><p>Novos conjuntos poderão ser cadastrados pelo painel.</p></div>}
+      </section>
+
+      <section className="section container">
+        <SectionTitle eyebrow="Preço de apresentação" title="Ofertas da semana" href="/catalogo?filtro=ofertas" />
+        <ProductGrid products={offers} />
+      </section>
+
+      <section className="section container">
+        <SectionTitle eyebrow="Escolhas da comunidade" title="Mais vendidos" href="/catalogo" />
+        <ProductGrid products={bestSellers} />
+      </section>
+
+      <section className="benefits">
+        <div className="container benefits-grid">
+          <div><MapPin /><strong>Entrega em São Paulo</strong><p>Atendimento focado no estado de SP nesta primeira fase.</p></div>
+          <div><ShieldCheck /><strong>Compra acompanhada</strong><p>Pedido demonstrativo com comunicação clara pelo WhatsApp.</p></div>
+          <div><BadgeCheck /><strong>Curadoria Bispo</strong><p>Seleção visual voltada para sneakers e moda urbana.</p></div>
+          <div><Headphones /><strong>Atendimento direto</strong><p>Converse com a loja antes e depois de finalizar o pedido.</p></div>
+        </div>
+      </section>
+
+      <section className="whatsapp-cta">
+        <div className="container">
+          <div>
+            <span>PRECISA DE AJUDA?</span>
+            <h2>Fala com a gente.<br />Sem enrolação.</h2>
+          </div>
+          <a href={whatsappUrl("Olá! Preciso de ajuda com a loja.")} target="_blank" rel="noreferrer" className="button button--light">Chamar no WhatsApp <ArrowRight size={19} /></a>
+        </div>
+      </section>
+    </PublicShell>
+  );
+}

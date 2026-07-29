@@ -1,0 +1,137 @@
+[
+  {
+    "id": "BSP-1048",
+    "createdAt": "27/07/2026 • 09:42",
+    "customer": {
+      "fullName": "Cliente Demonstração",
+      "whatsapp": "(11) 99999-1048",
+      "email": "cliente.demo@exemplo.com",
+      "cep": "03870-100",
+      "street": "Avenida de Demonstração",
+      "number": "100",
+      "complement": "",
+      "district": "Vila Exemplo",
+      "city": "São Paulo",
+      "state": "SP",
+      "reference": "Próximo à avenida principal",
+      "notes": "Dados exclusivamente fictícios.",
+      "deliveryChoice": "local_delivery_review"
+    },
+    "items": [
+      {
+        "productId": "p01",
+        "size": "40",
+        "color": "Vermelho",
+        "quantity": 1
+      }
+    ],
+    "subtotal": 359.9,
+    "deliveryChoice": "local_delivery_review",
+    "shippingAmount": null,
+    "shippingStatus": "awaiting_review",
+    "status": "awaiting_local_delivery_review",
+    "paymentStatus": "not_generated",
+    "localDeliveryReview": {
+      "status": "pending"
+    },
+    "history": [
+      {
+        "date": "27/07/2026 • 09:42",
+        "label": "Pedido criado e enviado para análise de entrega local"
+      }
+    ]
+  },
+  {
+    "id": "BSP-1047",
+    "createdAt": "27/07/2026 • 08:15",
+    "customer": {
+      "fullName": "Pessoa Compradora Demo",
+      "whatsapp": "(11) 98888-1047",
+      "email": "comprador.demo@exemplo.com",
+      "cep": "13010-110",
+      "street": "Rua de Exemplo",
+      "number": "220",
+      "complement": "",
+      "district": "Centro",
+      "city": "Campinas",
+      "state": "SP",
+      "reference": "",
+      "notes": "",
+      "deliveryChoice": "shipping_quote"
+    },
+    "items": [
+      {
+        "productId": "p15",
+        "size": "42",
+        "color": "Preto",
+        "quantity": 1
+      }
+    ],
+    "subtotal": 249.9,
+    "deliveryChoice": "shipping_quote",
+    "shippingAmount": null,
+    "shippingStatus": "awaiting_selection",
+    "status": "awaiting_shipping_selection",
+    "paymentStatus": "not_generated",
+    "localDeliveryReview": {
+      "status": "not_requested"
+    },
+    "history": [
+      {
+        "date": "27/07/2026 • 08:15",
+        "label": "Pedido criado aguardando seleção de frete"
+      }
+    ]
+  },
+  {
+    "id": "BSP-1046",
+    "createdAt": "26/07/2026 • 19:08",
+    "customer": {
+      "fullName": "Comprador Fictício",
+      "whatsapp": "(11) 97777-1046",
+      "email": "ficticio@exemplo.com",
+      "cep": "03871-000",
+      "street": "Rua Modelo",
+      "number": "45",
+      "complement": "",
+      "district": "Jardim Modelo",
+      "city": "São Paulo",
+      "state": "SP",
+      "reference": "Portão preto",
+      "notes": "",
+      "deliveryChoice": "local_delivery_review"
+    },
+    "items": [
+      {
+        "productId": "p03",
+        "size": "41",
+        "color": "Branco",
+        "quantity": 1
+      }
+    ],
+    "subtotal": 399.9,
+    "deliveryChoice": "local_delivery_review",
+    "shippingAmount": 0,
+    "shippingStatus": "free_approved",
+    "status": "awaiting_payment",
+    "paymentStatus": "awaiting_payment",
+    "localDeliveryReview": {
+      "status": "approved",
+      "note": "Endereço dentro da área demonstrativa.",
+      "decidedBy": "Diogo",
+      "decidedAt": "27/07/2026 • 07:20"
+    },
+    "history": [
+      {
+        "date": "26/07/2026 • 19:08",
+        "label": "Pedido criado e enviado para análise de entrega local"
+      },
+      {
+        "date": "27/07/2026 • 07:20",
+        "label": "Entrega local grátis aprovada",
+        "actor": "Diogo",
+        "note": "Endereço dentro da área demonstrativa."
+      }
+    ]
+  }
+]

@@ -1,0 +1,74 @@
+# See https://help.github.com/articles/ignoring-files/ for more about ignoring files.
+
+# dependencies
+/node_modules
+/.pnp
+.pnp.*
+.yarn/*
+!.yarn/patches
+!.yarn/plugins
+!.yarn/releases
+!.yarn/versions
+
+# testing
+/coverage
+
+# Supabase database backups (may contain customer and operational data)
+/.supabase-backups/
+/backups/
+/supabase/.temp/
+/reports/
+
+# next.js
+/.next/
+/.vinext/
+/out/
+
+# misc
+.DS_Store
+*.pem
+
+# debug
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+.pnpm-debug.log*
+.devserver.log
+*.log
+.image-process.*
+*.tsbuildinfo
+
+# environment and credential files
+.env*
+!.env.example
+*.key
+*.p12
+*.pfx
+*credentials*.json
+*service-account*.json
+
+# vercel
+.vercel
+
+# typescript
+next-env.d.ts
+/dist/
+/.wrangler/
+/outputs/
+/work/
+
+# Local Netlify folder
+/.netlify/
+
+# Local Codex/OpenAI state
+/.codex/
+/.openai/
+/.agents/
+
+# Original unoptimized source photos and duplicate local logo
+/Fotos Bispo Store/
+/logo bispostore.PNG
+
+# Local Windows launch shortcuts
+/Abrir20Store.bat
+/Fechar20Store.bat

@@ -1,0 +1,154 @@
+import assert from "node:assert/strict";
+import { readFileSync, existsSync } from "node:fs";
+import { join } from "node:path";
+import test from "node:test";
+
+const root = process.cwd();
+const productsSource = readFileSync(join(root, "data", "products.ts"), "utf8");
+const provisionalProducts = JSON.parse(readFileSync(join(root, "data", "provisional-products.generated.json"), "utf8"));
+const localProducts = JSON.parse(readFileSync(join(root, "data", "products.local.json"), "utf8"));
+const imageReport = JSON.parse(readFileSync(join(root, "reports", "image-optimization-report.json"), "utf8"));
+
+test("catálogo preserva os 16 produtos demonstrativos originais", () => {
+  const ids = productsSource.match(/id: "p\d+"/g) ?? [];
+  assert.equal(ids.length, 16);
+});
+
+test("188 fotos foram associadas uma única vez a 94 produtos provisórios", () => {
+  assert.equal(provisionalProducts.length, 94);
+  const images = provisionalProducts.flatMap((product) => product.images);
+  assert.equal(images.length, 188);
+  assert.equal(new Set(images).size, 188);
+  assert.ok(provisionalProducts.every((product) => product.images.length === 2));
+  assert.ok(provisionalProducts.every((product) => product.needsReview === true));
+});
+
+test("relatório confirma processamento integral sem arquivos ignorados", () => {
+  assert.equal(imageReport.encontradas, 188);
+  assert.equal(imageReport.processadas, 188);
+  assert.equal(imageReport.ignoradas, 0);
+  assert.ok(imageReport.imagens.every((image) => image.tamanho_otimizado_bytes <= 450 * 1024));
+});
+
+test("todas as rotas públicas essenciais existem", () => {
+  const routes = [
+    "app/page.tsx", "app/catalogo/page.tsx", "app/categoria/tenis/page.tsx",
+    "app/categoria/calcas/page.tsx", "app/categoria/conjuntos/page.tsx", "app/produto/[slug]/page.tsx",
+    "app/pesquisa/page.tsx", "app/carrinho/page.tsx", "app/checkout/page.tsx",
+    "app/pedido-recebido/page.tsx", "app/acompanhar-pedido/page.tsx",
+    "app/sobre/page.tsx", "app/contato/page.tsx", "app/trocas-e-devolucoes/page.tsx",
+    "app/privacidade/page.tsx", "app/termos/page.tsx", "app/not-found.tsx",
+  ];
+  for (const route of routes) assert.ok(existsSync(join(root, route)), `rota ausente: ${route}`);
+  assert.equal(existsSync(join(root, "app", "categoria", "roupas", "page.tsx")), false);
+});
+
+test("homologação Netlify bloqueia indexação em todas as camadas", () => {
+  const robots = readFileSync(join(root, "app", "robots.ts"), "utf8");
+  const layout = readFileSync(join(root, "app", "layout.tsx"), "utf8");
+  const netlify = readFileSync(join(root, "netlify.toml"), "utf8");
+  const nextConfig = readFileSync(join(root, "next.config.ts"), "utf8");
+  assert.match(robots, /disallow: "\/"/);
+  assert.match(layout, /index: false/);
+  assert.match(layout, /follow: false/);
+  assert.match(netlify, /X-Robots-Tag = "noindex, nofollow, noarchive, nosnippet"/);
+  assert.match(nextConfig, /X-Robots-Tag/);
+  assert.match(nextConfig, /noindex, nofollow, noarchive, nosnippet/);
+  assert.match(netlify, /npm run build -- --webpack/);
+  assert.doesNotMatch(netlify, /NEXT_DISABLE_NETLIFY_EDGE|NETLIFY_NEXT_PLUGIN_SKIP/);
+  assert.doesNotMatch(netlify, /SUPABASE|PAGBANK|MELHOR_ENVIO|STORE_CNPJ/);
+});
+
+test("integrações Sandbox ficam em rotas e serviços de servidor", () => {
+  const config = readFileSync(join(root, "lib", "integrations", "config.ts"), "utf8");
+  const env = readFileSync(join(root, ".env.example"), "utf8");
+  const melhorEnvioCallback = readFileSync(
+    join(root, "app", "api", "integrations", "melhor-envio", "callback", "route.ts"),
+    "utf8",
+  );
+  assert.match(config, /sandbox\.melhorenvio\.com\.br/);
+  assert.match(config, /sandbox\.api\.pagseguro\.com/);
+  assert.doesNotMatch(env, /NEXT_PUBLIC_(?:PAGBANK|MELHOR_ENVIO)/);
+  assert.match(env, /^ENABLE_MELHOR_ENVIO_LABEL_PURCHASE=$/m);
+  assert.match(melhorEnvioCallback, /process\.env\.NEXT_PUBLIC_SITE_URL/);
+});
+
+test("painel possui persistência Supabase, Storage e operações CRUD protegidas", () => {
+  assert.ok(existsSync(join(root, "repositories", "supabase-product-repository.ts")));
+  assert.ok(existsSync(join(root, "lib", "supabase", "server.ts")));
+  assert.ok(existsSync(join(root, "lib", "auth", "admin.ts")));
+  assert.ok(existsSync(join(root, "app", "api", "products", "[id]", "route.ts")));
+  assert.ok(existsSync(join(root, "app", "api", "products", "[id]", "actions", "route.ts")));
+  assert.ok(existsSync(join(root, "app", "api", "admin", "uploads", "route.ts")));
+  assert.ok(existsSync(join(root, "app", "api", "orders", "[id]", "route.ts")));
+  assert.ok(existsSync(join(root, "repositories", "order-repository.ts")));
+  assert.equal(existsSync(join(root, "components", "supabase-session-refresher.tsx")), false);
+  assert.ok(existsSync(join(root, "proxy.ts")));
+});
+
+test("checkout oferece análise local e cotação Melhor Envio Sandbox", () => {
+  const checkout = readFileSync(join(root, "components", "checkout-form.tsx"), "utf8");
+  assert.match(checkout, /São Paulo \(SP\)/);
+  assert.match(checkout, /Solicitar análise de entrega local grátis em até 5 km/);
+  assert.match(checkout, /Calcular frete para meu endereço/);
+  assert.match(checkout, /\/api\/shipping\/quotes/);
+  assert.match(checkout, /createPaymentCheckout/);
+  assert.match(checkout, /nenhuma cobrança será criada agora/i);
+});
+
+test("migration preserva dados antigos e arquiva categorias fora da operação", () => {
+  assert.equal(localProducts.length, 110);
+  const archived = localProducts.filter((product) => ["camisetas", "moletons", "calcas-shorts"].includes(product.category));
+  assert.equal(archived.length, 7);
+  assert.ok(archived.every((product) => product.active === false && product.status === "inactive"));
+  assert.ok(archived.every((product) => product.archiveReason));
+});
+
+test("produtos vendáveis possuem dados de envio editáveis e padrões migrados", () => {
+  const sellable = localProducts.filter((product) => ["tenis", "calcas", "conjuntos"].includes(product.category));
+  assert.ok(sellable.every((product) => product.stock !== undefined));
+  assert.ok(sellable.every((product) => product.weightKg > 0));
+  assert.ok(sellable.every((product) => product.lengthCm > 0 && product.widthCm > 0 && product.heightCm > 0));
+  assert.ok(sellable.every((product) => product.packagingCategory && product.shippingEnabled === true));
+  const shoe = sellable.find((product) => product.category === "tenis");
+  assert.equal(shoe.weightKg, 1.25);
+  assert.equal(shoe.lengthCm, 33);
+});
+
+test("novos estados e decisões de entrega estão implementados", () => {
+  const types = readFileSync(join(root, "types", "commerce.ts"), "utf8");
+  const orderApi = readFileSync(join(root, "app", "api", "orders", "[id]", "route.ts"), "utf8");
+  const schema = readFileSync(join(root, "supabase", "migrations", "20260727170000_schema.sql"), "utf8");
+  for (const status of [
+    "awaiting_local_delivery_review", "local_delivery_approved", "local_delivery_rejected",
+    "awaiting_shipping_selection", "awaiting_payment", "paid", "preparing",
+    "shipped", "delivered", "cancelled",
+  ]) assert.match(types, new RegExp(status));
+  assert.match(orderApi, /approve_local/);
+  assert.match(orderApi, /reject_local/);
+  assert.match(schema, /decided_by/);
+  assert.match(schema, /decided_at/);
+});
+
+test("configurações comerciais usam CNPJ somente no servidor", () => {
+  const settings = readFileSync(join(root, "supabase", "migrations", "20260727172000_seed_settings.sql"), "utf8");
+  const envExample = readFileSync(join(root, ".env.example"), "utf8");
+  assert.match(settings, /Avenida São Miguel, 5046/);
+  assert.match(settings, /03870-100/);
+  assert.match(settings, /5511972938269/);
+  assert.match(settings, /bispostorebr@hotmail.com/);
+  assert.match(envExample, /^STORE_CNPJ=/m);
+  assert.doesNotMatch(envExample, /STORE_CNPJ=.+/);
+});
+
+test("configurações administrativas continuam disponíveis se o status OAuth falhar", () => {
+  const page = readFileSync(
+    join(root, "app", "admin", "(painel)", "configuracoes", "page.tsx"),
+    "utf8",
+  );
+  const form = readFileSync(join(root, "components", "store-settings-form.tsx"), "utf8");
+  assert.match(page, /getMelhorEnvioConnectionStatus\(\)\.catch/);
+  assert.match(page, /unavailable: true/);
+  assert.match(form, /Status indisponível/);
+  assert.match(form, /As demais configurações continuam disponíveis/);
+});

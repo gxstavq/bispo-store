@@ -1,0 +1,5076 @@
+[
+  {
+    "id": "prov-001",
+    "name": "Tênis 001",
+    "slug": "tenis-001",
+    "code": "BSP-PROV-001",
+    "category": "tenis",
+    "description": "Produto provisório aguardando cadastro",
+    "price": 279.9,
+    "images": [
+      "/produtos/otimizados/produto-001-01.webp",
+      "/produtos/otimizados/produto-001-02.webp"
+    ],
+    "thumbnails": [
+      "/produtos/otimizados/thumbs/produto-001-01.webp",
+      "/produtos/otimizados/thumbs/produto-001-02.webp"
+    ],
+    "coverImage": "/produtos/otimizados/produto-001-01.webp",
+    "sizes": [
+      "38",
+      "39",
+      "40",
+      "41",
+      "42"
+    ],
+    "colors": [
+      "A definir"
+    ],
+    "stock": 12,
+    "featured": true,
+    "isNew": true,
+    "active": true,
+    "status": "active",
+    "needsReview": true,
+    "demo": true,
+    "imageType": "photo",
+    "visual": {
+      "accent": "#ef2b35",
+      "secondary": "#f7f7f4",
+      "type": "shoe"
+    },
+    "weightKg": 1.25,
+    "lengthCm": 33,
+    "widthCm": 20,
+    "heightCm": 12,
+    "packagingCategory": "caixa-tenis",
+    "shippingEnabled": true
+  },
+  {
+    "id": "prov-002",
+    "name": "Tênis 002",
+    "slug": "tenis-002",
+    "code": "BSP-PROV-002",
+    "category": "tenis",
+    "description": "Produto provisório aguardando cadastro",
+    "price": 299.9,
+    "images": [
+      "/produtos/otimizados/produto-002-01.webp",
+      "/produtos/otimizados/produto-002-02.webp"
+    ],
+    "thumbnails": [
+      "/produtos/otimizados/thumbs/produto-002-01.webp",
+      "/produtos/otimizados/thumbs/produto-002-02.webp"
+    ],
+    "coverImage": "/produtos/otimizados/produto-002-01.webp",
+    "sizes": [
+      "38",
+      "39",
+      "40",
+      "41",
+      "42"
+    ],
+    "colors": [
+      "A definir"
+    ],
+    "stock": 19,
+    "featured": true,
+    "isNew": true,
+    "active": true,
+    "status": "active",
+    "needsReview": true,
+    "demo": true,
+    "imageType": "photo",
+    "visual": {
+      "accent": "#ef2b35",
+      "secondary": "#f7f7f4",
+      "type": "shoe"
+    },
+    "weightKg": 1.25,
+    "lengthCm": 33,
+    "widthCm": 20,
+    "heightCm": 12,
+    "packagingCategory": "caixa-tenis",
+    "shippingEnabled": true
+  },
+  {
+    "id": "prov-003",
+    "name": "Tênis 003",
+    "slug": "tenis-003",
+    "code": "BSP-PROV-003",
+    "category": "tenis",
+    "description": "Produto provisório aguardando cadastro",
+    "price": 319.9,
+    "images": [
+      "/produtos/otimizados/produto-003-01.webp",
+      "/produtos/otimizados/produto-003-02.webp"
+    ],
+    "thumbnails": [
+      "/produtos/otimizados/thumbs/produto-003-01.webp",
+      "/produtos/otimizados/thumbs/produto-003-02.webp"
+    ],
+    "coverImage": "/produtos/otimizados/produto-003-01.webp",
+    "sizes": [
+      "38",
+      "39",
+      "40",
+      "41",
+      "42"
+    ],
+    "colors": [
+      "A definir"
+    ],
+    "stock": 8,
+    "featured": true,
+    "isNew": true,
+    "active": true,
+    "status": "active",
+    "needsReview": true,
+    "demo": true,
+    "imageType": "photo",
+    "visual": {
+      "accent": "#ef2b35",
+      "secondary": "#f7f7f4",
+      "type": "shoe"
+    },
+    "weightKg": 1.25,
+    "lengthCm": 33,
+    "widthCm": 20,
+    "heightCm": 12,
+    "packagingCategory": "caixa-tenis",
+    "shippingEnabled": true
+  },
+  {
+    "id": "prov-004",
+    "name": "Tênis 004",
+    "slug": "tenis-004",
+    "code": "BSP-PROV-004",
+    "category": "tenis",
+    "description": "Produto provisório aguardando cadastro",
+    "price": 339.9,
+    "images": [
+      "/produtos/otimizados/produto-004-01.webp",
+      "/produtos/otimizados/produto-004-02.webp"
+    ],
+    "thumbnails": [
+      "/produtos/otimizados/thumbs/produto-004-01.webp",
+      "/produtos/otimizados/thumbs/produto-004-02.webp"
+    ],
+    "coverImage": "/produtos/otimizados/produto-004-01.webp",
+    "sizes": [
+      "38",
+      "39",
+      "40",
+      "41",
+      "42"
+    ],
+    "colors": [
+      "A definir"
+    ],
+    "stock": 15,
+    "featured": true,
+    "isNew": true,
+    "active": true,
+    "status": "active",
+    "needsReview": true,
+    "demo": true,
+    "imageType": "photo",
+    "visual": {
+      "accent": "#ef2b35",
+      "secondary": "#f7f7f4",
+      "type": "shoe"
+    },
+    "weightKg": 1.25,
+    "lengthCm": 33,
+    "widthCm": 20,
+    "heightCm": 12,
+    "packagingCategory": "caixa-tenis",
+    "shippingEnabled": true
+  },
+  {
+    "id": "prov-005",
+    "name": "Tênis 005",
+    "slug": "tenis-005",
+    "code": "BSP-PROV-005",
+    "category": "tenis",
+    "description": "Produto provisório aguardando cadastro",
+    "price": 359.9,
+    "images": [
+      "/produtos/otimizados/produto-005-01.webp",
+      "/produtos/otimizados/produto-005-02.webp"
+    ],
+    "thumbnails": [
+      "/produtos/otimizados/thumbs/produto-005-01.webp",
+      "/produtos/otimizados/thumbs/produto-005-02.webp"
+    ],
+    "coverImage": "/produtos/otimizados/produto-005-01.webp",
+    "sizes": [
+      "38",
+      "39",
+      "40",
+      "41",
+      "42"
+    ],
+    "colors": [
+      "A definir"
+    ],
+    "stock": 22,
+    "featured": true,
+    "isNew": true,
+    "active": true,
+    "status": "active",
+    "needsReview": true,
+    "demo": true,
+    "imageType": "photo",
+    "visual": {
+      "accent": "#ef2b35",
+      "secondary": "#f7f7f4",
+      "type": "shoe"
+    },
+    "weightKg": 1.25,
+    "lengthCm": 33,
+    "widthCm": 20,
+    "heightCm": 12,
+    "packagingCategory": "caixa-tenis",
+    "shippingEnabled": true
+  },
+  {
+    "id": "prov-006",
+    "name": "Tênis 006",
+    "slug": "tenis-006",
+    "code": "BSP-PROV-006",
+    "category": "tenis",
+    "description": "Produto provisório aguardando cadastro",
+    "price": 279.9,
+    "images": [
+      "/produtos/otimizados/produto-006-01.webp",
+      "/produtos/otimizados/produto-006-02.webp"
+    ],
+    "thumbnails": [
+      "/produtos/otimizados/thumbs/produto-006-01.webp",
+      "/produtos/otimizados/thumbs/produto-006-02.webp"
+    ],
+    "coverImage": "/produtos/otimizados/produto-006-01.webp",
+    "sizes": [
+      "38",
+      "39",
+      "40",
+      "41",
+      "42"
+    ],
+    "colors": [
+      "A definir"
+    ],
+    "stock": 11,
+    "featured": true,
+    "isNew": true,
+    "active": true,
+    "status": "active",
+    "needsReview": true,
+    "demo": true,
+    "imageType": "photo",
+    "visual": {
+      "accent": "#ef2b35",
+      "secondary": "#f7f7f4",
+      "type": "shoe"
+    },
+    "weightKg": 1.25,
+    "lengthCm": 33,
+    "widthCm": 20,
+    "heightCm": 12,
+    "packagingCategory": "caixa-tenis",
+    "shippingEnabled": true
+  },
+  {
+    "id": "prov-007",
+    "name": "Tênis 007",
+    "slug": "tenis-007",
+    "code": "BSP-PROV-007",
+    "category": "tenis",
+    "description": "Produto provisório aguardando cadastro",
+    "price": 299.9,
+    "images": [
+      "/produtos/otimizados/produto-007-01.webp",
+      "/produtos/otimizados/produto-007-02.webp"
+    ],
+    "thumbnails": [
+      "/produtos/otimizados/thumbs/produto-007-01.webp",
+      "/produtos/otimizados/thumbs/produto-007-02.webp"
+    ],
+    "coverImage": "/produtos/otimizados/produto-007-01.webp",
+    "sizes": [
+      "38",
+      "39",
+      "40",
+      "41",
+      "42"
+    ],
+    "colors": [
+      "A definir"
+    ],
+    "stock": 18,
+    "featured": true,
+    "isNew": true,
+    "active": true,
+    "status": "active",
+    "needsReview": true,
+    "demo": true,
+    "imageType": "photo",
+    "visual": {
+      "accent": "#ef2b35",
+      "secondary": "#f7f7f4",
+      "type": "shoe"
+    },
+    "weightKg": 1.25,
+    "lengthCm": 33,
+    "widthCm": 20,
+    "heightCm": 12,
+    "packagingCategory": "caixa-tenis",
+    "shippingEnabled": true
+  },
+  {
+    "id": "prov-008",
+    "name": "Tênis 008",
+    "slug": "tenis-008",
+    "code": "BSP-PROV-008",
+    "category": "tenis",
+    "description": "Produto provisório aguardando cadastro",
+    "price": 319.9,
+    "images": [
+      "/produtos/otimizados/produto-008-01.webp",
+      "/produtos/otimizados/produto-008-02.webp"
+    ],
+    "thumbnails": [
+      "/produtos/otimizados/thumbs/produto-008-01.webp",
+      "/produtos/otimizados/thumbs/produto-008-02.webp"
+    ],
+    "coverImage": "/produtos/otimizados/produto-008-01.webp",
+    "sizes": [
+      "38",
+      "39",
+      "40",
+      "41",
+      "42"
+    ],
+    "colors": [
+      "A definir"
+    ],
+    "stock": 7,
+    "featured": true,
+    "isNew": true,
+    "active": true,
+    "status": "active",
+    "needsReview": true,
+    "demo": true,
+    "imageType": "photo",
+    "visual": {
+      "accent": "#ef2b35",
+      "secondary": "#f7f7f4",
+      "type": "shoe"
+    },
+    "weightKg": 1.25,
+    "lengthCm": 33,
+    "widthCm": 20,
+    "heightCm": 12,
+    "packagingCategory": "caixa-tenis",
+    "shippingEnabled": true
+  },
+  {
+    "id": "prov-009",
+    "name": "Tênis 009",
+    "slug": "tenis-009",
+    "code": "BSP-PROV-009",
+    "category": "tenis",
+    "description": "Produto provisório aguardando cadastro",
+    "price": 339.9,
+    "images": [
+      "/produtos/otimizados/produto-009-01.webp",
+      "/produtos/otimizados/produto-009-02.webp"
+    ],
+    "thumbnails": [
+      "/produtos/otimizados/thumbs/produto-009-01.webp",
+      "/produtos/otimizados/thumbs/produto-009-02.webp"
+    ],
+    "coverImage": "/produtos/otimizados/produto-009-01.webp",
+    "sizes": [
+      "38",
+      "39",
+      "40",
+      "41",
+      "42"
+    ],
+    "colors": [
+      "A definir"
+    ],
+    "stock": 14,
+    "featured": false,
+    "isNew": true,
+    "active": true,
+    "status": "active",
+    "needsReview": true,
+    "demo": true,
+    "imageType": "photo",
+    "visual": {
+      "accent": "#ef2b35",
+      "secondary": "#f7f7f4",
+      "type": "shoe"
+    },
+    "weightKg": 1.25,
+    "lengthCm": 33,
+    "widthCm": 20,
+    "heightCm": 12,
+    "packagingCategory": "caixa-tenis",
+    "shippingEnabled": true
+  },
+  {
+    "id": "prov-010",
+    "name": "Tênis 010",
+    "slug": "tenis-010",
+    "code": "BSP-PROV-010",
+    "category": "tenis",
+    "description": "Produto provisório aguardando cadastro",
+    "price": 359.9,
+    "images": [
+      "/produtos/otimizados/produto-010-01.webp",
+      "/produtos/otimizados/produto-010-02.webp"
+    ],
+    "thumbnails": [
+      "/produtos/otimizados/thumbs/produto-010-01.webp",
+      "/produtos/otimizados/thumbs/produto-010-02.webp"
+    ],
+    "coverImage": "/produtos/otimizados/produto-010-01.webp",
+    "sizes": [
+      "38",
+      "39",
+      "40",
+      "41",
+      "42"
+    ],
+    "colors": [
+      "A definir"
+    ],
+    "stock": 21,
+    "featured": false,
+    "isNew": true,
+    "active": true,
+    "status": "active",
+    "needsReview": true,
+    "demo": true,
+    "imageType": "photo",
+    "visual": {
+      "accent": "#ef2b35",
+      "secondary": "#f7f7f4",
+      "type": "shoe"
+    },
+    "weightKg": 1.25,
+    "lengthCm": 33,
+    "widthCm": 20,
+    "heightCm": 12,
+    "packagingCategory": "caixa-tenis",
+    "shippingEnabled": true
+  },
+  {
+    "id": "prov-011",
+    "name": "Tênis 011",
+    "slug": "tenis-011",
+    "code": "BSP-PROV-011",
+    "category": "tenis",
+    "description": "Produto provisório aguardando cadastro",
+    "price": 279.9,
+    "images": [
+      "/produtos/otimizados/produto-011-01.webp",
+      "/produtos/otimizados/produto-011-02.webp"
+    ],
+    "thumbnails": [
+      "/produtos/otimizados/thumbs/produto-011-01.webp",
+      "/produtos/otimizados/thumbs/produto-011-02.webp"
+    ],
+    "coverImage": "/produtos/otimizados/produto-011-01.webp",
+    "sizes": [
+      "38",
+      "39",
+      "40",
+      "41",
+      "42"
+    ],
+    "colors": [
+      "A definir"
+    ],
+    "stock": 10,
+    "featured": false,
+    "isNew": true,
+    "active": true,
+    "status": "active",
+    "needsReview": true,
+    "demo": true,
+    "imageType": "photo",
+    "visual": {
+      "accent": "#ef2b35",
+      "secondary": "#f7f7f4",
+      "type": "shoe"
+    },
+    "weightKg": 1.25,
+    "lengthCm": 33,
+    "widthCm": 20,
+    "heightCm": 12,
+    "packagingCategory": "caixa-tenis",
+    "shippingEnabled": true
+  },
+  {
+    "id": "prov-012",
+    "name": "Tênis 012",
+    "slug": "tenis-012",
+    "code": "BSP-PROV-012",
+    "category": "tenis",
+    "description": "Produto provisório aguardando cadastro",
+    "price": 299.9,
+    "images": [
+      "/produtos/otimizados/produto-012-01.webp",
+      "/produtos/otimizados/produto-012-02.webp"
+    ],
+    "thumbnails": [
+      "/produtos/otimizados/thumbs/produto-012-01.webp",
+      "/produtos/otimizados/thumbs/produto-012-02.webp"
+    ],
+    "coverImage": "/produtos/otimizados/produto-012-01.webp",
+    "sizes": [
+      "38",
+      "39",
+      "40",
+      "41",
+      "42"
+    ],
+    "colors": [
+      "A definir"
+    ],
+    "stock": 17,
+    "featured": false,
+    "isNew": true,
+    "active": true,
+    "status": "active",
+    "needsReview": true,
+    "demo": true,
+    "imageType": "photo",
+    "visual": {
+      "accent": "#ef2b35",
+      "secondary": "#f7f7f4",
+      "type": "shoe"
+    },
+    "weightKg": 1.25,
+    "lengthCm": 33,
+    "widthCm": 20,
+    "heightCm": 12,
+    "packagingCategory": "caixa-tenis",
+    "shippingEnabled": true
+  },
+  {
+    "id": "prov-013",
+    "name": "Tênis 013",
+    "slug": "tenis-013",
+    "code": "BSP-PROV-013",
+    "category": "tenis",
+    "description": "Produto provisório aguardando cadastro",
+    "price": 319.9,
+    "images": [
+      "/produtos/otimizados/produto-013-01.webp",
+      "/produtos/otimizados/produto-013-02.webp"
+    ],
+    "thumbnails": [
+      "/produtos/otimizados/thumbs/produto-013-01.webp",
+      "/produtos/otimizados/thumbs/produto-013-02.webp"
+    ],
+    "coverImage": "/produtos/otimizados/produto-013-01.webp",
+    "sizes": [
+      "38",
+      "39",
+      "40",
+      "41",
+      "42"
+    ],
+    "colors": [
+      "A definir"
+    ],
+    "stock": 6,
+    "featured": false,
+    "isNew": true,
+    "active": true,
+    "status": "active",
+    "needsReview": true,
+    "demo": true,
+    "imageType": "photo",
+    "visual": {
+      "accent": "#ef2b35",
+      "secondary": "#f7f7f4",
+      "type": "shoe"
+    },
+    "weightKg": 1.25,
+    "lengthCm": 33,
+    "widthCm": 20,
+    "heightCm": 12,
+    "packagingCategory": "caixa-tenis",
+    "shippingEnabled": true
+  },
+  {
+    "id": "prov-014",
+    "name": "Tênis 014",
+    "slug": "tenis-014",
+    "code": "BSP-PROV-014",
+    "category": "tenis",
+    "description": "Produto provisório aguardando cadastro",
+    "price": 339.9,
+    "images": [
+      "/produtos/otimizados/produto-014-01.webp",
+      "/produtos/otimizados/produto-014-02.webp"
+    ],
+    "thumbnails": [
+      "/produtos/otimizados/thumbs/produto-014-01.webp",
+      "/produtos/otimizados/thumbs/produto-014-02.webp"
+    ],
+    "coverImage": "/produtos/otimizados/produto-014-01.webp",
+    "sizes": [
+      "38",
+      "39",
+      "40",
+      "41",
+      "42"
+    ],
+    "colors": [
+      "A definir"
+    ],
+    "stock": 13,
+    "featured": false,
+    "isNew": true,
+    "active": true,
+    "status": "active",
+    "needsReview": true,
+    "demo": true,
+    "imageType": "photo",
+    "visual": {
+      "accent": "#ef2b35",
+      "secondary": "#f7f7f4",
+      "type": "shoe"
+    },
+    "weightKg": 1.25,
+    "lengthCm": 33,
+    "widthCm": 20,
+    "heightCm": 12,
+    "packagingCategory": "caixa-tenis",
+    "shippingEnabled": true
+  },
+  {
+    "id": "prov-015",
+    "name": "Tênis 015",
+    "slug": "tenis-015",
+    "code": "BSP-PROV-015",
+    "category": "tenis",
+    "description": "Produto provisório aguardando cadastro",
+    "price": 359.9,
+    "images": [
+      "/produtos/otimizados/produto-015-01.webp",
+      "/produtos/otimizados/produto-015-02.webp"
+    ],
+    "thumbnails": [
+      "/produtos/otimizados/thumbs/produto-015-01.webp",
+      "/produtos/otimizados/thumbs/produto-015-02.webp"
+    ],
+    "coverImage": "/produtos/otimizados/produto-015-01.webp",
+    "sizes": [
+      "38",
+      "39",
+      "40",
+      "41",
+      "42"
+    ],
+    "colors": [
+      "A definir"
+    ],
+    "stock": 20,
+    "featured": false,
+    "isNew": true,
+    "active": true,
+    "status": "active",
+    "needsReview": true,
+    "demo": true,
+    "imageType": "photo",
+    "visual": {
+      "accent": "#ef2b35",
+      "secondary": "#f7f7f4",
+      "type": "shoe"
+    },
+    "weightKg": 1.25,
+    "lengthCm": 33,
+    "widthCm": 20,
+    "heightCm": 12,
+    "packagingCategory": "caixa-tenis",
+    "shippingEnabled": true
+  },
+  {
+    "id": "prov-016",
+    "name": "Tênis 016",
+    "slug": "tenis-016",
+    "code": "BSP-PROV-016",
+    "category": "tenis",
+    "description": "Produto provisório aguardando cadastro",
+    "price": 279.9,
+    "images": [
+      "/produtos/otimizados/produto-016-01.webp",
+      "/produtos/otimizados/produto-016-02.webp"
+    ],
+    "thumbnails": [
+      "/produtos/otimizados/thumbs/produto-016-01.webp",
+      "/produtos/otimizados/thumbs/produto-016-02.webp"
+    ],
+    "coverImage": "/produtos/otimizados/produto-016-01.webp",
+    "sizes": [
+      "38",
+      "39",
+      "40",
+      "41",
+      "42"
+    ],
+    "colors": [
+      "A definir"
+    ],
+    "stock": 9,
+    "featured": false,
+    "isNew": true,
+    "active": true,
+    "status": "active",
+    "needsReview": true,
+    "demo": true,
+    "imageType": "photo",
+    "visual": {
+      "accent": "#ef2b35",
+      "secondary": "#f7f7f4",
+      "type": "shoe"
+    },
+    "weightKg": 1.25,
+    "lengthCm": 33,
+    "widthCm": 20,
+    "heightCm": 12,
+    "packagingCategory": "caixa-tenis",
+    "shippingEnabled": true
+  },
+  {
+    "id": "prov-017",
+    "name": "Tênis 017",
+    "slug": "tenis-017",
+    "code": "BSP-PROV-017",
+    "category": "tenis",
+    "description": "Produto provisório aguardando cadastro",
+    "price": 299.9,
+    "images": [
+      "/produtos/otimizados/produto-017-01.webp",
+      "/produtos/otimizados/produto-017-02.webp"
+    ],
+    "thumbnails": [
+      "/produtos/otimizados/thumbs/produto-017-01.webp",
+      "/produtos/otimizados/thumbs/produto-017-02.webp"
+    ],
+    "coverImage": "/produtos/otimizados/produto-017-01.webp",
+    "sizes": [
+      "38",
+      "39",
+      "40",
+      "41",
+      "42"
+    ],
+    "colors": [
+      "A definir"
+    ],
+    "stock": 16,
+    "featured": false,
+    "isNew": false,
+    "active": true,
+    "status": "active",
+    "needsReview": true,
+    "demo": true,
+    "imageType": "photo",
+    "visual": {
+      "accent": "#ef2b35",
+      "secondary": "#f7f7f4",
+      "type": "shoe"
+    },
+    "weightKg": 1.25,
+    "lengthCm": 33,
+    "widthCm": 20,
+    "heightCm": 12,
+    "packagingCategory": "caixa-tenis",
+    "shippingEnabled": true
+  },
+  {
+    "id": "prov-018",
+    "name": "Tênis 018",
+    "slug": "tenis-018",
+    "code": "BSP-PROV-018",
+    "category": "tenis",
+    "description": "Produto provisório aguardando cadastro",
+    "price": 319.9,
+    "images": [
+      "/produtos/otimizados/produto-018-01.webp",
+      "/produtos/otimizados/produto-018-02.webp"
+    ],
+    "thumbnails": [
+      "/produtos/otimizados/thumbs/produto-018-01.webp",
+      "/produtos/otimizados/thumbs/produto-018-02.webp"
+    ],
+    "coverImage": "/produtos/otimizados/produto-018-01.webp",
+    "sizes": [
+      "38",
+      "39",
+      "40",
+      "41",
+      "42"
+    ],
+    "colors": [
+      "A definir"
+    ],
+    "stock": 5,
+    "featured": false,
+    "isNew": false,
+    "active": true,
+    "status": "active",
+    "needsReview": true,
+    "demo": true,
+    "imageType": "photo",
+    "visual": {
+      "accent": "#ef2b35",
+      "secondary": "#f7f7f4",
+      "type": "shoe"
+    },
+    "weightKg": 1.25,
+    "lengthCm": 33,
+    "widthCm": 20,
+    "heightCm": 12,
+    "packagingCategory": "caixa-tenis",
+    "shippingEnabled": true
+  },
+  {
+    "id": "prov-019",
+    "name": "Tênis 019",
+    "slug": "tenis-019",
+    "code": "BSP-PROV-019",
+    "category": "tenis",
+    "description": "Produto provisório aguardando cadastro",
+    "price": 339.9,
+    "images": [
+      "/produtos/otimizados/produto-019-01.webp",
+      "/produtos/otimizados/produto-019-02.webp"
+    ],
+    "thumbnails": [
+      "/produtos/otimizados/thumbs/produto-019-01.webp",
+      "/produtos/otimizados/thumbs/produto-019-02.webp"
+    ],
+    "coverImage": "/produtos/otimizados/produto-019-01.webp",
+    "sizes": [
+      "38",
+      "39",
+      "40",
+      "41",
+      "42"
+    ],
+    "colors": [
+      "A definir"
+    ],
+    "stock": 12,
+    "featured": false,
+    "isNew": false,
+    "active": true,
+    "status": "active",
+    "needsReview": true,
+    "demo": true,
+    "imageType": "photo",
+    "visual": {
+      "accent": "#ef2b35",
+      "secondary": "#f7f7f4",
+      "type": "shoe"
+    },
+    "weightKg": 1.25,
+    "lengthCm": 33,
+    "widthCm": 20,
+    "heightCm": 12,
+    "packagingCategory": "caixa-tenis",
+    "shippingEnabled": true
+  },
+  {
+    "id": "prov-020",
+    "name": "Tênis 020",
+    "slug": "tenis-020",
+    "code": "BSP-PROV-020",
+    "category": "tenis",
+    "description": "Produto provisório aguardando cadastro",
+    "price": 359.9,
+    "images": [
+      "/produtos/otimizados/produto-020-01.webp",
+      "/produtos/otimizados/produto-020-02.webp"
+    ],
+    "thumbnails": [
+      "/produtos/otimizados/thumbs/produto-020-01.webp",
+      "/produtos/otimizados/thumbs/produto-020-02.webp"
+    ],
+    "coverImage": "/produtos/otimizados/produto-020-01.webp",
+    "sizes": [
+      "38",
+      "39",
+      "40",
+      "41",
+      "42"
+    ],
+    "colors": [
+      "A definir"
+    ],
+    "stock": 19,
+    "featured": false,
+    "isNew": false,
+    "active": true,
+    "status": "active",
+    "needsReview": true,
+    "demo": true,
+    "imageType": "photo",
+    "visual": {
+      "accent": "#ef2b35",
+      "secondary": "#f7f7f4",
+      "type": "shoe"
+    },
+    "weightKg": 1.25,
+    "lengthCm": 33,
+    "widthCm": 20,
+    "heightCm": 12,
+    "packagingCategory": "caixa-tenis",
+    "shippingEnabled": true
+  },
+  {
+    "id": "prov-021",
+    "name": "Tênis 021",
+    "slug": "tenis-021",
+    "code": "BSP-PROV-021",
+    "category": "tenis",
+    "description": "Produto provisório aguardando cadastro",
+    "price": 279.9,
+    "images": [
+      "/produtos/otimizados/produto-021-01.webp",
+      "/produtos/otimizados/produto-021-02.webp"
+    ],
+    "thumbnails": [
+      "/produtos/otimizados/thumbs/produto-021-01.webp",
+      "/produtos/otimizados/thumbs/produto-021-02.webp"
+    ],
+    "coverImage": "/produtos/otimizados/produto-021-01.webp",
+    "sizes": [
+      "38",
+      "39",
+      "40",
+      "41",
+      "42"
+    ],
+    "colors": [
+      "A definir"
+    ],
+    "stock": 8,
+    "featured": false,
+    "isNew": false,
+    "active": true,
+    "status": "active",
+    "needsReview": true,
+    "demo": true,
+    "imageType": "photo",
+    "visual": {
+      "accent": "#ef2b35",
+      "secondary": "#f7f7f4",
+      "type": "shoe"
+    },
+    "weightKg": 1.25,
+    "lengthCm": 33,
+    "widthCm": 20,
+    "heightCm": 12,
+    "packagingCategory": "caixa-tenis",
+    "shippingEnabled": true
+  },
+  {
+    "id": "prov-022",
+    "name": "Tênis 022",
+    "slug": "tenis-022",
+    "code": "BSP-PROV-022",
+    "category": "tenis",
+    "description": "Produto provisório aguardando cadastro",
+    "price": 299.9,
+    "images": [
+      "/produtos/otimizados/produto-022-01.webp",
+      "/produtos/otimizados/produto-022-02.webp"
+    ],
+    "thumbnails": [
+      "/produtos/otimizados/thumbs/produto-022-01.webp",
+      "/produtos/otimizados/thumbs/produto-022-02.webp"
+    ],
+    "coverImage": "/produtos/otimizados/produto-022-01.webp",
+    "sizes": [
+      "38",
+      "39",
+      "40",
+      "41",
+      "42"
+    ],
+    "colors": [
+      "A definir"
+    ],
+    "stock": 15,
+    "featured": false,
+    "isNew": false,
+    "active": true,
+    "status": "active",
+    "needsReview": true,
+    "demo": true,
+    "imageType": "photo",
+    "visual": {
+      "accent": "#ef2b35",
+      "secondary": "#f7f7f4",
+      "type": "shoe"
+    },
+    "weightKg": 1.25,
+    "lengthCm": 33,
+    "widthCm": 20,
+    "heightCm": 12,
+    "packagingCategory": "caixa-tenis",
+    "shippingEnabled": true
+  },
+  {
+    "id": "prov-023",
+    "name": "Tênis 023",
+    "slug": "tenis-023",
+    "code": "BSP-PROV-023",
+    "category": "tenis",
+    "description": "Produto provisório aguardando cadastro",
+    "price": 319.9,
+    "images": [
+      "/produtos/otimizados/produto-023-01.webp",
+      "/produtos/otimizados/produto-023-02.webp"
+    ],
+    "thumbnails": [
+      "/produtos/otimizados/thumbs/produto-023-01.webp",
+      "/produtos/otimizados/thumbs/produto-023-02.webp"
+    ],
+    "coverImage": "/produtos/otimizados/produto-023-01.webp",
+    "sizes": [
+      "38",
+      "39",
+      "40",
+      "41",
+      "42"
+    ],
+    "colors": [
+      "A definir"
+    ],
+    "stock": 22,
+    "featured": false,
+    "isNew": false,
+    "active": true,
+    "status": "active",
+    "needsReview": true,
+    "demo": true,
+    "imageType": "photo",
+    "visual": {
+      "accent": "#ef2b35",
+      "secondary": "#f7f7f4",
+      "type": "shoe"
+    },
+    "weightKg": 1.25,
+    "lengthCm": 33,
+    "widthCm": 20,
+    "heightCm": 12,
+    "packagingCategory": "caixa-tenis",
+    "shippingEnabled": true
+  },
+  {
+    "id": "prov-024",
+    "name": "Tênis 024",
+    "slug": "tenis-024",
+    "code": "BSP-PROV-024",
+    "category": "tenis",
+    "description": "Produto provisório aguardando cadastro",
+    "price": 339.9,
+    "images": [
+      "/produtos/otimizados/produto-024-01.webp",
+      "/produtos/otimizados/produto-024-02.webp"
+    ],
+    "thumbnails": [
+      "/produtos/otimizados/thumbs/produto-024-01.webp",
+      "/produtos/otimizados/thumbs/produto-024-02.webp"
+    ],
+    "coverImage": "/produtos/otimizados/produto-024-01.webp",
+    "sizes": [
+      "38",
+      "39",
+      "40",
+      "41",
+      "42"
+    ],
+    "colors": [
+      "A definir"
+    ],
+    "stock": 11,
+    "featured": false,
+    "isNew": false,
+    "active": true,
+    "status": "active",
+    "needsReview": true,
+    "demo": true,
+    "imageType": "photo",
+    "visual": {
+      "accent": "#ef2b35",
+      "secondary": "#f7f7f4",
+      "type": "shoe"
+    },
+    "weightKg": 1.25,
+    "lengthCm": 33,
+    "widthCm": 20,
+    "heightCm": 12,
+    "packagingCategory": "caixa-tenis",
+    "shippingEnabled": true
+  },
+  {
+    "id": "prov-025",
+    "name": "Tênis 025",
+    "slug": "tenis-025",
+    "code": "BSP-PROV-025",
+    "category": "tenis",
+    "description": "Produto provisório aguardando cadastro",
+    "price": 359.9,
+    "images": [
+      "/produtos/otimizados/produto-025-01.webp",
+      "/produtos/otimizados/produto-025-02.webp"
+    ],
+    "thumbnails": [
+      "/produtos/otimizados/thumbs/produto-025-01.webp",
+      "/produtos/otimizados/thumbs/produto-025-02.webp"
+    ],
+    "coverImage": "/produtos/otimizados/produto-025-01.webp",
+    "sizes": [
+      "38",
+      "39",
+      "40",
+      "41",
+      "42"
+    ],
+    "colors": [
+      "A definir"
+    ],
+    "stock": 18,
+    "featured": false,
+    "isNew": false,
+    "active": true,
+    "status": "active",
+    "needsReview": true,
+    "demo": true,
+    "imageType": "photo",
+    "visual": {
+      "accent": "#ef2b35",
+      "secondary": "#f7f7f4",
+      "type": "shoe"
+    },
+    "weightKg": 1.25,
+    "lengthCm": 33,
+    "widthCm": 20,
+    "heightCm": 12,
+    "packagingCategory": "caixa-tenis",
+    "shippingEnabled": true
+  },
+  {
+    "id": "prov-026",
+    "name": "Tênis 026",
+    "slug": "tenis-026",
+    "code": "BSP-PROV-026",
+    "category": "tenis",
+    "description": "Produto provisório aguardando cadastro",
+    "price": 279.9,
+    "images": [
+      "/produtos/otimizados/produto-026-01.webp",
+      "/produtos/otimizados/produto-026-02.webp"
+    ],
+    "thumbnails": [
+      "/produtos/otimizados/thumbs/produto-026-01.webp",
+      "/produtos/otimizados/thumbs/produto-026-02.webp"
+    ],
+    "coverImage": "/produtos/otimizados/produto-026-01.webp",
+    "sizes": [
+      "38",
+      "39",
+      "40",
+      "41",
+      "42"
+    ],
+    "colors": [
+      "A definir"
+    ],
+    "stock": 7,
+    "featured": false,
+    "isNew": false,
+    "active": true,
+    "status": "active",
+    "needsReview": true,
+    "demo": true,
+    "imageType": "photo",
+    "visual": {
+      "accent": "#ef2b35",
+      "secondary": "#f7f7f4",
+      "type": "shoe"
+    },
+    "weightKg": 1.25,
+    "lengthCm": 33,
+    "widthCm": 20,
+    "heightCm": 12,
+    "packagingCategory": "caixa-tenis",
+    "shippingEnabled": true
+  },
+  {
+    "id": "prov-027",
+    "name": "Tênis 027",
+    "slug": "tenis-027",
+    "code": "BSP-PROV-027",
+    "category": "tenis",
+    "description": "Produto provisório aguardando cadastro",
+    "price": 299.9,
+    "images": [
+      "/produtos/otimizados/produto-027-01.webp",
+      "/produtos/otimizados/produto-027-02.webp"
+    ],
+    "thumbnails": [
+      "/produtos/otimizados/thumbs/produto-027-01.webp",
+      "/produtos/otimizados/thumbs/produto-027-02.webp"
+    ],
+    "coverImage": "/produtos/otimizados/produto-027-01.webp",
+    "sizes": [
+      "38",
+      "39",
+      "40",
+      "41",
+      "42"
+    ],
+    "colors": [
+      "A definir"
+    ],
+    "stock": 14,
+    "featured": false,
+    "isNew": false,
+    "active": true,
+    "status": "active",
+    "needsReview": true,
+    "demo": true,
+    "imageType": "photo",
+    "visual": {
+      "accent": "#ef2b35",
+      "secondary": "#f7f7f4",
+      "type": "shoe"
+    },
+    "weightKg": 1.25,
+    "lengthCm": 33,
+    "widthCm": 20,
+    "heightCm": 12,
+    "packagingCategory": "caixa-tenis",
+    "shippingEnabled": true
+  },
+  {
+    "id": "prov-028",
+    "name": "Tênis 028",
+    "slug": "tenis-028",
+    "code": "BSP-PROV-028",
+    "category": "tenis",
+    "description": "Produto provisório aguardando cadastro",
+    "price": 319.9,
+    "images": [
+      "/produtos/otimizados/produto-028-01.webp",
+      "/produtos/otimizados/produto-028-02.webp"
+    ],
+    "thumbnails": [
+      "/produtos/otimizados/thumbs/produto-028-01.webp",
+      "/produtos/otimizados/thumbs/produto-028-02.webp"
+    ],
+    "coverImage": "/produtos/otimizados/produto-028-01.webp",
+    "sizes": [
+      "38",
+      "39",
+      "40",
+      "41",
+      "42"
+    ],
+    "colors": [
+      "A definir"
+    ],
+    "stock": 21,
+    "featured": false,
+    "isNew": false,
+    "active": true,
+    "status": "active",
+    "needsReview": true,
+    "demo": true,
+    "imageType": "photo",
+    "visual": {
+      "accent": "#ef2b35",
+      "secondary": "#f7f7f4",
+      "type": "shoe"
+    },
+    "weightKg": 1.25,
+    "lengthCm": 33,
+    "widthCm": 20,
+    "heightCm": 12,
+    "packagingCategory": "caixa-tenis",
+    "shippingEnabled": true
+  },
+  {
+    "id": "prov-029",
+    "name": "Tênis 029",
+    "slug": "tenis-029",
+    "code": "BSP-PROV-029",
+    "category": "tenis",
+    "description": "Produto provisório aguardando cadastro",
+    "price": 339.9,
+    "images": [
+      "/produtos/otimizados/produto-029-01.webp",
+      "/produtos/otimizados/produto-029-02.webp"
+    ],
+    "thumbnails": [
+      "/produtos/otimizados/thumbs/produto-029-01.webp",
+      "/produtos/otimizados/thumbs/produto-029-02.webp"
+    ],
+    "coverImage": "/produtos/otimizados/produto-029-01.webp",
+    "sizes": [
+      "38",
+      "39",
+      "40",
+      "41",
+      "42"
+    ],
+    "colors": [
+      "A definir"
+    ],
+    "stock": 10,
+    "featured": false,
+    "isNew": false,
+    "active": true,
+    "status": "active",
+    "needsReview": true,
+    "demo": true,
+    "imageType": "photo",
+    "visual": {
+      "accent": "#ef2b35",
+      "secondary": "#f7f7f4",
+      "type": "shoe"
+    },
+    "weightKg": 1.25,
+    "lengthCm": 33,
+    "widthCm": 20,
+    "heightCm": 12,
+    "packagingCategory": "caixa-tenis",
+    "shippingEnabled": true
+  },
+  {
+    "id": "prov-030",
+    "name": "Tênis 030",
+    "slug": "tenis-030",
+    "code": "BSP-PROV-030",
+    "category": "tenis",
+    "description": "Produto provisório aguardando cadastro",
+    "price": 359.9,
+    "images": [
+      "/produtos/otimizados/produto-030-01.webp",
+      "/produtos/otimizados/produto-030-02.webp"
+    ],
+    "thumbnails": [
+      "/produtos/otimizados/thumbs/produto-030-01.webp",
+      "/produtos/otimizados/thumbs/produto-030-02.webp"
+    ],
+    "coverImage": "/produtos/otimizados/produto-030-01.webp",
+    "sizes": [
+      "38",
+      "39",
+      "40",
+      "41",
+      "42"
+    ],
+    "colors": [
+      "A definir"
+    ],
+    "stock": 17,
+    "featured": false,
+    "isNew": false,
+    "active": true,
+    "status": "active",
+    "needsReview": true,
+    "demo": true,
+    "imageType": "photo",
+    "visual": {
+      "accent": "#ef2b35",
+      "secondary": "#f7f7f4",
+      "type": "shoe"
+    },
+    "weightKg": 1.25,
+    "lengthCm": 33,
+    "widthCm": 20,
+    "heightCm": 12,
+    "packagingCategory": "caixa-tenis",
+    "shippingEnabled": true
+  },
+  {
+    "id": "prov-031",
+    "name": "Tênis 031",
+    "slug": "tenis-031",
+    "code": "BSP-PROV-031",
+    "category": "tenis",
+    "description": "Produto provisório aguardando cadastro",
+    "price": 279.9,
+    "images": [
+      "/produtos/otimizados/produto-031-01.webp",
+      "/produtos/otimizados/produto-031-02.webp"
+    ],
+    "thumbnails": [
+      "/produtos/otimizados/thumbs/produto-031-01.webp",
+      "/produtos/otimizados/thumbs/produto-031-02.webp"
+    ],
+    "coverImage": "/produtos/otimizados/produto-031-01.webp",
+    "sizes": [
+      "38",
+      "39",
+      "40",
+      "41",
+      "42"
+    ],
+    "colors": [
+      "A definir"
+    ],
+    "stock": 6,
+    "featured": false,
+    "isNew": false,
+    "active": true,
+    "status": "active",
+    "needsReview": true,
+    "demo": true,
+    "imageType": "photo",
+    "visual": {
+      "accent": "#ef2b35",
+      "secondary": "#f7f7f4",
+      "type": "shoe"
+    },
+    "weightKg": 1.25,
+    "lengthCm": 33,
+    "widthCm": 20,
+    "heightCm": 12,
+    "packagingCategory": "caixa-tenis",
+    "shippingEnabled": true
+  },
+  {
+    "id": "prov-032",
+    "name": "Tênis 032",
+    "slug": "tenis-032",
+    "code": "BSP-PROV-032",
+    "category": "tenis",
+    "description": "Produto provisório aguardando cadastro",
+    "price": 299.9,
+    "images": [
+      "/produtos/otimizados/produto-032-01.webp",
+      "/produtos/otimizados/produto-032-02.webp"
+    ],
+    "thumbnails": [
+      "/produtos/otimizados/thumbs/produto-032-01.webp",
+      "/produtos/otimizados/thumbs/produto-032-02.webp"
+    ],
+    "coverImage": "/produtos/otimizados/produto-032-01.webp",
+    "sizes": [
+      "38",
+      "39",
+      "40",
+      "41",
+      "42"
+    ],
+    "colors": [
+      "A definir"
+    ],
+    "stock": 13,
+    "featured": false,
+    "isNew": false,
+    "active": true,
+    "status": "active",
+    "needsReview": true,
+    "demo": true,
+    "imageType": "photo",
+    "visual": {
+      "accent": "#ef2b35",
+      "secondary": "#f7f7f4",
+      "type": "shoe"
+    },
+    "weightKg": 1.25,
+    "lengthCm": 33,
+    "widthCm": 20,
+    "heightCm": 12,
+    "packagingCategory": "caixa-tenis",
+    "shippingEnabled": true
+  },
+  {
+    "id": "prov-033",
+    "name": "Tênis 033",
+    "slug": "tenis-033",
+    "code": "BSP-PROV-033",
+    "category": "tenis",
+    "description": "Produto provisório aguardando cadastro",
+    "price": 319.9,
+    "images": [
+      "/produtos/otimizados/produto-033-01.webp",
+      "/produtos/otimizados/produto-033-02.webp"
+    ],
+    "thumbnails": [
+      "/produtos/otimizados/thumbs/produto-033-01.webp",
+      "/produtos/otimizados/thumbs/produto-033-02.webp"
+    ],
+    "coverImage": "/produtos/otimizados/produto-033-01.webp",
+    "sizes": [
+      "38",
+      "39",
+      "40",
+      "41",
+      "42"
+    ],
+    "colors": [
+      "A definir"
+    ],
+    "stock": 20,
+    "featured": false,
+    "isNew": false,
+    "active": true,
+    "status": "active",
+    "needsReview": true,
+    "demo": true,
+    "imageType": "photo",
+    "visual": {
+      "accent": "#ef2b35",
+      "secondary": "#f7f7f4",
+      "type": "shoe"
+    },
+    "weightKg": 1.25,
+    "lengthCm": 33,
+    "widthCm": 20,
+    "heightCm": 12,
+    "packagingCategory": "caixa-tenis",
+    "shippingEnabled": true
+  },
+  {
+    "id": "prov-034",
+    "name": "Tênis 034",
+    "slug": "tenis-034",
+    "code": "BSP-PROV-034",
+    "category": "tenis",
+    "description": "Produto provisório aguardando cadastro",
+    "price": 339.9,
+    "images": [
+      "/produtos/otimizados/produto-034-01.webp",
+      "/produtos/otimizados/produto-034-02.webp"
+    ],
+    "thumbnails": [
+      "/produtos/otimizados/thumbs/produto-034-01.webp",
+      "/produtos/otimizados/thumbs/produto-034-02.webp"
+    ],
+    "coverImage": "/produtos/otimizados/produto-034-01.webp",
+    "sizes": [
+      "38",
+      "39",
+      "40",
+      "41",
+      "42"
+    ],
+    "colors": [
+      "A definir"
+    ],
+    "stock": 9,
+    "featured": false,
+    "isNew": false,
+    "active": true,
+    "status": "active",
+    "needsReview": true,
+    "demo": true,
+    "imageType": "photo",
+    "visual": {
+      "accent": "#ef2b35",
+      "secondary": "#f7f7f4",
+      "type": "shoe"
+    },
+    "weightKg": 1.25,
+    "lengthCm": 33,
+    "widthCm": 20,
+    "heightCm": 12,
+    "packagingCategory": "caixa-tenis",
+    "shippingEnabled": true
+  },
+  {
+    "id": "prov-035",
+    "name": "Tênis 035",
+    "slug": "tenis-035",
+    "code": "BSP-PROV-035",
+    "category": "tenis",
+    "description": "Produto provisório aguardando cadastro",
+    "price": 359.9,
+    "images": [
+      "/produtos/otimizados/produto-035-01.webp",
+      "/produtos/otimizados/produto-035-02.webp"
+    ],
+    "thumbnails": [
+      "/produtos/otimizados/thumbs/produto-035-01.webp",
+      "/produtos/otimizados/thumbs/produto-035-02.webp"
+    ],
+    "coverImage": "/produtos/otimizados/produto-035-01.webp",
+    "sizes": [
+      "38",
+      "39",
+      "40",
+      "41",
+      "42"
+    ],
+    "colors": [
+      "A definir"
+    ],
+    "stock": 16,
+    "featured": false,
+    "isNew": false,
+    "active": true,
+    "status": "active",
+    "needsReview": true,
+    "demo": true,
+    "imageType": "photo",
+    "visual": {
+      "accent": "#ef2b35",
+      "secondary": "#f7f7f4",
+      "type": "shoe"
+    },
+    "weightKg": 1.25,
+    "lengthCm": 33,
+    "widthCm": 20,
+    "heightCm": 12,
+    "packagingCategory": "caixa-tenis",
+    "shippingEnabled": true
+  },
+  {
+    "id": "prov-036",
+    "name": "Tênis 036",
+    "slug": "tenis-036",
+    "code": "BSP-PROV-036",
+    "category": "tenis",
+    "description": "Produto provisório aguardando cadastro",
+    "price": 279.9,
+    "images": [
+      "/produtos/otimizados/produto-036-01.webp",
+      "/produtos/otimizados/produto-036-02.webp"
+    ],
+    "thumbnails": [
+      "/produtos/otimizados/thumbs/produto-036-01.webp",
+      "/produtos/otimizados/thumbs/produto-036-02.webp"
+    ],
+    "coverImage": "/produtos/otimizados/produto-036-01.webp",
+    "sizes": [
+      "38",
+      "39",
+      "40",
+      "41",
+      "42"
+    ],
+    "colors": [
+      "A definir"
+    ],
+    "stock": 5,
+    "featured": false,
+    "isNew": false,
+    "active": true,
+    "status": "active",
+    "needsReview": true,
+    "demo": true,
+    "imageType": "photo",
+    "visual": {
+      "accent": "#ef2b35",
+      "secondary": "#f7f7f4",
+      "type": "shoe"
+    },
+    "weightKg": 1.25,
+    "lengthCm": 33,
+    "widthCm": 20,
+    "heightCm": 12,
+    "packagingCategory": "caixa-tenis",
+    "shippingEnabled": true
+  },
+  {
+    "id": "prov-037",
+    "name": "Tênis 037",
+    "slug": "tenis-037",
+    "code": "BSP-PROV-037",
+    "category": "tenis",
+    "description": "Produto provisório aguardando cadastro",
+    "price": 299.9,
+    "images": [
+      "/produtos/otimizados/produto-037-01.webp",
+      "/produtos/otimizados/produto-037-02.webp"
+    ],
+    "thumbnails": [
+      "/produtos/otimizados/thumbs/produto-037-01.webp",
+      "/produtos/otimizados/thumbs/produto-037-02.webp"
+    ],
+    "coverImage": "/produtos/otimizados/produto-037-01.webp",
+    "sizes": [
+      "38",
+      "39",
+      "40",
+      "41",
+      "42"
+    ],
+    "colors": [
+      "A definir"
+    ],
+    "stock": 12,
+    "featured": false,
+    "isNew": false,
+    "active": true,
+    "status": "active",
+    "needsReview": true,
+    "demo": true,
+    "imageType": "photo",
+    "visual": {
+      "accent": "#ef2b35",
+      "secondary": "#f7f7f4",
+      "type": "shoe"
+    },
+    "weightKg": 1.25,
+    "lengthCm": 33,
+    "widthCm": 20,
+    "heightCm": 12,
+    "packagingCategory": "caixa-tenis",
+    "shippingEnabled": true
+  },
+  {
+    "id": "prov-038",
+    "name": "Tênis 038",
+    "slug": "tenis-038",
+    "code": "BSP-PROV-038",
+    "category": "tenis",
+    "description": "Produto provisório aguardando cadastro",
+    "price": 319.9,
+    "images": [
+      "/produtos/otimizados/produto-038-01.webp",
+      "/produtos/otimizados/produto-038-02.webp"
+    ],
+    "thumbnails": [
+      "/produtos/otimizados/thumbs/produto-038-01.webp",
+      "/produtos/otimizados/thumbs/produto-038-02.webp"
+    ],
+    "coverImage": "/produtos/otimizados/produto-038-01.webp",
+    "sizes": [
+      "38",
+      "39",
+      "40",
+      "41",
+      "42"
+    ],
+    "colors": [
+      "A definir"
+    ],
+    "stock": 19,
+    "featured": false,
+    "isNew": false,
+    "active": true,
+    "status": "active",
+    "needsReview": true,
+    "demo": true,
+    "imageType": "photo",
+    "visual": {
+      "accent": "#ef2b35",
+      "secondary": "#f7f7f4",
+      "type": "shoe"
+    },
+    "weightKg": 1.25,
+    "lengthCm": 33,
+    "widthCm": 20,
+    "heightCm": 12,
+    "packagingCategory": "caixa-tenis",
+    "shippingEnabled": true
+  },
+  {
+    "id": "prov-039",
+    "name": "Tênis 039",
+    "slug": "tenis-039",
+    "code": "BSP-PROV-039",
+    "category": "tenis",
+    "description": "Produto provisório aguardando cadastro",
+    "price": 339.9,
+    "images": [
+      "/produtos/otimizados/produto-039-01.webp",
+      "/produtos/otimizados/produto-039-02.webp"
+    ],
+    "thumbnails": [
+      "/produtos/otimizados/thumbs/produto-039-01.webp",
+      "/produtos/otimizados/thumbs/produto-039-02.webp"
+    ],
+    "coverImage": "/produtos/otimizados/produto-039-01.webp",
+    "sizes": [
+      "38",
+      "39",
+      "40",
+      "41",
+      "42"
+    ],
+    "colors": [
+      "A definir"
+    ],
+    "stock": 8,
+    "featured": false,
+    "isNew": false,
+    "active": true,
+    "status": "active",
+    "needsReview": true,
+    "demo": true,
+    "imageType": "photo",
+    "visual": {
+      "accent": "#ef2b35",
+      "secondary": "#f7f7f4",
+      "type": "shoe"
+    },
+    "weightKg": 1.25,
+    "lengthCm": 33,
+    "widthCm": 20,
+    "heightCm": 12,
+    "packagingCategory": "caixa-tenis",
+    "shippingEnabled": true
+  },
+  {
+    "id": "prov-040",
+    "name": "Tênis 040",
+    "slug": "tenis-040",
+    "code": "BSP-PROV-040",
+    "category": "tenis",
+    "description": "Produto provisório aguardando cadastro",
+    "price": 359.9,
+    "images": [
+      "/produtos/otimizados/produto-040-01.webp",
+      "/produtos/otimizados/produto-040-02.webp"
+    ],
+    "thumbnails": [
+      "/produtos/otimizados/thumbs/produto-040-01.webp",
+      "/produtos/otimizados/thumbs/produto-040-02.webp"
+    ],
+    "coverImage": "/produtos/otimizados/produto-040-01.webp",
+    "sizes": [
+      "38",
+      "39",
+      "40",
+      "41",
+      "42"
+    ],
+    "colors": [
+      "A definir"
+    ],
+    "stock": 15,
+    "featured": false,
+    "isNew": false,
+    "active": true,
+    "status": "active",
+    "needsReview": true,
+    "demo": true,
+    "imageType": "photo",
+    "visual": {
+      "accent": "#ef2b35",
+      "secondary": "#f7f7f4",
+      "type": "shoe"
+    },
+    "weightKg": 1.25,
+    "lengthCm": 33,
+    "widthCm": 20,
+    "heightCm": 12,
+    "packagingCategory": "caixa-tenis",
+    "shippingEnabled": true
+  },
+  {
+    "id": "prov-041",
+    "name": "Tênis 041",
+    "slug": "tenis-041",
+    "code": "BSP-PROV-041",
+    "category": "tenis",
+    "description": "Produto provisório aguardando cadastro",
+    "price": 279.9,
+    "images": [
+      "/produtos/otimizados/produto-041-01.webp",
+      "/produtos/otimizados/produto-041-02.webp"
+    ],
+    "thumbnails": [
+      "/produtos/otimizados/thumbs/produto-041-01.webp",
+      "/produtos/otimizados/thumbs/produto-041-02.webp"
+    ],
+    "coverImage": "/produtos/otimizados/produto-041-01.webp",
+    "sizes": [
+      "38",
+      "39",
+      "40",
+      "41",
+      "42"
+    ],
+    "colors": [
+      "A definir"
+    ],
+    "stock": 22,
+    "featured": false,
+    "isNew": false,
+    "active": true,
+    "status": "active",
+    "needsReview": true,
+    "demo": true,
+    "imageType": "photo",
+    "visual": {
+      "accent": "#ef2b35",
+      "secondary": "#f7f7f4",
+      "type": "shoe"
+    },
+    "weightKg": 1.25,
+    "lengthCm": 33,
+    "widthCm": 20,
+    "heightCm": 12,
+    "packagingCategory": "caixa-tenis",
+    "shippingEnabled": true
+  },
+  {
+    "id": "prov-042",
+    "name": "Tênis 042",
+    "slug": "tenis-042",
+    "code": "BSP-PROV-042",
+    "category": "tenis",
+    "description": "Produto provisório aguardando cadastro",
+    "price": 299.9,
+    "images": [
+      "/produtos/otimizados/produto-042-01.webp",
+      "/produtos/otimizados/produto-042-02.webp"
+    ],
+    "thumbnails": [
+      "/produtos/otimizados/thumbs/produto-042-01.webp",
+      "/produtos/otimizados/thumbs/produto-042-02.webp"
+    ],
+    "coverImage": "/produtos/otimizados/produto-042-01.webp",
+    "sizes": [
+      "38",
+      "39",
+      "40",
+      "41",
+      "42"
+    ],
+    "colors": [
+      "A definir"
+    ],
+    "stock": 11,
+    "featured": false,
+    "isNew": false,
+    "active": true,
+    "status": "active",
+    "needsReview": true,
+    "demo": true,
+    "imageType": "photo",
+    "visual": {
+      "accent": "#ef2b35",
+      "secondary": "#f7f7f4",
+      "type": "shoe"
+    },
+    "weightKg": 1.25,
+    "lengthCm": 33,
+    "widthCm": 20,
+    "heightCm": 12,
+    "packagingCategory": "caixa-tenis",
+    "shippingEnabled": true
+  },
+  {
+    "id": "prov-043",
+    "name": "Tênis 043",
+    "slug": "tenis-043",
+    "code": "BSP-PROV-043",
+    "category": "tenis",
+    "description": "Produto provisório aguardando cadastro",
+    "price": 319.9,
+    "images": [
+      "/produtos/otimizados/produto-043-01.webp",
+      "/produtos/otimizados/produto-043-02.webp"
+    ],
+    "thumbnails": [
+      "/produtos/otimizados/thumbs/produto-043-01.webp",
+      "/produtos/otimizados/thumbs/produto-043-02.webp"
+    ],
+    "coverImage": "/produtos/otimizados/produto-043-01.webp",
+    "sizes": [
+      "38",
+      "39",
+      "40",
+      "41",
+      "42"
+    ],
+    "colors": [
+      "A definir"
+    ],
+    "stock": 18,
+    "featured": false,
+    "isNew": false,
+    "active": true,
+    "status": "active",
+    "needsReview": true,
+    "demo": true,
+    "imageType": "photo",
+    "visual": {
+      "accent": "#ef2b35",
+      "secondary": "#f7f7f4",
+      "type": "shoe"
+    },
+    "weightKg": 1.25,
+    "lengthCm": 33,
+    "widthCm": 20,
+    "heightCm": 12,
+    "packagingCategory": "caixa-tenis",
+    "shippingEnabled": true
+  },
+  {
+    "id": "prov-044",
+    "name": "Tênis 044",
+    "slug": "tenis-044",
+    "code": "BSP-PROV-044",
+    "category": "tenis",
+    "description": "Produto provisório aguardando cadastro",
+    "price": 339.9,
+    "images": [
+      "/produtos/otimizados/produto-044-01.webp",
+      "/produtos/otimizados/produto-044-02.webp"
+    ],
+    "thumbnails": [
+      "/produtos/otimizados/thumbs/produto-044-01.webp",
+      "/produtos/otimizados/thumbs/produto-044-02.webp"
+    ],
+    "coverImage": "/produtos/otimizados/produto-044-01.webp",
+    "sizes": [
+      "38",
+      "39",
+      "40",
+      "41",
+      "42"
+    ],
+    "colors": [
+      "A definir"
+    ],
+    "stock": 7,
+    "featured": false,
+    "isNew": false,
+    "active": true,
+    "status": "active",
+    "needsReview": true,
+    "demo": true,
+    "imageType": "photo",
+    "visual": {
+      "accent": "#ef2b35",
+      "secondary": "#f7f7f4",
+      "type": "shoe"
+    },
+    "weightKg": 1.25,
+    "lengthCm": 33,
+    "widthCm": 20,
+    "heightCm": 12,
+    "packagingCategory": "caixa-tenis",
+    "shippingEnabled": true
+  },
+  {
+    "id": "prov-045",
+    "name": "Tênis 045",
+    "slug": "tenis-045",
+    "code": "BSP-PROV-045",
+    "category": "tenis",
+    "description": "Produto provisório aguardando cadastro",
+    "price": 359.9,
+    "images": [
+      "/produtos/otimizados/produto-045-01.webp",
+      "/produtos/otimizados/produto-045-02.webp"
+    ],
+    "thumbnails": [
+      "/produtos/otimizados/thumbs/produto-045-01.webp",
+      "/produtos/otimizados/thumbs/produto-045-02.webp"
+    ],
+    "coverImage": "/produtos/otimizados/produto-045-01.webp",
+    "sizes": [
+      "38",
+      "39",
+      "40",
+      "41",
+      "42"
+    ],
+    "colors": [
+      "A definir"
+    ],
+    "stock": 14,
+    "featured": false,
+    "isNew": false,
+    "active": true,
+    "status": "active",
+    "needsReview": true,
+    "demo": true,
+    "imageType": "photo",
+    "visual": {
+      "accent": "#ef2b35",
+      "secondary": "#f7f7f4",
+      "type": "shoe"
+    },
+    "weightKg": 1.25,
+    "lengthCm": 33,
+    "widthCm": 20,
+    "heightCm": 12,
+    "packagingCategory": "caixa-tenis",
+    "shippingEnabled": true
+  },
+  {
+    "id": "prov-046",
+    "name": "Tênis 046",
+    "slug": "tenis-046",
+    "code": "BSP-PROV-046",
+    "category": "tenis",
+    "description": "Produto provisório aguardando cadastro",
+    "price": 279.9,
+    "images": [
+      "/produtos/otimizados/produto-046-01.webp",
+      "/produtos/otimizados/produto-046-02.webp"
+    ],
+    "thumbnails": [
+      "/produtos/otimizados/thumbs/produto-046-01.webp",
+      "/produtos/otimizados/thumbs/produto-046-02.webp"
+    ],
+    "coverImage": "/produtos/otimizados/produto-046-01.webp",
+    "sizes": [
+      "38",
+      "39",
+      "40",
+      "41",
+      "42"
+    ],
+    "colors": [
+      "A definir"
+    ],
+    "stock": 21,
+    "featured": false,
+    "isNew": false,
+    "active": true,
+    "status": "active",
+    "needsReview": true,
+    "demo": true,
+    "imageType": "photo",
+    "visual": {
+      "accent": "#ef2b35",
+      "secondary": "#f7f7f4",
+      "type": "shoe"
+    },
+    "weightKg": 1.25,
+    "lengthCm": 33,
+    "widthCm": 20,
+    "heightCm": 12,
+    "packagingCategory": "caixa-tenis",
+    "shippingEnabled": true
+  },
+  {
+    "id": "prov-047",
+    "name": "Tênis 047",
+    "slug": "tenis-047",
+    "code": "BSP-PROV-047",
+    "category": "tenis",
+    "description": "Produto provisório aguardando cadastro",
+    "price": 299.9,
+    "images": [
+      "/produtos/otimizados/produto-047-01.webp",
+      "/produtos/otimizados/produto-047-02.webp"
+    ],
+    "thumbnails": [
+      "/produtos/otimizados/thumbs/produto-047-01.webp",
+      "/produtos/otimizados/thumbs/produto-047-02.webp"
+    ],
+    "coverImage": "/produtos/otimizados/produto-047-01.webp",
+    "sizes": [
+      "38",
+      "39",
+      "40",
+      "41",
+      "42"
+    ],
+    "colors": [
+      "A definir"
+    ],
+    "stock": 10,
+    "featured": false,
+    "isNew": false,
+    "active": true,
+    "status": "active",
+    "needsReview": true,
+    "demo": true,
+    "imageType": "photo",
+    "visual": {
+      "accent": "#ef2b35",
+      "secondary": "#f7f7f4",
+      "type": "shoe"
+    },
+    "weightKg": 1.25,
+    "lengthCm": 33,
+    "widthCm": 20,
+    "heightCm": 12,
+    "packagingCategory": "caixa-tenis",
+    "shippingEnabled": true
+  },
+  {
+    "id": "prov-048",
+    "name": "Tênis 048",
+    "slug": "tenis-048",
+    "code": "BSP-PROV-048",
+    "category": "tenis",
+    "description": "Produto provisório aguardando cadastro",
+    "price": 319.9,
+    "images": [
+      "/produtos/otimizados/produto-048-01.webp",
+      "/produtos/otimizados/produto-048-02.webp"
+    ],
+    "thumbnails": [
+      "/produtos/otimizados/thumbs/produto-048-01.webp",
+      "/produtos/otimizados/thumbs/produto-048-02.webp"
+    ],
+    "coverImage": "/produtos/otimizados/produto-048-01.webp",
+    "sizes": [
+      "38",
+      "39",
+      "40",
+      "41",
+      "42"
+    ],
+    "colors": [
+      "A definir"
+    ],
+    "stock": 17,
+    "featured": false,
+    "isNew": false,
+    "active": true,
+    "status": "active",
+    "needsReview": true,
+    "demo": true,
+    "imageType": "photo",
+    "visual": {
+      "accent": "#ef2b35",
+      "secondary": "#f7f7f4",
+      "type": "shoe"
+    },
+    "weightKg": 1.25,
+    "lengthCm": 33,
+    "widthCm": 20,
+    "heightCm": 12,
+    "packagingCategory": "caixa-tenis",
+    "shippingEnabled": true
+  },
+  {
+    "id": "prov-049",
+    "name": "Tênis 049",
+    "slug": "tenis-049",
+    "code": "BSP-PROV-049",
+    "category": "tenis",
+    "description": "Produto provisório aguardando cadastro",
+    "price": 339.9,
+    "images": [
+      "/produtos/otimizados/produto-049-01.webp",
+      "/produtos/otimizados/produto-049-02.webp"
+    ],
+    "thumbnails": [
+      "/produtos/otimizados/thumbs/produto-049-01.webp",
+      "/produtos/otimizados/thumbs/produto-049-02.webp"
+    ],
+    "coverImage": "/produtos/otimizados/produto-049-01.webp",
+    "sizes": [
+      "38",
+      "39",
+      "40",
+      "41",
+      "42"
+    ],
+    "colors": [
+      "A definir"
+    ],
+    "stock": 6,
+    "featured": false,
+    "isNew": false,
+    "active": true,
+    "status": "active",
+    "needsReview": true,
+    "demo": true,
+    "imageType": "photo",
+    "visual": {
+      "accent": "#ef2b35",
+      "secondary": "#f7f7f4",
+      "type": "shoe"
+    },
+    "weightKg": 1.25,
+    "lengthCm": 33,
+    "widthCm": 20,
+    "heightCm": 12,
+    "packagingCategory": "caixa-tenis",
+    "shippingEnabled": true
+  },
+  {
+    "id": "prov-050",
+    "name": "Tênis 050",
+    "slug": "tenis-050",
+    "code": "BSP-PROV-050",
+    "category": "tenis",
+    "description": "Produto provisório aguardando cadastro",
+    "price": 359.9,
+    "images": [
+      "/produtos/otimizados/produto-050-01.webp",
+      "/produtos/otimizados/produto-050-02.webp"
+    ],
+    "thumbnails": [
+      "/produtos/otimizados/thumbs/produto-050-01.webp",
+      "/produtos/otimizados/thumbs/produto-050-02.webp"
+    ],
+    "coverImage": "/produtos/otimizados/produto-050-01.webp",
+    "sizes": [
+      "38",
+      "39",
+      "40",
+      "41",
+      "42"
+    ],
+    "colors": [
+      "A definir"
+    ],
+    "stock": 13,
+    "featured": false,
+    "isNew": false,
+    "active": true,
+    "status": "active",
+    "needsReview": true,
+    "demo": true,
+    "imageType": "photo",
+    "visual": {
+      "accent": "#ef2b35",
+      "secondary": "#f7f7f4",
+      "type": "shoe"
+    },
+    "weightKg": 1.25,
+    "lengthCm": 33,
+    "widthCm": 20,
+    "heightCm": 12,
+    "packagingCategory": "caixa-tenis",
+    "shippingEnabled": true
+  },
+  {
+    "id": "prov-051",
+    "name": "Tênis 051",
+    "slug": "tenis-051",
+    "code": "BSP-PROV-051",
+    "category": "tenis",
+    "description": "Produto provisório aguardando cadastro",
+    "price": 279.9,
+    "images": [
+      "/produtos/otimizados/produto-051-01.webp",
+      "/produtos/otimizados/produto-051-02.webp"
+    ],
+    "thumbnails": [
+      "/produtos/otimizados/thumbs/produto-051-01.webp",
+      "/produtos/otimizados/thumbs/produto-051-02.webp"
+    ],
+    "coverImage": "/produtos/otimizados/produto-051-01.webp",
+    "sizes": [
+      "38",
+      "39",
+      "40",
+      "41",
+      "42"
+    ],
+    "colors": [
+      "A definir"
+    ],
+    "stock": 20,
+    "featured": false,
+    "isNew": false,
+    "active": true,
+    "status": "active",
+    "needsReview": true,
+    "demo": true,
+    "imageType": "photo",
+    "visual": {
+      "accent": "#ef2b35",
+      "secondary": "#f7f7f4",
+      "type": "shoe"
+    },
+    "weightKg": 1.25,
+    "lengthCm": 33,
+    "widthCm": 20,
+    "heightCm": 12,
+    "packagingCategory": "caixa-tenis",
+    "shippingEnabled": true
+  },
+  {
+    "id": "prov-052",
+    "name": "Tênis 052",
+    "slug": "tenis-052",
+    "code": "BSP-PROV-052",
+    "category": "tenis",
+    "description": "Produto provisório aguardando cadastro",
+    "price": 299.9,
+    "images": [
+      "/produtos/otimizados/produto-052-01.webp",
+      "/produtos/otimizados/produto-052-02.webp"
+    ],
+    "thumbnails": [
+      "/produtos/otimizados/thumbs/produto-052-01.webp",
+      "/produtos/otimizados/thumbs/produto-052-02.webp"
+    ],
+    "coverImage": "/produtos/otimizados/produto-052-01.webp",
+    "sizes": [
+      "38",
+      "39",
+      "40",
+      "41",
+      "42"
+    ],
+    "colors": [
+      "A definir"
+    ],
+    "stock": 9,
+    "featured": false,
+    "isNew": false,
+    "active": true,
+    "status": "active",
+    "needsReview": true,
+    "demo": true,
+    "imageType": "photo",
+    "visual": {
+      "accent": "#ef2b35",
+      "secondary": "#f7f7f4",
+      "type": "shoe"
+    },
+    "weightKg": 1.25,
+    "lengthCm": 33,
+    "widthCm": 20,
+    "heightCm": 12,
+    "packagingCategory": "caixa-tenis",
+    "shippingEnabled": true
+  },
+  {
+    "id": "prov-053",
+    "name": "Tênis 053",
+    "slug": "tenis-053",
+    "code": "BSP-PROV-053",
+    "category": "tenis",
+    "description": "Produto provisório aguardando cadastro",
+    "price": 319.9,
+    "images": [
+      "/produtos/otimizados/produto-053-01.webp",
+      "/produtos/otimizados/produto-053-02.webp"
+    ],
+    "thumbnails": [
+      "/produtos/otimizados/thumbs/produto-053-01.webp",
+      "/produtos/otimizados/thumbs/produto-053-02.webp"
+    ],
+    "coverImage": "/produtos/otimizados/produto-053-01.webp",
+    "sizes": [
+      "38",
+      "39",
+      "40",
+      "41",
+      "42"
+    ],
+    "colors": [
+      "A definir"
+    ],
+    "stock": 16,
+    "featured": false,
+    "isNew": false,
+    "active": true,
+    "status": "active",
+    "needsReview": true,
+    "demo": true,
+    "imageType": "photo",
+    "visual": {
+      "accent": "#ef2b35",
+      "secondary": "#f7f7f4",
+      "type": "shoe"
+    },
+    "weightKg": 1.25,
+    "lengthCm": 33,
+    "widthCm": 20,
+    "heightCm": 12,
+    "packagingCategory": "caixa-tenis",
+    "shippingEnabled": true
+  },
+  {
+    "id": "prov-054",
+    "name": "Tênis 054",
+    "slug": "tenis-054",
+    "code": "BSP-PROV-054",
+    "category": "tenis",
+    "description": "Produto provisório aguardando cadastro",
+    "price": 339.9,
+    "images": [
+      "/produtos/otimizados/produto-054-01.webp",
+      "/produtos/otimizados/produto-054-02.webp"
+    ],
+    "thumbnails": [
+      "/produtos/otimizados/thumbs/produto-054-01.webp",
+      "/produtos/otimizados/thumbs/produto-054-02.webp"
+    ],
+    "coverImage": "/produtos/otimizados/produto-054-01.webp",
+    "sizes": [
+      "38",
+      "39",
+      "40",
+      "41",
+      "42"
+    ],
+    "colors": [
+      "A definir"
+    ],
+    "stock": 5,
+    "featured": false,
+    "isNew": false,
+    "active": true,
+    "status": "active",
+    "needsReview": true,
+    "demo": true,
+    "imageType": "photo",
+    "visual": {
+      "accent": "#ef2b35",
+      "secondary": "#f7f7f4",
+      "type": "shoe"
+    },
+    "weightKg": 1.25,
+    "lengthCm": 33,
+    "widthCm": 20,
+    "heightCm": 12,
+    "packagingCategory": "caixa-tenis",
+    "shippingEnabled": true
+  },
+  {
+    "id": "prov-055",
+    "name": "Tênis 055",
+    "slug": "tenis-055",
+    "code": "BSP-PROV-055",
+    "category": "tenis",
+    "description": "Produto provisório aguardando cadastro",
+    "price": 359.9,
+    "images": [
+      "/produtos/otimizados/produto-055-01.webp",
+      "/produtos/otimizados/produto-055-02.webp"
+    ],
+    "thumbnails": [
+      "/produtos/otimizados/thumbs/produto-055-01.webp",
+      "/produtos/otimizados/thumbs/produto-055-02.webp"
+    ],
+    "coverImage": "/produtos/otimizados/produto-055-01.webp",
+    "sizes": [
+      "38",
+      "39",
+      "40",
+      "41",
+      "42"
+    ],
+    "colors": [
+      "A definir"
+    ],
+    "stock": 12,
+    "featured": false,
+    "isNew": false,
+    "active": true,
+    "status": "active",
+    "needsReview": true,
+    "demo": true,
+    "imageType": "photo",
+    "visual": {
+      "accent": "#ef2b35",
+      "secondary": "#f7f7f4",
+      "type": "shoe"
+    },
+    "weightKg": 1.25,
+    "lengthCm": 33,
+    "widthCm": 20,
+    "heightCm": 12,
+    "packagingCategory": "caixa-tenis",
+    "shippingEnabled": true
+  },
+  {
+    "id": "prov-056",
+    "name": "Tênis 056",
+    "slug": "tenis-056",
+    "code": "BSP-PROV-056",
+    "category": "tenis",
+    "description": "Produto provisório aguardando cadastro",
+    "price": 279.9,
+    "images": [
+      "/produtos/otimizados/produto-056-01.webp",
+      "/produtos/otimizados/produto-056-02.webp"
+    ],
+    "thumbnails": [
+      "/produtos/otimizados/thumbs/produto-056-01.webp",
+      "/produtos/otimizados/thumbs/produto-056-02.webp"
+    ],
+    "coverImage": "/produtos/otimizados/produto-056-01.webp",
+    "sizes": [
+      "38",
+      "39",
+      "40",
+      "41",
+      "42"
+    ],
+    "colors": [
+      "A definir"
+    ],
+    "stock": 19,
+    "featured": false,
+    "isNew": false,
+    "active": true,
+    "status": "active",
+    "needsReview": true,
+    "demo": true,
+    "imageType": "photo",
+    "visual": {
+      "accent": "#ef2b35",
+      "secondary": "#f7f7f4",
+      "type": "shoe"
+    },
+    "weightKg": 1.25,
+    "lengthCm": 33,
+    "widthCm": 20,
+    "heightCm": 12,
+    "packagingCategory": "caixa-tenis",
+    "shippingEnabled": true
+  },
+  {
+    "id": "prov-057",
+    "name": "Tênis 057",
+    "slug": "tenis-057",
+    "code": "BSP-PROV-057",
+    "category": "tenis",
+    "description": "Produto provisório aguardando cadastro",
+    "price": 299.9,
+    "images": [
+      "/produtos/otimizados/produto-057-01.webp",
+      "/produtos/otimizados/produto-057-02.webp"
+    ],
+    "thumbnails": [
+      "/produtos/otimizados/thumbs/produto-057-01.webp",
+      "/produtos/otimizados/thumbs/produto-057-02.webp"
+    ],
+    "coverImage": "/produtos/otimizados/produto-057-01.webp",
+    "sizes": [
+      "38",
+      "39",
+      "40",
+      "41",
+      "42"
+    ],
+    "colors": [
+      "A definir"
+    ],
+    "stock": 8,
+    "featured": false,
+    "isNew": false,
+    "active": true,
+    "status": "active",
+    "needsReview": true,
+    "demo": true,
+    "imageType": "photo",
+    "visual": {
+      "accent": "#ef2b35",
+      "secondary": "#f7f7f4",
+      "type": "shoe"
+    },
+    "weightKg": 1.25,
+    "lengthCm": 33,
+    "widthCm": 20,
+    "heightCm": 12,
+    "packagingCategory": "caixa-tenis",
+    "shippingEnabled": true
+  },
+  {
+    "id": "prov-058",
+    "name": "Tênis 058",
+    "slug": "tenis-058",
+    "code": "BSP-PROV-058",
+    "category": "tenis",
+    "description": "Produto provisório aguardando cadastro",
+    "price": 319.9,
+    "images": [
+      "/produtos/otimizados/produto-058-01.webp",
+      "/produtos/otimizados/produto-058-02.webp"
+    ],
+    "thumbnails": [
+      "/produtos/otimizados/thumbs/produto-058-01.webp",
+      "/produtos/otimizados/thumbs/produto-058-02.webp"
+    ],
+    "coverImage": "/produtos/otimizados/produto-058-01.webp",
+    "sizes": [
+      "38",
+      "39",
+      "40",
+      "41",
+      "42"
+    ],
+    "colors": [
+      "A definir"
+    ],
+    "stock": 15,
+    "featured": false,
+    "isNew": false,
+    "active": true,
+    "status": "active",
+    "needsReview": true,
+    "demo": true,
+    "imageType": "photo",
+    "visual": {
+      "accent": "#ef2b35",
+      "secondary": "#f7f7f4",
+      "type": "shoe"
+    },
+    "weightKg": 1.25,
+    "lengthCm": 33,
+    "widthCm": 20,
+    "heightCm": 12,
+    "packagingCategory": "caixa-tenis",
+    "shippingEnabled": true
+  },
+  {
+    "id": "prov-059",
+    "name": "Tênis 059",
+    "slug": "tenis-059",
+    "code": "BSP-PROV-059",
+    "category": "tenis",
+    "description": "Produto provisório aguardando cadastro",
+    "price": 339.9,
+    "images": [
+      "/produtos/otimizados/produto-059-01.webp",
+      "/produtos/otimizados/produto-059-02.webp"
+    ],
+    "thumbnails": [
+      "/produtos/otimizados/thumbs/produto-059-01.webp",
+      "/produtos/otimizados/thumbs/produto-059-02.webp"
+    ],
+    "coverImage": "/produtos/otimizados/produto-059-01.webp",
+    "sizes": [
+      "38",
+      "39",
+      "40",
+      "41",
+      "42"
+    ],
+    "colors": [
+      "A definir"
+    ],
+    "stock": 22,
+    "featured": false,
+    "isNew": false,
+    "active": true,
+    "status": "active",
+    "needsReview": true,
+    "demo": true,
+    "imageType": "photo",
+    "visual": {
+      "accent": "#ef2b35",
+      "secondary": "#f7f7f4",
+      "type": "shoe"
+    },
+    "weightKg": 1.25,
+    "lengthCm": 33,
+    "widthCm": 20,
+    "heightCm": 12,
+    "packagingCategory": "caixa-tenis",
+    "shippingEnabled": true
+  },
+  {
+    "id": "prov-060",
+    "name": "Tênis 060",
+    "slug": "tenis-060",
+    "code": "BSP-PROV-060",
+    "category": "tenis",
+    "description": "Produto provisório aguardando cadastro",
+    "price": 359.9,
+    "images": [
+      "/produtos/otimizados/produto-060-01.webp",
+      "/produtos/otimizados/produto-060-02.webp"
+    ],
+    "thumbnails": [
+      "/produtos/otimizados/thumbs/produto-060-01.webp",
+      "/produtos/otimizados/thumbs/produto-060-02.webp"
+    ],
+    "coverImage": "/produtos/otimizados/produto-060-01.webp",
+    "sizes": [
+      "38",
+      "39",
+      "40",
+      "41",
+      "42"
+    ],
+    "colors": [
+      "A definir"
+    ],
+    "stock": 11,
+    "featured": false,
+    "isNew": false,
+    "active": true,
+    "status": "active",
+    "needsReview": true,
+    "demo": true,
+    "imageType": "photo",
+    "visual": {
+      "accent": "#ef2b35",
+      "secondary": "#f7f7f4",
+      "type": "shoe"
+    },
+    "weightKg": 1.25,
+    "lengthCm": 33,
+    "widthCm": 20,
+    "heightCm": 12,
+    "packagingCategory": "caixa-tenis",
+    "shippingEnabled": true
+  },
+  {
+    "id": "prov-061",
+    "name": "Tênis 061",
+    "slug": "tenis-061",
+    "code": "BSP-PROV-061",
+    "category": "tenis",
+    "description": "Produto provisório aguardando cadastro",
+    "price": 279.9,
+    "images": [
+      "/produtos/otimizados/produto-061-01.webp",
+      "/produtos/otimizados/produto-061-02.webp"
+    ],
+    "thumbnails": [
+      "/produtos/otimizados/thumbs/produto-061-01.webp",
+      "/produtos/otimizados/thumbs/produto-061-02.webp"
+    ],
+    "coverImage": "/produtos/otimizados/produto-061-01.webp",
+    "sizes": [
+      "38",
+      "39",
+      "40",
+      "41",
+      "42"
+    ],
+    "colors": [
+      "A definir"
+    ],
+    "stock": 18,
+    "featured": false,
+    "isNew": false,
+    "active": true,
+    "status": "active",
+    "needsReview": true,
+    "demo": true,
+    "imageType": "photo",
+    "visual": {
+      "accent": "#ef2b35",
+      "secondary": "#f7f7f4",
+      "type": "shoe"
+    },
+    "weightKg": 1.25,
+    "lengthCm": 33,
+    "widthCm": 20,
+    "heightCm": 12,
+    "packagingCategory": "caixa-tenis",
+    "shippingEnabled": true
+  },
+  {
+    "id": "prov-062",
+    "name": "Tênis 062",
+    "slug": "tenis-062",
+    "code": "BSP-PROV-062",
+    "category": "tenis",
+    "description": "Produto provisório aguardando cadastro",
+    "price": 299.9,
+    "images": [
+      "/produtos/otimizados/produto-062-01.webp",
+      "/produtos/otimizados/produto-062-02.webp"
+    ],
+    "thumbnails": [
+      "/produtos/otimizados/thumbs/produto-062-01.webp",
+      "/produtos/otimizados/thumbs/produto-062-02.webp"
+    ],
+    "coverImage": "/produtos/otimizados/produto-062-01.webp",
+    "sizes": [
+      "38",
+      "39",
+      "40",
+      "41",
+      "42"
+    ],
+    "colors": [
+      "A definir"
+    ],
+    "stock": 7,
+    "featured": false,
+    "isNew": false,
+    "active": true,
+    "status": "active",
+    "needsReview": true,
+    "demo": true,
+    "imageType": "photo",
+    "visual": {
+      "accent": "#ef2b35",
+      "secondary": "#f7f7f4",
+      "type": "shoe"
+    },
+    "weightKg": 1.25,
+    "lengthCm": 33,
+    "widthCm": 20,
+    "heightCm": 12,
+    "packagingCategory": "caixa-tenis",
+    "shippingEnabled": true
+  },
+  {
+    "id": "prov-063",
+    "name": "Tênis 063",
+    "slug": "tenis-063",
+    "code": "BSP-PROV-063",
+    "category": "tenis",
+    "description": "Produto provisório aguardando cadastro",
+    "price": 319.9,
+    "images": [
+      "/produtos/otimizados/produto-063-01.webp",
+      "/produtos/otimizados/produto-063-02.webp"
+    ],
+    "thumbnails": [
+      "/produtos/otimizados/thumbs/produto-063-01.webp",
+      "/produtos/otimizados/thumbs/produto-063-02.webp"
+    ],
+    "coverImage": "/produtos/otimizados/produto-063-01.webp",
+    "sizes": [
+      "38",
+      "39",
+      "40",
+      "41",
+      "42"
+    ],
+    "colors": [
+      "A definir"
+    ],
+    "stock": 14,
+    "featured": false,
+    "isNew": false,
+    "active": true,
+    "status": "active",
+    "needsReview": true,
+    "demo": true,
+    "imageType": "photo",
+    "visual": {
+      "accent": "#ef2b35",
+      "secondary": "#f7f7f4",
+      "type": "shoe"
+    },
+    "weightKg": 1.25,
+    "lengthCm": 33,
+    "widthCm": 20,
+    "heightCm": 12,
+    "packagingCategory": "caixa-tenis",
+    "shippingEnabled": true
+  },
+  {
+    "id": "prov-064",
+    "name": "Tênis 064",
+    "slug": "tenis-064",
+    "code": "BSP-PROV-064",
+    "category": "tenis",
+    "description": "Produto provisório aguardando cadastro",
+    "price": 339.9,
+    "images": [
+      "/produtos/otimizados/produto-064-01.webp",
+      "/produtos/otimizados/produto-064-02.webp"
+    ],
+    "thumbnails": [
+      "/produtos/otimizados/thumbs/produto-064-01.webp",
+      "/produtos/otimizados/thumbs/produto-064-02.webp"
+    ],
+    "coverImage": "/produtos/otimizados/produto-064-01.webp",
+    "sizes": [
+      "38",
+      "39",
+      "40",
+      "41",
+      "42"
+    ],
+    "colors": [
+      "A definir"
+    ],
+    "stock": 21,
+    "featured": false,
+    "isNew": false,
+    "active": true,
+    "status": "active",
+    "needsReview": true,
+    "demo": true,
+    "imageType": "photo",
+    "visual": {
+      "accent": "#ef2b35",
+      "secondary": "#f7f7f4",
+      "type": "shoe"
+    },
+    "weightKg": 1.25,
+    "lengthCm": 33,
+    "widthCm": 20,
+    "heightCm": 12,
+    "packagingCategory": "caixa-tenis",
+    "shippingEnabled": true
+  },
+  {
+    "id": "prov-065",
+    "name": "Tênis 065",
+    "slug": "tenis-065",
+    "code": "BSP-PROV-065",
+    "category": "tenis",
+    "description": "Produto provisório aguardando cadastro",
+    "price": 359.9,
+    "images": [
+      "/produtos/otimizados/produto-065-01.webp",
+      "/produtos/otimizados/produto-065-02.webp"
+    ],
+    "thumbnails": [
+      "/produtos/otimizados/thumbs/produto-065-01.webp",
+      "/produtos/otimizados/thumbs/produto-065-02.webp"
+    ],
+    "coverImage": "/produtos/otimizados/produto-065-01.webp",
+    "sizes": [
+      "38",
+      "39",
+      "40",
+      "41",
+      "42"
+    ],
+    "colors": [
+      "A definir"
+    ],
+    "stock": 10,
+    "featured": false,
+    "isNew": false,
+    "active": true,
+    "status": "active",
+    "needsReview": true,
+    "demo": true,
+    "imageType": "photo",
+    "visual": {
+      "accent": "#ef2b35",
+      "secondary": "#f7f7f4",
+      "type": "shoe"
+    },
+    "weightKg": 1.25,
+    "lengthCm": 33,
+    "widthCm": 20,
+    "heightCm": 12,
+    "packagingCategory": "caixa-tenis",
+    "shippingEnabled": true
+  },
+  {
+    "id": "prov-066",
+    "name": "Tênis 066",
+    "slug": "tenis-066",
+    "code": "BSP-PROV-066",
+    "category": "tenis",
+    "description": "Produto provisório aguardando cadastro",
+    "price": 279.9,
+    "images": [
+      "/produtos/otimizados/produto-066-01.webp",
+      "/produtos/otimizados/produto-066-02.webp"
+    ],
+    "thumbnails": [
+      "/produtos/otimizados/thumbs/produto-066-01.webp",
+      "/produtos/otimizados/thumbs/produto-066-02.webp"
+    ],
+    "coverImage": "/produtos/otimizados/produto-066-01.webp",
+    "sizes": [
+      "38",
+      "39",
+      "40",
+      "41",
+      "42"
+    ],
+    "colors": [
+      "A definir"
+    ],
+    "stock": 17,
+    "featured": false,
+    "isNew": false,
+    "active": true,
+    "status": "active",
+    "needsReview": true,
+    "demo": true,
+    "imageType": "photo",
+    "visual": {
+      "accent": "#ef2b35",
+      "secondary": "#f7f7f4",
+      "type": "shoe"
+    },
+    "weightKg": 1.25,
+    "lengthCm": 33,
+    "widthCm": 20,
+    "heightCm": 12,
+    "packagingCategory": "caixa-tenis",
+    "shippingEnabled": true
+  },
+  {
+    "id": "prov-067",
+    "name": "Tênis 067",
+    "slug": "tenis-067",
+    "code": "BSP-PROV-067",
+    "category": "tenis",
+    "description": "Produto provisório aguardando cadastro",
+    "price": 299.9,
+    "images": [
+      "/produtos/otimizados/produto-067-01.webp",
+      "/produtos/otimizados/produto-067-02.webp"
+    ],
+    "thumbnails": [
+      "/produtos/otimizados/thumbs/produto-067-01.webp",
+      "/produtos/otimizados/thumbs/produto-067-02.webp"
+    ],
+    "coverImage": "/produtos/otimizados/produto-067-01.webp",
+    "sizes": [
+      "38",
+      "39",
+      "40",
+      "41",
+      "42"
+    ],
+    "colors": [
+      "A definir"
+    ],
+    "stock": 6,
+    "featured": false,
+    "isNew": false,
+    "active": true,
+    "status": "active",
+    "needsReview": true,
+    "demo": true,
+    "imageType": "photo",
+    "visual": {
+      "accent": "#ef2b35",
+      "secondary": "#f7f7f4",
+      "type": "shoe"
+    },
+    "weightKg": 1.25,
+    "lengthCm": 33,
+    "widthCm": 20,
+    "heightCm": 12,
+    "packagingCategory": "caixa-tenis",
+    "shippingEnabled": true
+  },
+  {
+    "id": "prov-068",
+    "name": "Tênis 068",
+    "slug": "tenis-068",
+    "code": "BSP-PROV-068",
+    "category": "tenis",
+    "description": "Produto provisório aguardando cadastro",
+    "price": 319.9,
+    "images": [
+      "/produtos/otimizados/produto-068-01.webp",
+      "/produtos/otimizados/produto-068-02.webp"
+    ],
+    "thumbnails": [
+      "/produtos/otimizados/thumbs/produto-068-01.webp",
+      "/produtos/otimizados/thumbs/produto-068-02.webp"
+    ],
+    "coverImage": "/produtos/otimizados/produto-068-01.webp",
+    "sizes": [
+      "38",
+      "39",
+      "40",
+      "41",
+      "42"
+    ],
+    "colors": [
+      "A definir"
+    ],
+    "stock": 13,
+    "featured": false,
+    "isNew": false,
+    "active": true,
+    "status": "active",
+    "needsReview": true,
+    "demo": true,
+    "imageType": "photo",
+    "visual": {
+      "accent": "#ef2b35",
+      "secondary": "#f7f7f4",
+      "type": "shoe"
+    },
+    "weightKg": 1.25,
+    "lengthCm": 33,
+    "widthCm": 20,
+    "heightCm": 12,
+    "packagingCategory": "caixa-tenis",
+    "shippingEnabled": true
+  },
+  {
+    "id": "prov-069",
+    "name": "Tênis 069",
+    "slug": "tenis-069",
+    "code": "BSP-PROV-069",
+    "category": "tenis",
+    "description": "Produto provisório aguardando cadastro",
+    "price": 339.9,
+    "images": [
+      "/produtos/otimizados/produto-069-01.webp",
+      "/produtos/otimizados/produto-069-02.webp"
+    ],
+    "thumbnails": [
+      "/produtos/otimizados/thumbs/produto-069-01.webp",
+      "/produtos/otimizados/thumbs/produto-069-02.webp"
+    ],
+    "coverImage": "/produtos/otimizados/produto-069-01.webp",
+    "sizes": [
+      "38",
+      "39",
+      "40",
+      "41",
+      "42"
+    ],
+    "colors": [
+      "A definir"
+    ],
+    "stock": 20,
+    "featured": false,
+    "isNew": false,
+    "active": true,
+    "status": "active",
+    "needsReview": true,
+    "demo": true,
+    "imageType": "photo",
+    "visual": {
+      "accent": "#ef2b35",
+      "secondary": "#f7f7f4",
+      "type": "shoe"
+    },
+    "weightKg": 1.25,
+    "lengthCm": 33,
+    "widthCm": 20,
+    "heightCm": 12,
+    "packagingCategory": "caixa-tenis",
+    "shippingEnabled": true
+  },
+  {
+    "id": "prov-070",
+    "name": "Tênis 070",
+    "slug": "tenis-070",
+    "code": "BSP-PROV-070",
+    "category": "tenis",
+    "description": "Produto provisório aguardando cadastro",
+    "price": 359.9,
+    "images": [
+      "/produtos/otimizados/produto-070-01.webp",
+      "/produtos/otimizados/produto-070-02.webp"
+    ],
+    "thumbnails": [
+      "/produtos/otimizados/thumbs/produto-070-01.webp",
+      "/produtos/otimizados/thumbs/produto-070-02.webp"
+    ],
+    "coverImage": "/produtos/otimizados/produto-070-01.webp",
+    "sizes": [
+      "38",
+      "39",
+      "40",
+      "41",
+      "42"
+    ],
+    "colors": [
+      "A definir"
+    ],
+    "stock": 9,
+    "featured": false,
+    "isNew": false,
+    "active": true,
+    "status": "active",
+    "needsReview": true,
+    "demo": true,
+    "imageType": "photo",
+    "visual": {
+      "accent": "#ef2b35",
+      "secondary": "#f7f7f4",
+      "type": "shoe"
+    },
+    "weightKg": 1.25,
+    "lengthCm": 33,
+    "widthCm": 20,
+    "heightCm": 12,
+    "packagingCategory": "caixa-tenis",
+    "shippingEnabled": true
+  },
+  {
+    "id": "prov-071",
+    "name": "Tênis 071",
+    "slug": "tenis-071",
+    "code": "BSP-PROV-071",
+    "category": "tenis",
+    "description": "Produto provisório aguardando cadastro",
+    "price": 279.9,
+    "images": [
+      "/produtos/otimizados/produto-071-01.webp",
+      "/produtos/otimizados/produto-071-02.webp"
+    ],
+    "thumbnails": [
+      "/produtos/otimizados/thumbs/produto-071-01.webp",
+      "/produtos/otimizados/thumbs/produto-071-02.webp"
+    ],
+    "coverImage": "/produtos/otimizados/produto-071-01.webp",
+    "sizes": [
+      "38",
+      "39",
+      "40",
+      "41",
+      "42"
+    ],
+    "colors": [
+      "A definir"
+    ],
+    "stock": 16,
+    "featured": false,
+    "isNew": false,
+    "active": true,
+    "status": "active",
+    "needsReview": true,
+    "demo": true,
+    "imageType": "photo",
+    "visual": {
+      "accent": "#ef2b35",
+      "secondary": "#f7f7f4",
+      "type": "shoe"
+    },
+    "weightKg": 1.25,
+    "lengthCm": 33,
+    "widthCm": 20,
+    "heightCm": 12,
+    "packagingCategory": "caixa-tenis",
+    "shippingEnabled": true
+  },
+  {
+    "id": "prov-072",
+    "name": "Tênis 072",
+    "slug": "tenis-072",
+    "code": "BSP-PROV-072",
+    "category": "tenis",
+    "description": "Produto provisório aguardando cadastro",
+    "price": 299.9,
+    "images": [
+      "/produtos/otimizados/produto-072-01.webp",
+      "/produtos/otimizados/produto-072-02.webp"
+    ],
+    "thumbnails": [
+      "/produtos/otimizados/thumbs/produto-072-01.webp",
+      "/produtos/otimizados/thumbs/produto-072-02.webp"
+    ],
+    "coverImage": "/produtos/otimizados/produto-072-01.webp",
+    "sizes": [
+      "38",
+      "39",
+      "40",
+      "41",
+      "42"
+    ],
+    "colors": [
+      "A definir"
+    ],
+    "stock": 5,
+    "featured": false,
+    "isNew": false,
+    "active": true,
+    "status": "active",
+    "needsReview": true,
+    "demo": true,
+    "imageType": "photo",
+    "visual": {
+      "accent": "#ef2b35",
+      "secondary": "#f7f7f4",
+      "type": "shoe"
+    },
+    "weightKg": 1.25,
+    "lengthCm": 33,
+    "widthCm": 20,
+    "heightCm": 12,
+    "packagingCategory": "caixa-tenis",
+    "shippingEnabled": true
+  },
+  {
+    "id": "prov-073",
+    "name": "Tênis 073",
+    "slug": "tenis-073",
+    "code": "BSP-PROV-073",
+    "category": "tenis",
+    "description": "Produto provisório aguardando cadastro",
+    "price": 319.9,
+    "images": [
+      "/produtos/otimizados/produto-073-01.webp",
+      "/produtos/otimizados/produto-073-02.webp"
+    ],
+    "thumbnails": [
+      "/produtos/otimizados/thumbs/produto-073-01.webp",
+      "/produtos/otimizados/thumbs/produto-073-02.webp"
+    ],
+    "coverImage": "/produtos/otimizados/produto-073-01.webp",
+    "sizes": [
+      "38",
+      "39",
+      "40",
+      "41",
+      "42"
+    ],
+    "colors": [
+      "A definir"
+    ],
+    "stock": 12,
+    "featured": false,
+    "isNew": false,
+    "active": true,
+    "status": "active",
+    "needsReview": true,
+    "demo": true,
+    "imageType": "photo",
+    "visual": {
+      "accent": "#ef2b35",
+      "secondary": "#f7f7f4",
+      "type": "shoe"
+    },
+    "weightKg": 1.25,
+    "lengthCm": 33,
+    "widthCm": 20,
+    "heightCm": 12,
+    "packagingCategory": "caixa-tenis",
+    "shippingEnabled": true
+  },
+  {
+    "id": "prov-074",
+    "name": "Tênis 074",
+    "slug": "tenis-074",
+    "code": "BSP-PROV-074",
+    "category": "tenis",
+    "description": "Produto provisório aguardando cadastro",
+    "price": 339.9,
+    "images": [
+      "/produtos/otimizados/produto-074-01.webp",
+      "/produtos/otimizados/produto-074-02.webp"
+    ],
+    "thumbnails": [
+      "/produtos/otimizados/thumbs/produto-074-01.webp",
+      "/produtos/otimizados/thumbs/produto-074-02.webp"
+    ],
+    "coverImage": "/produtos/otimizados/produto-074-01.webp",
+    "sizes": [
+      "38",
+      "39",
+      "40",
+      "41",
+      "42"
+    ],
+    "colors": [
+      "A definir"
+    ],
+    "stock": 19,
+    "featured": false,
+    "isNew": false,
+    "active": true,
+    "status": "active",
+    "needsReview": true,
+    "demo": true,
+    "imageType": "photo",
+    "visual": {
+      "accent": "#ef2b35",
+      "secondary": "#f7f7f4",
+      "type": "shoe"
+    },
+    "weightKg": 1.25,
+    "lengthCm": 33,
+    "widthCm": 20,
+    "heightCm": 12,
+    "packagingCategory": "caixa-tenis",
+    "shippingEnabled": true
+  },
+  {
+    "id": "prov-075",
+    "name": "Tênis 075",
+    "slug": "tenis-075",
+    "code": "BSP-PROV-075",
+    "category": "tenis",
+    "description": "Produto provisório aguardando cadastro",
+    "price": 359.9,
+    "images": [
+      "/produtos/otimizados/produto-075-01.webp",
+      "/produtos/otimizados/produto-075-02.webp"
+    ],
+    "thumbnails": [
+      "/produtos/otimizados/thumbs/produto-075-01.webp",
+      "/produtos/otimizados/thumbs/produto-075-02.webp"
+    ],
+    "coverImage": "/produtos/otimizados/produto-075-01.webp",
+    "sizes": [
+      "38",
+      "39",
+      "40",
+      "41",
+      "42"
+    ],
+    "colors": [
+      "A definir"
+    ],
+    "stock": 8,
+    "featured": false,
+    "isNew": false,
+    "active": true,
+    "status": "active",
+    "needsReview": true,
+    "demo": true,
+    "imageType": "photo",
+    "visual": {
+      "accent": "#ef2b35",
+      "secondary": "#f7f7f4",
+      "type": "shoe"
+    },
+    "weightKg": 1.25,
+    "lengthCm": 33,
+    "widthCm": 20,
+    "heightCm": 12,
+    "packagingCategory": "caixa-tenis",
+    "shippingEnabled": true
+  },
+  {
+    "id": "prov-076",
+    "name": "Tênis 076",
+    "slug": "tenis-076",
+    "code": "BSP-PROV-076",
+    "category": "tenis",
+    "description": "Produto provisório aguardando cadastro",
+    "price": 279.9,
+    "images": [
+      "/produtos/otimizados/produto-076-01.webp",
+      "/produtos/otimizados/produto-076-02.webp"
+    ],
+    "thumbnails": [
+      "/produtos/otimizados/thumbs/produto-076-01.webp",
+      "/produtos/otimizados/thumbs/produto-076-02.webp"
+    ],
+    "coverImage": "/produtos/otimizados/produto-076-01.webp",
+    "sizes": [
+      "38",
+      "39",
+      "40",
+      "41",
+      "42"
+    ],
+    "colors": [
+      "A definir"
+    ],
+    "stock": 15,
+    "featured": false,
+    "isNew": false,
+    "active": true,
+    "status": "active",
+    "needsReview": true,
+    "demo": true,
+    "imageType": "photo",
+    "visual": {
+      "accent": "#ef2b35",
+      "secondary": "#f7f7f4",
+      "type": "shoe"
+    },
+    "weightKg": 1.25,
+    "lengthCm": 33,
+    "widthCm": 20,
+    "heightCm": 12,
+    "packagingCategory": "caixa-tenis",
+    "shippingEnabled": true
+  },
+  {
+    "id": "prov-077",
+    "name": "Tênis 077",
+    "slug": "tenis-077",
+    "code": "BSP-PROV-077",
+    "category": "tenis",
+    "description": "Produto provisório aguardando cadastro",
+    "price": 299.9,
+    "images": [
+      "/produtos/otimizados/produto-077-01.webp",
+      "/produtos/otimizados/produto-077-02.webp"
+    ],
+    "thumbnails": [
+      "/produtos/otimizados/thumbs/produto-077-01.webp",
+      "/produtos/otimizados/thumbs/produto-077-02.webp"
+    ],
+    "coverImage": "/produtos/otimizados/produto-077-01.webp",
+    "sizes": [
+      "38",
+      "39",
+      "40",
+      "41",
+      "42"
+    ],
+    "colors": [
+      "A definir"
+    ],
+    "stock": 22,
+    "featured": false,
+    "isNew": false,
+    "active": true,
+    "status": "active",
+    "needsReview": true,
+    "demo": true,
+    "imageType": "photo",
+    "visual": {
+      "accent": "#ef2b35",
+      "secondary": "#f7f7f4",
+      "type": "shoe"
+    },
+    "weightKg": 1.25,
+    "lengthCm": 33,
+    "widthCm": 20,
+    "heightCm": 12,
+    "packagingCategory": "caixa-tenis",
+    "shippingEnabled": true
+  },
+  {
+    "id": "prov-078",
+    "name": "Tênis 078",
+    "slug": "tenis-078",
+    "code": "BSP-PROV-078",
+    "category": "tenis",
+    "description": "Produto provisório aguardando cadastro",
+    "price": 319.9,
+    "images": [
+      "/produtos/otimizados/produto-078-01.webp",
+      "/produtos/otimizados/produto-078-02.webp"
+    ],
+    "thumbnails": [
+      "/produtos/otimizados/thumbs/produto-078-01.webp",
+      "/produtos/otimizados/thumbs/produto-078-02.webp"
+    ],
+    "coverImage": "/produtos/otimizados/produto-078-01.webp",
+    "sizes": [
+      "38",
+      "39",
+      "40",
+      "41",
+      "42"
+    ],
+    "colors": [
+      "A definir"
+    ],
+    "stock": 11,
+    "featured": false,
+    "isNew": false,
+    "active": true,
+    "status": "active",
+    "needsReview": true,
+    "demo": true,
+    "imageType": "photo",
+    "visual": {
+      "accent": "#ef2b35",
+      "secondary": "#f7f7f4",
+      "type": "shoe"
+    },
+    "weightKg": 1.25,
+    "lengthCm": 33,
+    "widthCm": 20,
+    "heightCm": 12,
+    "packagingCategory": "caixa-tenis",
+    "shippingEnabled": true
+  },
+  {
+    "id": "prov-079",
+    "name": "Tênis 079",
+    "slug": "tenis-079",
+    "code": "BSP-PROV-079",
+    "category": "tenis",
+    "description": "Produto provisório aguardando cadastro",
+    "price": 339.9,
+    "images": [
+      "/produtos/otimizados/produto-079-01.webp",
+      "/produtos/otimizados/produto-079-02.webp"
+    ],
+    "thumbnails": [
+      "/produtos/otimizados/thumbs/produto-079-01.webp",
+      "/produtos/otimizados/thumbs/produto-079-02.webp"
+    ],
+    "coverImage": "/produtos/otimizados/produto-079-01.webp",
+    "sizes": [
+      "38",
+      "39",
+      "40",
+      "41",
+      "42"
+    ],
+    "colors": [
+      "A definir"
+    ],
+    "stock": 18,
+    "featured": false,
+    "isNew": false,
+    "active": true,
+    "status": "active",
+    "needsReview": true,
+    "demo": true,
+    "imageType": "photo",
+    "visual": {
+      "accent": "#ef2b35",
+      "secondary": "#f7f7f4",
+      "type": "shoe"
+    },
+    "weightKg": 1.25,
+    "lengthCm": 33,
+    "widthCm": 20,
+    "heightCm": 12,
+    "packagingCategory": "caixa-tenis",
+    "shippingEnabled": true
+  },
+  {
+    "id": "prov-080",
+    "name": "Tênis 080",
+    "slug": "tenis-080",
+    "code": "BSP-PROV-080",
+    "category": "tenis",
+    "description": "Produto provisório aguardando cadastro",
+    "price": 359.9,
+    "images": [
+      "/produtos/otimizados/produto-080-01.webp",
+      "/produtos/otimizados/produto-080-02.webp"
+    ],
+    "thumbnails": [
+      "/produtos/otimizados/thumbs/produto-080-01.webp",
+      "/produtos/otimizados/thumbs/produto-080-02.webp"
+    ],
+    "coverImage": "/produtos/otimizados/produto-080-01.webp",
+    "sizes": [
+      "38",
+      "39",
+      "40",
+      "41",
+      "42"
+    ],
+    "colors": [
+      "A definir"
+    ],
+    "stock": 7,
+    "featured": false,
+    "isNew": false,
+    "active": true,
+    "status": "active",
+    "needsReview": true,
+    "demo": true,
+    "imageType": "photo",
+    "visual": {
+      "accent": "#ef2b35",
+      "secondary": "#f7f7f4",
+      "type": "shoe"
+    },
+    "weightKg": 1.25,
+    "lengthCm": 33,
+    "widthCm": 20,
+    "heightCm": 12,
+    "packagingCategory": "caixa-tenis",
+    "shippingEnabled": true
+  },
+  {
+    "id": "prov-081",
+    "name": "Tênis 081",
+    "slug": "tenis-081",
+    "code": "BSP-PROV-081",
+    "category": "tenis",
+    "description": "Produto provisório aguardando cadastro",
+    "price": 279.9,
+    "images": [
+      "/produtos/otimizados/produto-081-01.webp",
+      "/produtos/otimizados/produto-081-02.webp"
+    ],
+    "thumbnails": [
+      "/produtos/otimizados/thumbs/produto-081-01.webp",
+      "/produtos/otimizados/thumbs/produto-081-02.webp"
+    ],
+    "coverImage": "/produtos/otimizados/produto-081-01.webp",
+    "sizes": [
+      "38",
+      "39",
+      "40",
+      "41",
+      "42"
+    ],
+    "colors": [
+      "A definir"
+    ],
+    "stock": 14,
+    "featured": false,
+    "isNew": false,
+    "active": true,
+    "status": "active",
+    "needsReview": true,
+    "demo": true,
+    "imageType": "photo",
+    "visual": {
+      "accent": "#ef2b35",
+      "secondary": "#f7f7f4",
+      "type": "shoe"
+    },
+    "weightKg": 1.25,
+    "lengthCm": 33,
+    "widthCm": 20,
+    "heightCm": 12,
+    "packagingCategory": "caixa-tenis",
+    "shippingEnabled": true
+  },
+  {
+    "id": "prov-082",
+    "name": "Tênis 082",
+    "slug": "tenis-082",
+    "code": "BSP-PROV-082",
+    "category": "tenis",
+    "description": "Produto provisório aguardando cadastro",
+    "price": 299.9,
+    "images": [
+      "/produtos/otimizados/produto-082-01.webp",
+      "/produtos/otimizados/produto-082-02.webp"
+    ],
+    "thumbnails": [
+      "/produtos/otimizados/thumbs/produto-082-01.webp",
+      "/produtos/otimizados/thumbs/produto-082-02.webp"
+    ],
+    "coverImage": "/produtos/otimizados/produto-082-01.webp",
+    "sizes": [
+      "38",
+      "39",
+      "40",
+      "41",
+      "42"
+    ],
+    "colors": [
+      "A definir"
+    ],
+    "stock": 21,
+    "featured": false,
+    "isNew": false,
+    "active": true,
+    "status": "active",
+    "needsReview": true,
+    "demo": true,
+    "imageType": "photo",
+    "visual": {
+      "accent": "#ef2b35",
+      "secondary": "#f7f7f4",
+      "type": "shoe"
+    },
+    "weightKg": 1.25,
+    "lengthCm": 33,
+    "widthCm": 20,
+    "heightCm": 12,
+    "packagingCategory": "caixa-tenis",
+    "shippingEnabled": true
+  },
+  {
+    "id": "prov-083",
+    "name": "Tênis 083",
+    "slug": "tenis-083",
+    "code": "BSP-PROV-083",
+    "category": "tenis",
+    "description": "Produto provisório aguardando cadastro",
+    "price": 319.9,
+    "images": [
+      "/produtos/otimizados/produto-083-01.webp",
+      "/produtos/otimizados/produto-083-02.webp"
+    ],
+    "thumbnails": [
+      "/produtos/otimizados/thumbs/produto-083-01.webp",
+      "/produtos/otimizados/thumbs/produto-083-02.webp"
+    ],
+    "coverImage": "/produtos/otimizados/produto-083-01.webp",
+    "sizes": [
+      "38",
+      "39",
+      "40",
+      "41",
+      "42"
+    ],
+    "colors": [
+      "A definir"
+    ],
+    "stock": 10,
+    "featured": false,
+    "isNew": false,
+    "active": true,
+    "status": "active",
+    "needsReview": true,
+    "demo": true,
+    "imageType": "photo",
+    "visual": {
+      "accent": "#ef2b35",
+      "secondary": "#f7f7f4",
+      "type": "shoe"
+    },
+    "weightKg": 1.25,
+    "lengthCm": 33,
+    "widthCm": 20,
+    "heightCm": 12,
+    "packagingCategory": "caixa-tenis",
+    "shippingEnabled": true
+  },
+  {
+    "id": "prov-084",
+    "name": "Tênis 084",
+    "slug": "tenis-084",
+    "code": "BSP-PROV-084",
+    "category": "tenis",
+    "description": "Produto provisório aguardando cadastro",
+    "price": 339.9,
+    "images": [
+      "/produtos/otimizados/produto-084-01.webp",
+      "/produtos/otimizados/produto-084-02.webp"
+    ],
+    "thumbnails": [
+      "/produtos/otimizados/thumbs/produto-084-01.webp",
+      "/produtos/otimizados/thumbs/produto-084-02.webp"
+    ],
+    "coverImage": "/produtos/otimizados/produto-084-01.webp",
+    "sizes": [
+      "38",
+      "39",
+      "40",
+      "41",
+      "42"
+    ],
+    "colors": [
+      "A definir"
+    ],
+    "stock": 17,
+    "featured": false,
+    "isNew": false,
+    "active": true,
+    "status": "active",
+    "needsReview": true,
+    "demo": true,
+    "imageType": "photo",
+    "visual": {
+      "accent": "#ef2b35",
+      "secondary": "#f7f7f4",
+      "type": "shoe"
+    },
+    "weightKg": 1.25,
+    "lengthCm": 33,
+    "widthCm": 20,
+    "heightCm": 12,
+    "packagingCategory": "caixa-tenis",
+    "shippingEnabled": true
+  },
+  {
+    "id": "prov-085",
+    "name": "Tênis 085",
+    "slug": "tenis-085",
+    "code": "BSP-PROV-085",
+    "category": "tenis",
+    "description": "Produto provisório aguardando cadastro",
+    "price": 359.9,
+    "images": [
+      "/produtos/otimizados/produto-085-01.webp",
+      "/produtos/otimizados/produto-085-02.webp"
+    ],
+    "thumbnails": [
+      "/produtos/otimizados/thumbs/produto-085-01.webp",
+      "/produtos/otimizados/thumbs/produto-085-02.webp"
+    ],
+    "coverImage": "/produtos/otimizados/produto-085-01.webp",
+    "sizes": [
+      "38",
+      "39",
+      "40",
+      "41",
+      "42"
+    ],
+    "colors": [
+      "A definir"
+    ],
+    "stock": 6,
+    "featured": false,
+    "isNew": false,
+    "active": true,
+    "status": "active",
+    "needsReview": true,
+    "demo": true,
+    "imageType": "photo",
+    "visual": {
+      "accent": "#ef2b35",
+      "secondary": "#f7f7f4",
+      "type": "shoe"
+    },
+    "weightKg": 1.25,
+    "lengthCm": 33,
+    "widthCm": 20,
+    "heightCm": 12,
+    "packagingCategory": "caixa-tenis",
+    "shippingEnabled": true
+  },
+  {
+    "id": "prov-086",
+    "name": "Tênis 086",
+    "slug": "tenis-086",
+    "code": "BSP-PROV-086",
+    "category": "tenis",
+    "description": "Produto provisório aguardando cadastro",
+    "price": 279.9,
+    "images": [
+      "/produtos/otimizados/produto-086-01.webp",
+      "/produtos/otimizados/produto-086-02.webp"
+    ],
+    "thumbnails": [
+      "/produtos/otimizados/thumbs/produto-086-01.webp",
+      "/produtos/otimizados/thumbs/produto-086-02.webp"
+    ],
+    "coverImage": "/produtos/otimizados/produto-086-01.webp",
+    "sizes": [
+      "38",
+      "39",
+      "40",
+      "41",
+      "42"
+    ],
+    "colors": [
+      "A definir"
+    ],
+    "stock": 13,
+    "featured": false,
+    "isNew": false,
+    "active": true,
+    "status": "active",
+    "needsReview": true,
+    "demo": true,
+    "imageType": "photo",
+    "visual": {
+      "accent": "#ef2b35",
+      "secondary": "#f7f7f4",
+      "type": "shoe"
+    },
+    "weightKg": 1.25,
+    "lengthCm": 33,
+    "widthCm": 20,
+    "heightCm": 12,
+    "packagingCategory": "caixa-tenis",
+    "shippingEnabled": true
+  },
+  {
+    "id": "prov-087",
+    "name": "Tênis 087",
+    "slug": "tenis-087",
+    "code": "BSP-PROV-087",
+    "category": "tenis",
+    "description": "Produto provisório aguardando cadastro",
+    "price": 299.9,
+    "images": [
+      "/produtos/otimizados/produto-087-01.webp",
+      "/produtos/otimizados/produto-087-02.webp"
+    ],
+    "thumbnails": [
+      "/produtos/otimizados/thumbs/produto-087-01.webp",
+      "/produtos/otimizados/thumbs/produto-087-02.webp"
+    ],
+    "coverImage": "/produtos/otimizados/produto-087-01.webp",
+    "sizes": [
+      "38",
+      "39",
+      "40",
+      "41",
+      "42"
+    ],
+    "colors": [
+      "A definir"
+    ],
+    "stock": 20,
+    "featured": false,
+    "isNew": false,
+    "active": true,
+    "status": "active",
+    "needsReview": true,
+    "demo": true,
+    "imageType": "photo",
+    "visual": {
+      "accent": "#ef2b35",
+      "secondary": "#f7f7f4",
+      "type": "shoe"
+    },
+    "weightKg": 1.25,
+    "lengthCm": 33,
+    "widthCm": 20,
+    "heightCm": 12,
+    "packagingCategory": "caixa-tenis",
+    "shippingEnabled": true
+  },
+  {
+    "id": "prov-088",
+    "name": "Tênis 088",
+    "slug": "tenis-088",
+    "code": "BSP-PROV-088",
+    "category": "tenis",
+    "description": "Produto provisório aguardando cadastro",
+    "price": 319.9,
+    "images": [
+      "/produtos/otimizados/produto-088-01.webp",
+      "/produtos/otimizados/produto-088-02.webp"
+    ],
+    "thumbnails": [
+      "/produtos/otimizados/thumbs/produto-088-01.webp",
+      "/produtos/otimizados/thumbs/produto-088-02.webp"
+    ],
+    "coverImage": "/produtos/otimizados/produto-088-01.webp",
+    "sizes": [
+      "38",
+      "39",
+      "40",
+      "41",
+      "42"
+    ],
+    "colors": [
+      "A definir"
+    ],
+    "stock": 9,
+    "featured": false,
+    "isNew": false,
+    "active": true,
+    "status": "active",
+    "needsReview": true,
+    "demo": true,
+    "imageType": "photo",
+    "visual": {
+      "accent": "#ef2b35",
+      "secondary": "#f7f7f4",
+      "type": "shoe"
+    },
+    "weightKg": 1.25,
+    "lengthCm": 33,
+    "widthCm": 20,
+    "heightCm": 12,
+    "packagingCategory": "caixa-tenis",
+    "shippingEnabled": true
+  },
+  {
+    "id": "prov-089",
+    "name": "Tênis 089",
+    "slug": "tenis-089",
+    "code": "BSP-PROV-089",
+    "category": "tenis",
+    "description": "Produto provisório aguardando cadastro",
+    "price": 339.9,
+    "images": [
+      "/produtos/otimizados/produto-089-01.webp",
+      "/produtos/otimizados/produto-089-02.webp"
+    ],
+    "thumbnails": [
+      "/produtos/otimizados/thumbs/produto-089-01.webp",
+      "/produtos/otimizados/thumbs/produto-089-02.webp"
+    ],
+    "coverImage": "/produtos/otimizados/produto-089-01.webp",
+    "sizes": [
+      "38",
+      "39",
+      "40",
+      "41",
+      "42"
+    ],
+    "colors": [
+      "A definir"
+    ],
+    "stock": 16,
+    "featured": false,
+    "isNew": false,
+    "active": true,
+    "status": "active",
+    "needsReview": true,
+    "demo": true,
+    "imageType": "photo",
+    "visual": {
+      "accent": "#ef2b35",
+      "secondary": "#f7f7f4",
+      "type": "shoe"
+    },
+    "weightKg": 1.25,
+    "lengthCm": 33,
+    "widthCm": 20,
+    "heightCm": 12,
+    "packagingCategory": "caixa-tenis",
+    "shippingEnabled": true
+  },
+  {
+    "id": "prov-090",
+    "name": "Tênis 090",
+    "slug": "tenis-090",
+    "code": "BSP-PROV-090",
+    "category": "tenis",
+    "description": "Produto provisório aguardando cadastro",
+    "price": 359.9,
+    "images": [
+      "/produtos/otimizados/produto-090-01.webp",
+      "/produtos/otimizados/produto-090-02.webp"
+    ],
+    "thumbnails": [
+      "/produtos/otimizados/thumbs/produto-090-01.webp",
+      "/produtos/otimizados/thumbs/produto-090-02.webp"
+    ],
+    "coverImage": "/produtos/otimizados/produto-090-01.webp",
+    "sizes": [
+      "38",
+      "39",
+      "40",
+      "41",
+      "42"
+    ],
+    "colors": [
+      "A definir"
+    ],
+    "stock": 5,
+    "featured": false,
+    "isNew": false,
+    "active": true,
+    "status": "active",
+    "needsReview": true,
+    "demo": true,
+    "imageType": "photo",
+    "visual": {
+      "accent": "#ef2b35",
+      "secondary": "#f7f7f4",
+      "type": "shoe"
+    },
+    "weightKg": 1.25,
+    "lengthCm": 33,
+    "widthCm": 20,
+    "heightCm": 12,
+    "packagingCategory": "caixa-tenis",
+    "shippingEnabled": true
+  },
+  {
+    "id": "prov-091",
+    "name": "Tênis 091",
+    "slug": "tenis-091",
+    "code": "BSP-PROV-091",
+    "category": "tenis",
+    "description": "Produto provisório aguardando cadastro",
+    "price": 279.9,
+    "images": [
+      "/produtos/otimizados/produto-091-01.webp",
+      "/produtos/otimizados/produto-091-02.webp"
+    ],
+    "thumbnails": [
+      "/produtos/otimizados/thumbs/produto-091-01.webp",
+      "/produtos/otimizados/thumbs/produto-091-02.webp"
+    ],
+    "coverImage": "/produtos/otimizados/produto-091-01.webp",
+    "sizes": [
+      "38",
+      "39",
+      "40",
+      "41",
+      "42"
+    ],
+    "colors": [
+      "A definir"
+    ],
+    "stock": 12,
+    "featured": false,
+    "isNew": false,
+    "active": true,
+    "status": "active",
+    "needsReview": true,
+    "demo": true,
+    "imageType": "photo",
+    "visual": {
+      "accent": "#ef2b35",
+      "secondary": "#f7f7f4",
+      "type": "shoe"
+    },
+    "weightKg": 1.25,
+    "lengthCm": 33,
+    "widthCm": 20,
+    "heightCm": 12,
+    "packagingCategory": "caixa-tenis",
+    "shippingEnabled": true
+  },
+  {
+    "id": "prov-092",
+    "name": "Tênis 092",
+    "slug": "tenis-092",
+    "code": "BSP-PROV-092",
+    "category": "tenis",
+    "description": "Produto provisório aguardando cadastro",
+    "price": 299.9,
+    "images": [
+      "/produtos/otimizados/produto-092-01.webp",
+      "/produtos/otimizados/produto-092-02.webp"
+    ],
+    "thumbnails": [
+      "/produtos/otimizados/thumbs/produto-092-01.webp",
+      "/produtos/otimizados/thumbs/produto-092-02.webp"
+    ],
+    "coverImage": "/produtos/otimizados/produto-092-01.webp",
+    "sizes": [
+      "38",
+      "39",
+      "40",
+      "41",
+      "42"
+    ],
+    "colors": [
+      "A definir"
+    ],
+    "stock": 19,
+    "featured": false,
+    "isNew": false,
+    "active": true,
+    "status": "active",
+    "needsReview": true,
+    "demo": true,
+    "imageType": "photo",
+    "visual": {
+      "accent": "#ef2b35",
+      "secondary": "#f7f7f4",
+      "type": "shoe"
+    },
+    "weightKg": 1.25,
+    "lengthCm": 33,
+    "widthCm": 20,
+    "heightCm": 12,
+    "packagingCategory": "caixa-tenis",
+    "shippingEnabled": true
+  },
+  {
+    "id": "prov-093",
+    "name": "Tênis 093",
+    "slug": "tenis-093",
+    "code": "BSP-PROV-093",
+    "category": "tenis",
+    "description": "Produto provisório aguardando cadastro",
+    "price": 319.9,
+    "images": [
+      "/produtos/otimizados/produto-093-01.webp",
+      "/produtos/otimizados/produto-093-02.webp"
+    ],
+    "thumbnails": [
+      "/produtos/otimizados/thumbs/produto-093-01.webp",
+      "/produtos/otimizados/thumbs/produto-093-02.webp"
+    ],
+    "coverImage": "/produtos/otimizados/produto-093-01.webp",
+    "sizes": [
+      "38",
+      "39",
+      "40",
+      "41",
+      "42"
+    ],
+    "colors": [
+      "A definir"
+    ],
+    "stock": 8,
+    "featured": false,
+    "isNew": false,
+    "active": true,
+    "status": "active",
+    "needsReview": true,
+    "demo": true,
+    "imageType": "photo",
+    "visual": {
+      "accent": "#ef2b35",
+      "secondary": "#f7f7f4",
+      "type": "shoe"
+    },
+    "weightKg": 1.25,
+    "lengthCm": 33,
+    "widthCm": 20,
+    "heightCm": 12,
+    "packagingCategory": "caixa-tenis",
+    "shippingEnabled": true
+  },
+  {
+    "id": "prov-094",
+    "name": "Tênis 094",
+    "slug": "tenis-094",
+    "code": "BSP-PROV-094",
+    "category": "tenis",
+    "description": "Produto provisório aguardando cadastro",
+    "price": 339.9,
+    "images": [
+      "/produtos/otimizados/produto-094-01.webp",
+      "/produtos/otimizados/produto-094-02.webp"
+    ],
+    "thumbnails": [
+      "/produtos/otimizados/thumbs/produto-094-01.webp",
+      "/produtos/otimizados/thumbs/produto-094-02.webp"
+    ],
+    "coverImage": "/produtos/otimizados/produto-094-01.webp",
+    "sizes": [
+      "38",
+      "39",
+      "40",
+      "41",
+      "42"
+    ],
+    "colors": [
+      "A definir"
+    ],
+    "stock": 15,
+    "featured": false,
+    "isNew": false,
+    "active": true,
+    "status": "active",
+    "needsReview": true,
+    "demo": true,
+    "imageType": "photo",
+    "visual": {
+      "accent": "#ef2b35",
+      "secondary": "#f7f7f4",
+      "type": "shoe"
+    },
+    "weightKg": 1.25,
+    "lengthCm": 33,
+    "widthCm": 20,
+    "heightCm": 12,
+    "packagingCategory": "caixa-tenis",
+    "shippingEnabled": true
+  },
+  {
+    "id": "p01",
+    "name": "Pulse Runner 01",
+    "slug": "pulse-runner-01",
+    "code": "BSP-TN-001",
+    "category": "tenis",
+    "description": "Tênis urbano de demonstração com construção leve, linhas dinâmicas e conforto para a rotina.",
+    "price": 429.9,
+    "promotionalPrice": 359.9,
+    "images": [
+      "Frente",
+      "Lateral",
+      "Detalhe"
+    ],
+    "sizes": [
+      "37",
+      "38",
+      "39",
+      "40",
+      "41",
+      "42",
+      "43"
+    ],
+    "colors": [
+      "Vermelho",
+      "Preto"
+    ],
+    "stock": 12,
+    "featured": true,
+    "isNew": true,
+    "active": true,
+    "demo": true,
+    "visual": {
+      "accent": "#ef2b35",
+      "secondary": "#f7f7f4",
+      "type": "shoe"
+    },
+    "weightKg": 1.25,
+    "lengthCm": 33,
+    "widthCm": 20,
+    "heightCm": 12,
+    "packagingCategory": "caixa-tenis",
+    "shippingEnabled": true
+  },
+  {
+    "id": "p02",
+    "name": "Night Shift Low",
+    "slug": "night-shift-low",
+    "code": "BSP-TN-002",
+    "category": "tenis",
+    "description": "Silhueta baixa de inspiração noturna com acabamento monocromático e sola de alto contraste.",
+    "price": 389.9,
+    "images": [
+      "Frente",
+      "Lateral",
+      "Detalhe"
+    ],
+    "sizes": [
+      "37",
+      "38",
+      "39",
+      "40",
+      "41",
+      "42"
+    ],
+    "colors": [
+      "Preto",
+      "Grafite"
+    ],
+    "stock": 7,
+    "featured": true,
+    "isNew": false,
+    "active": true,
+    "demo": true,
+    "visual": {
+      "accent": "#222226",
+      "secondary": "#8c8c92",
+      "type": "shoe"
+    },
+    "weightKg": 1.25,
+    "lengthCm": 33,
+    "widthCm": 20,
+    "heightCm": 12,
+    "packagingCategory": "caixa-tenis",
+    "shippingEnabled": true
+  },
+  {
+    "id": "p03",
+    "name": "District 90",
+    "slug": "district-90",
+    "code": "BSP-TN-003",
+    "category": "tenis",
+    "description": "Proporções retrô, base clara e detalhes marcantes para composições streetwear.",
+    "price": 449.9,
+    "promotionalPrice": 399.9,
+    "images": [
+      "Frente",
+      "Lateral",
+      "Detalhe"
+    ],
+    "sizes": [
+      "36",
+      "37",
+      "38",
+      "39",
+      "40",
+      "41",
+      "42"
+    ],
+    "colors": [
+      "Branco",
+      "Vermelho"
+    ],
+    "stock": 18,
+    "featured": true,
+    "isNew": true,
+    "active": true,
+    "demo": true,
+    "visual": {
+      "accent": "#f2efe8",
+      "secondary": "#d9212d",
+      "type": "shoe"
+    },
+    "weightKg": 1.25,
+    "lengthCm": 33,
+    "widthCm": 20,
+    "heightCm": 12,
+    "packagingCategory": "caixa-tenis",
+    "shippingEnabled": true
+  },
+  {
+    "id": "p04",
+    "name": "Apex Street",
+    "slug": "apex-street",
+    "code": "BSP-TN-004",
+    "category": "tenis",
+    "description": "Tênis robusto com recortes técnicos e visual contemporâneo para destacar qualquer produção.",
+    "price": 479.9,
+    "images": [
+      "Frente",
+      "Lateral",
+      "Detalhe"
+    ],
+    "sizes": [
+      "38",
+      "39",
+      "40",
+      "41",
+      "42",
+      "43",
+      "44"
+    ],
+    "colors": [
+      "Cinza",
+      "Preto"
+    ],
+    "stock": 5,
+    "featured": false,
+    "isNew": true,
+    "active": true,
+    "demo": true,
+    "visual": {
+      "accent": "#a9abb0",
+      "secondary": "#26262b",
+      "type": "shoe"
+    },
+    "weightKg": 1.25,
+    "lengthCm": 33,
+    "widthCm": 20,
+    "heightCm": 12,
+    "packagingCategory": "caixa-tenis",
+    "shippingEnabled": true
+  },
+  {
+    "id": "p05",
+    "name": "Redline Classic",
+    "slug": "redline-classic",
+    "code": "BSP-TN-005",
+    "category": "tenis",
+    "description": "Clássico casual revisitado com assinatura vermelha e cabedal visualmente limpo.",
+    "price": 349.9,
+    "promotionalPrice": 299.9,
+    "images": [
+      "Frente",
+      "Lateral",
+      "Detalhe"
+    ],
+    "sizes": [
+      "36",
+      "37",
+      "38",
+      "39",
+      "40",
+      "41"
+    ],
+    "colors": [
+      "Branco",
+      "Preto"
+    ],
+    "stock": 22,
+    "featured": true,
+    "isNew": false,
+    "active": true,
+    "demo": true,
+    "visual": {
+      "accent": "#f8f6f0",
+      "secondary": "#ee2934",
+      "type": "shoe"
+    },
+    "weightKg": 1.25,
+    "lengthCm": 33,
+    "widthCm": 20,
+    "heightCm": 12,
+    "packagingCategory": "caixa-tenis",
+    "shippingEnabled": true
+  },
+  {
+    "id": "p06",
+    "name": "Concrete Flow",
+    "slug": "concrete-flow",
+    "code": "BSP-TN-006",
+    "category": "tenis",
+    "description": "Mix de tons minerais, volumes equilibrados e presença urbana para o dia a dia.",
+    "price": 419.9,
+    "images": [
+      "Frente",
+      "Lateral",
+      "Detalhe"
+    ],
+    "sizes": [
+      "37",
+      "38",
+      "39",
+      "40",
+      "41",
+      "42",
+      "43"
+    ],
+    "colors": [
+      "Areia",
+      "Cinza"
+    ],
+    "stock": 9,
+    "featured": false,
+    "isNew": false,
+    "active": true,
+    "demo": true,
+    "visual": {
+      "accent": "#c8bca9",
+      "secondary": "#74777b",
+      "type": "shoe"
+    },
+    "weightKg": 1.25,
+    "lengthCm": 33,
+    "widthCm": 20,
+    "heightCm": 12,
+    "packagingCategory": "caixa-tenis",
+    "shippingEnabled": true
+  },
+  {
+    "id": "p07",
+    "name": "Velocity Knit",
+    "slug": "velocity-knit",
+    "code": "BSP-TN-007",
+    "category": "tenis",
+    "description": "Construção knit conceitual, desenho esportivo e leveza visual para acompanhar o ritmo.",
+    "price": 399.9,
+    "promotionalPrice": 339.9,
+    "images": [
+      "Frente",
+      "Lateral",
+      "Detalhe"
+    ],
+    "sizes": [
+      "38",
+      "39",
+      "40",
+      "41",
+      "42",
+      "43"
+    ],
+    "colors": [
+      "Preto",
+      "Vermelho"
+    ],
+    "stock": 4,
+    "featured": true,
+    "isNew": true,
+    "active": true,
+    "demo": true,
+    "visual": {
+      "accent": "#111114",
+      "secondary": "#e12731",
+      "type": "shoe"
+    },
+    "weightKg": 1.25,
+    "lengthCm": 33,
+    "widthCm": 20,
+    "heightCm": 12,
+    "packagingCategory": "caixa-tenis",
+    "shippingEnabled": true
+  },
+  {
+    "id": "p08",
+    "name": "Mono Court",
+    "slug": "mono-court",
+    "code": "BSP-TN-008",
+    "category": "tenis",
+    "description": "Tênis clean inspirado nas quadras, com acabamento tonal e fácil combinação.",
+    "price": 369.9,
+    "images": [
+      "Frente",
+      "Lateral",
+      "Detalhe"
+    ],
+    "sizes": [
+      "36",
+      "37",
+      "38",
+      "39",
+      "40",
+      "41",
+      "42"
+    ],
+    "colors": [
+      "Off-white",
+      "Preto"
+    ],
+    "stock": 16,
+    "featured": false,
+    "isNew": false,
+    "active": true,
+    "demo": true,
+    "visual": {
+      "accent": "#eae8df",
+      "secondary": "#3a3a3d",
+      "type": "shoe"
+    },
+    "weightKg": 1.25,
+    "lengthCm": 33,
+    "widthCm": 20,
+    "heightCm": 12,
+    "packagingCategory": "caixa-tenis",
+    "shippingEnabled": true
+  },
+  {
+    "id": "p09",
+    "name": "Camiseta Essential Box",
+    "slug": "camiseta-essential-box",
+    "code": "BSP-CM-001",
+    "category": "camisetas",
+    "description": "Camiseta boxy de demonstração em malha encorpada, gola firme e identidade minimalista.",
+    "price": 129.9,
+    "images": [
+      "Frente",
+      "Costas",
+      "Detalhe"
+    ],
+    "sizes": [
+      "P",
+      "M",
+      "G",
+      "GG"
+    ],
+    "colors": [
+      "Preto",
+      "Branco"
+    ],
+    "stock": 24,
+    "featured": true,
+    "isNew": true,
+    "active": false,
+    "demo": true,
+    "visual": {
+      "accent": "#17171a",
+      "secondary": "#f4f1ea",
+      "type": "shirt"
+    },
+    "status": "inactive",
+    "shippingEnabled": false,
+    "archivedAt": "2026-07-27T00:00:00.000Z",
+    "archiveReason": "Categoria fora da operação comercial atual"
+  },
+  {
+    "id": "p10",
+    "name": "Camiseta Bishop Signal",
+    "slug": "camiseta-bishop-signal",
+    "code": "BSP-CM-002",
+    "category": "camisetas",
+    "description": "Modelagem ampla com gráfico conceitual inspirado na assinatura visual da Bispo Store.",
+    "price": 149.9,
+    "promotionalPrice": 119.9,
+    "images": [
+      "Frente",
+      "Costas",
+      "Detalhe"
+    ],
+    "sizes": [
+      "P",
+      "M",
+      "G",
+      "GG"
+    ],
+    "colors": [
+      "Vermelho",
+      "Preto"
+    ],
+    "stock": 14,
+    "featured": true,
+    "isNew": false,
+    "active": false,
+    "demo": true,
+    "visual": {
+      "accent": "#d9222e",
+      "secondary": "#151518",
+      "type": "shirt"
+    },
+    "status": "inactive",
+    "shippingEnabled": false,
+    "archivedAt": "2026-07-27T00:00:00.000Z",
+    "archiveReason": "Categoria fora da operação comercial atual"
+  },
+  {
+    "id": "p11",
+    "name": "Camiseta Off Grid",
+    "slug": "camiseta-off-grid",
+    "code": "BSP-CM-003",
+    "category": "camisetas",
+    "description": "Base clara, estampa técnica e caimento confortável para looks de alto contraste.",
+    "price": 139.9,
+    "images": [
+      "Frente",
+      "Costas",
+      "Detalhe"
+    ],
+    "sizes": [
+      "P",
+      "M",
+      "G",
+      "GG",
+      "XGG"
+    ],
+    "colors": [
+      "Off-white",
+      "Cinza"
+    ],
+    "stock": 11,
+    "featured": false,
+    "isNew": true,
+    "active": false,
+    "demo": true,
+    "visual": {
+      "accent": "#eae5da",
+      "secondary": "#64666b",
+      "type": "shirt"
+    },
+    "status": "inactive",
+    "shippingEnabled": false,
+    "archivedAt": "2026-07-27T00:00:00.000Z",
+    "archiveReason": "Categoria fora da operação comercial atual"
+  },
+  {
+    "id": "p12",
+    "name": "Camiseta Core Type",
+    "slug": "camiseta-core-type",
+    "code": "BSP-CM-004",
+    "category": "camisetas",
+    "description": "Peça essencial com tipografia frontal discreta e construção pensada para sobreposições.",
+    "price": 119.9,
+    "images": [
+      "Frente",
+      "Costas",
+      "Detalhe"
+    ],
+    "sizes": [
+      "P",
+      "M",
+      "G",
+      "GG"
+    ],
+    "colors": [
+      "Chumbo",
+      "Preto"
+    ],
+    "stock": 19,
+    "featured": false,
+    "isNew": false,
+    "active": false,
+    "demo": true,
+    "visual": {
+      "accent": "#4a4b50",
+      "secondary": "#141417",
+      "type": "shirt"
+    },
+    "status": "inactive",
+    "shippingEnabled": false,
+    "archivedAt": "2026-07-27T00:00:00.000Z",
+    "archiveReason": "Categoria fora da operação comercial atual"
+  },
+  {
+    "id": "p13",
+    "name": "Moletom Heavy Mark",
+    "slug": "moletom-heavy-mark",
+    "code": "BSP-ML-001",
+    "category": "moletons",
+    "description": "Moletom pesado com capuz estruturado, bolso canguru e detalhe gráfico de demonstração.",
+    "price": 299.9,
+    "promotionalPrice": 259.9,
+    "images": [
+      "Frente",
+      "Costas",
+      "Detalhe"
+    ],
+    "sizes": [
+      "P",
+      "M",
+      "G",
+      "GG"
+    ],
+    "colors": [
+      "Preto",
+      "Vermelho"
+    ],
+    "stock": 8,
+    "featured": true,
+    "isNew": true,
+    "active": false,
+    "demo": true,
+    "visual": {
+      "accent": "#19191c",
+      "secondary": "#df2530",
+      "type": "hoodie"
+    },
+    "status": "inactive",
+    "shippingEnabled": false,
+    "archivedAt": "2026-07-27T00:00:00.000Z",
+    "archiveReason": "Categoria fora da operação comercial atual"
+  },
+  {
+    "id": "p14",
+    "name": "Moletom Urban Layer",
+    "slug": "moletom-urban-layer",
+    "code": "BSP-ML-002",
+    "category": "moletons",
+    "description": "Camada urbana versátil, interior macio e modelagem relaxada para dias mais frios.",
+    "price": 279.9,
+    "images": [
+      "Frente",
+      "Costas",
+      "Detalhe"
+    ],
+    "sizes": [
+      "P",
+      "M",
+      "G",
+      "GG"
+    ],
+    "colors": [
+      "Mescla",
+      "Preto"
+    ],
+    "stock": 6,
+    "featured": false,
+    "isNew": false,
+    "active": false,
+    "demo": true,
+    "visual": {
+      "accent": "#7e8084",
+      "secondary": "#222226",
+      "type": "hoodie"
+    },
+    "status": "inactive",
+    "shippingEnabled": false,
+    "archivedAt": "2026-07-27T00:00:00.000Z",
+    "archiveReason": "Categoria fora da operação comercial atual"
+  },
+  {
+    "id": "p15",
+    "name": "Calça Cargo Sector",
+    "slug": "calca-cargo-sector",
+    "code": "BSP-CL-001",
+    "category": "calcas",
+    "description": "Calça cargo utilitária com múltiplos bolsos e ajuste relaxado de inspiração street.",
+    "price": 249.9,
+    "images": [
+      "Frente",
+      "Costas",
+      "Detalhe"
+    ],
+    "sizes": [
+      "38",
+      "40",
+      "42",
+      "44",
+      "46"
+    ],
+    "colors": [
+      "Preto",
+      "Verde militar"
+    ],
+    "stock": 10,
+    "featured": true,
+    "isNew": true,
+    "active": true,
+    "demo": true,
+    "visual": {
+      "accent": "#202023",
+      "secondary": "#53584b",
+      "type": "bottom"
+    },
+    "weightKg": 0.6,
+    "lengthCm": 30,
+    "widthCm": 25,
+    "heightCm": 5,
+    "packagingCategory": "pacote-roupa",
+    "shippingEnabled": true
+  },
+  {
+    "id": "p16",
+    "name": "Short Utility Block",
+    "slug": "short-utility-block",
+    "code": "BSP-SH-001",
+    "category": "calcas-shorts",
+    "description": "Short de sarja com bolsos funcionais, acabamento limpo e etiqueta conceitual da coleção.",
+    "price": 179.9,
+    "promotionalPrice": 149.9,
+    "images": [
+      "Frente",
+      "Costas",
+      "Detalhe"
+    ],
+    "sizes": [
+      "38",
+      "40",
+      "42",
+      "44"
+    ],
+    "colors": [
+      "Areia",
+      "Preto"
+    ],
+    "stock": 3,
+    "featured": false,
+    "isNew": false,
+    "active": false,
+    "demo": true,
+    "visual": {
+      "accent": "#c4b69d",
+      "secondary": "#242428",
+      "type": "bottom"
+    },
+    "status": "inactive",
+    "shippingEnabled": false,
+    "archivedAt": "2026-07-27T00:00:00.000Z",
+    "archiveReason": "Categoria fora da operação comercial atual"
+  }
+]

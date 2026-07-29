@@ -1,0 +1,9 @@
+{
+  "storeName": "Bispo Store",
+  "ownerName": "Diogo",
+  "originAddress": "Avenida São Miguel, 5046",
+  "originPostalCode": "03870-100",
+  "whatsapp": "5511972938269",
+  "commercialEmail": "bispostorebr@hotmail.com",
+  "cnpjEnvVar": "STORE_CNPJ"
+}

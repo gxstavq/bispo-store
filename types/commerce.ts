@@ -1,0 +1,189 @@
+export type SellableProductCategory = "tenis" | "calcas" | "conjuntos";
+export type ArchivedProductCategory = "camisetas" | "moletons" | "calcas-shorts";
+export type ProductCategory = SellableProductCategory | ArchivedProductCategory;
+export type ProductStatus = "active" | "inactive" | "draft" | "archived";
+export type PackagingCategory = "caixa-tenis" | "pacote-roupa" | "caixa-conjunto" | "a-definir";
+
+export interface Product {
+  id: string;
+  name: string;
+  slug: string;
+  code: string;
+  category: ProductCategory;
+  description: string;
+  price: number;
+  promotionalPrice?: number;
+  images: string[];
+  thumbnails?: string[];
+  coverImage?: string;
+  imageType?: "photo" | "placeholder";
+  sizes: string[];
+  colors: string[];
+  stock: number;
+  weightKg?: number;
+  lengthCm?: number;
+  widthCm?: number;
+  heightCm?: number;
+  packagingCategory?: PackagingCategory;
+  shippingEnabled?: boolean;
+  featured: boolean;
+  isNew: boolean;
+  active: boolean;
+  status?: ProductStatus;
+  needsReview?: boolean;
+  archivedAt?: string;
+  archiveReason?: string;
+  demo: true;
+  visual: {
+    accent: string;
+    secondary: string;
+    type: "shoe" | "shirt" | "hoodie" | "bottom";
+  };
+}
+
+export interface CartItem {
+  productId: string;
+  size: string;
+  color: string;
+  quantity: number;
+  productName?: string;
+  productCode?: string;
+  unitPrice?: number;
+}
+
+export type DeliveryChoice = "local_delivery_review" | "shipping_quote";
+
+export type OrderStatus =
+  | "awaiting_local_delivery_review"
+  | "local_delivery_approved"
+  | "local_delivery_rejected"
+  | "awaiting_shipping_selection"
+  | "awaiting_payment"
+  | "paid"
+  | "preparing"
+  | "shipped"
+  | "delivered"
+  | "cancelled";
+
+export type LocalDeliveryReviewStatus = "not_requested" | "pending" | "approved" | "rejected";
+export type PaymentStatus =
+  | "not_generated"
+  | "awaiting_payment"
+  | "paid"
+  | "declined"
+  | "expired"
+  | "cancelled";
+export type ShippingStatus =
+  | "awaiting_review"
+  | "awaiting_selection"
+  | "free_approved"
+  | "selected"
+  | "shipped"
+  | "delivered"
+  | "cancelled";
+
+export interface CheckoutData {
+  fullName: string;
+  whatsapp: string;
+  email: string;
+  cep: string;
+  street: string;
+  number: string;
+  complement: string;
+  district: string;
+  city: string;
+  state: "SP";
+  reference: string;
+  notes: string;
+  deliveryChoice: DeliveryChoice;
+  selectedShippingQuoteId?: string;
+}
+
+export interface ShippingQuote {
+  id: string;
+  carrier: string;
+  serviceId: string;
+  service: string;
+  amount: number;
+  deliveryDays: number;
+  expiresAt: string;
+}
+
+export interface PaymentEventView {
+  id: string;
+  status?: string;
+  verified: boolean;
+  date: string;
+  error?: string;
+}
+
+export interface OrderPaymentView {
+  checkoutId?: string;
+  paymentUrl?: string;
+  method?: string;
+  providerStatus?: string;
+  createdAt?: string;
+  expiresAt?: string;
+  events: PaymentEventView[];
+}
+
+export interface ShipmentLabelView {
+  providerOrderId?: string;
+  carrier?: string;
+  service?: string;
+  status: string;
+  trackingCode?: string;
+  printUrl?: string;
+  lastError?: string;
+}
+
+export interface OrderHistoryEntry {
+  date: string;
+  label: string;
+  actor?: string;
+  note?: string;
+}
+
+export interface LocalDeliveryReview {
+  status: LocalDeliveryReviewStatus;
+  note?: string;
+  decidedBy?: string;
+  decidedAt?: string;
+}
+
+export interface StoreOrder {
+  id: string;
+  createdAt: string;
+  createdAtIso?: string;
+  customer: CheckoutData;
+  items: CartItem[];
+  subtotal: number;
+  deliveryChoice: DeliveryChoice;
+  shippingAmount: number | null;
+  shippingStatus: ShippingStatus;
+  status: OrderStatus;
+  paymentStatus: PaymentStatus;
+  paymentReference?: string;
+  payment?: OrderPaymentView;
+  shippingQuote?: ShippingQuote;
+  shipmentLabel?: ShipmentLabelView;
+  localDeliveryReview: LocalDeliveryReview;
+  history: OrderHistoryEntry[];
+}
+
+export interface StoreSettings {
+  storeName: string;
+  ownerName: string;
+  originAddress: string;
+  originPostalCode: string;
+  whatsapp: string;
+  commercialEmail: string;
+  stateRegistration: string;
+  economicActivityCode: string;
+  fiscalNotes: string;
+  originDistrict: string;
+  originCity: string;
+  originState: string;
+  senderPhone: string;
+  cnpjEnvVar: "STORE_CNPJ";
+}
