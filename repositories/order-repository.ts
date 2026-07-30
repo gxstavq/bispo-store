@@ -23,7 +23,7 @@ const orderSelect = `
   payments(
     id, status, external_reference, checkout_id, payment_url, payment_method,
     raw_status, expires_at, created_at,
-    payment_events(id, provider_status, verified, verification_error, received_at)
+    payment_events(id, event_type, provider_status, verified, verification_error, received_at)
   ),
   selected_quote:shipping_quotes!orders_selected_shipping_quote_id_fkey(
     id, carrier_name, service_id, service_name, amount, delivery_days, expires_at
@@ -89,6 +89,7 @@ type OrderRecord = {
     created_at: string;
     payment_events: Array<{
       id: string;
+      event_type: string;
       provider_status: string | null;
       verified: boolean;
       verification_error: string | null;
@@ -223,6 +224,7 @@ function mapOrder(row: OrderRecord): StoreOrder {
         .sort((a, b) => b.received_at.localeCompare(a.received_at))
         .map((event) => ({
           id: event.id,
+          type: event.event_type,
           status: event.provider_status ?? undefined,
           verified: event.verified,
           date: formatDate(event.received_at),

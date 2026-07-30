@@ -2,13 +2,18 @@ import assert from "node:assert/strict";
 import { readFileSync } from "node:fs";
 import { join } from "node:path";
 import test from "node:test";
-import { normalizePagBankStatus, pagBankCheckoutTotalCents } from "../services/pagbank/status.ts";
+import {
+  normalizePagBankStatus,
+  pagBankCheckoutTotalCents,
+  pagBankTransactionSummary,
+} from "../services/pagbank/status.ts";
 import { shouldRefreshMelhorEnvioToken } from "../services/melhor-envio/token-policy.ts";
 
 const root = process.cwd();
 const migration = readFileSync(join(root, "supabase", "migrations", "20260727175000_sandbox_integrations.sql"), "utf8");
 const orderApi = readFileSync(join(root, "app", "api", "orders", "[id]", "route.ts"), "utf8");
 const webhook = readFileSync(join(root, "app", "api", "webhooks", "pagbank", "route.ts"), "utf8");
+const reconciliation = readFileSync(join(root, "services", "pagbank", "reconciliation.ts"), "utf8");
 const quoteService = readFileSync(join(root, "services", "shipping", "quote-service.ts"), "utf8");
 const paymentService = readFileSync(join(root, "services", "pagbank", "payment-service.ts"), "utf8");
 const labelService = readFileSync(join(root, "services", "melhor-envio", "label-service.ts"), "utf8");
@@ -45,11 +50,33 @@ test("total consultado inclui produtos e frete", () => {
   }), 22500);
 });
 
+test("reconciliação extrai cobrança, método e datas sem dados pessoais", () => {
+  assert.deepEqual(pagBankTransactionSummary({
+    charges: [{
+      id: "CHAR_TESTE",
+      status: "PAID",
+      created_at: "2026-07-30T13:00:00-03:00",
+      updated_at: "2026-07-30T13:02:00-03:00",
+      paid_at: "2026-07-30T13:01:00-03:00",
+      payment_method: { type: "PIX" },
+    }],
+  }), {
+    id: "CHAR_TESTE",
+    status: "PAID",
+    method: "PIX",
+    createdAt: "2026-07-30T13:00:00-03:00",
+    updatedAt: "2026-07-30T13:02:00-03:00",
+    paidAt: "2026-07-30T13:01:00-03:00",
+  });
+});
+
 test("webhook duplicado é idempotente e consulta o PagBank antes de confirmar", () => {
   assert.match(migration, /payment_events_provider_event_uidx/);
-  assert.match(webhook, /eventError\?\.code === "23505"/);
-  assert.match(webhook, /consultPagBankCheckout/);
-  assert.match(webhook, /confirm_pagbank_payment/);
+  assert.match(reconciliation, /error\?\.code !== "23505"/);
+  assert.match(reconciliation, /consultPagBankCheckout/);
+  assert.match(reconciliation, /confirm_pagbank_payment/);
+  assert.match(reconciliation, /payment_reconciliation_started/);
+  assert.match(webhook, /reconcilePagBankPayment/);
   assert.match(migration, /stock_deducted_at is null/);
 });
 

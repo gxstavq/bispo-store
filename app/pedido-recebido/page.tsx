@@ -16,6 +16,7 @@ import {
   findOrderForVerifiedReturn,
   orderRepository,
 } from "@/repositories/order-repository";
+import { reconcilePagBankPayment } from "@/services/pagbank/reconciliation";
 
 export const metadata: Metadata = { title: "Pedido recebido", robots: { index: false } };
 export const dynamic = "force-dynamic";
@@ -27,9 +28,16 @@ export default async function OrderReceivedPage({ searchParams }: {
   if (!isValidOrderNumber(pedido)) notFound();
   const supabase = await createSupabaseServerClient();
   const { data: { user } } = await supabase.auth.getUser();
-  const signedReturn = !user && verifyOrderReturnToken(pedido, retorno);
+  const signedReturn = verifyOrderReturnToken(pedido, retorno);
   if (!user && !signedReturn) {
     redirect(`/entrar?next=${encodeURIComponent(`/acompanhar-pedido?pedido=${pedido}`)}`);
+  }
+  if (signedReturn) {
+    await reconcilePagBankPayment({
+      orderNumber: pedido,
+      source: "signed_return",
+      applyNonPaid: false,
+    }).catch(() => null);
   }
   const order = user
     ? await orderRepository.findById(pedido)

@@ -47,6 +47,10 @@ const paymentConfirmationRollback = readFileSync(
   "utf8",
 );
 const webhook = readFileSync(join(root, "app", "api", "webhooks", "pagbank", "route.ts"), "utf8");
+const reconciliation = readFileSync(
+  join(root, "services", "pagbank", "reconciliation.ts"),
+  "utf8",
+);
 const returnPage = readFileSync(join(root, "app", "pedido-recebido", "page.tsx"), "utf8");
 const paymentService = readFileSync(join(root, "services", "pagbank", "payment-service.ts"), "utf8");
 const reservationService = readFileSync(
@@ -133,6 +137,9 @@ test("página de retorno não considera o redirecionamento uma aprovação", () 
   assert.match(returnPage, /expired:/);
   assert.match(returnPage, /isValidOrderNumber\(pedido\)/);
   assert.match(returnPage, /verifyOrderReturnToken\(pedido, retorno\)/);
+  assert.match(returnPage, /reconcilePagBankPayment/);
+  assert.match(returnPage, /source: "signed_return"/);
+  assert.match(returnPage, /applyNonPaid: false/);
   assert.match(returnPage, /findOrderForVerifiedReturn\(pedido\)/);
   assert.doesNotMatch(returnPage, /if \(!user\) redirect/);
 });
@@ -158,12 +165,12 @@ test("webhook usa checkout_id explícito e ignora id transacional", () => {
 });
 
 test("webhook rejeita ambiguidade, referência e valor divergentes antes do evento", () => {
-  assert.match(webhook, /matchingPayments\.length !== 1/);
-  assert.match(webhook, /webhookReferenceId: identifiers\.referenceId/);
-  assert.match(webhook, /expectedCheckoutId: payment\.checkout_id/);
-  assert.match(webhook, /consultedPagBankCheckoutMatchesPayment/);
-  const divergenceCheck = webhook.indexOf("consultedPagBankCheckoutMatchesPayment({");
-  const eventInsert = webhook.indexOf('.from("payment_events").insert');
+  assert.match(reconciliation, /data\.length !== 1/);
+  assert.match(webhook, /orderNumber: identifiers\.referenceId/);
+  assert.match(reconciliation, /expectedCheckoutId: payment\.checkout_id!/);
+  assert.match(reconciliation, /consultedPagBankCheckoutMatchesPayment/);
+  const divergenceCheck = reconciliation.indexOf("consultedPagBankCheckoutMatchesPayment({");
+  const eventInsert = reconciliation.indexOf("beginOfficialStateEvent({");
   assert.ok(divergenceCheck >= 0 && eventInsert > divergenceCheck);
   assert.equal(storedPagBankPaymentMatchesOrder({
     paymentAmount: 120,
@@ -179,6 +186,16 @@ test("webhook rejeita ambiguidade, referência e valor divergentes antes do even
     expectedOrderNumber: "BSP-12AB34CD",
     expectedAmount: 120,
   }), false);
+});
+
+test("webhook e reconciliação compartilham uma trava idempotente antes da RPC", () => {
+  const eventClaim = reconciliation.indexOf("beginOfficialStateEvent({");
+  const confirmation = reconciliation.indexOf('.rpc("confirm_pagbank_payment"');
+  assert.ok(eventClaim >= 0 && confirmation > eventClaim);
+  assert.match(reconciliation, /provider_event_id: input\.providerEventId/);
+  assert.match(reconciliation, /error\?\.code !== "23505"/);
+  assert.match(reconciliation, /if \(event\.duplicate\)/);
+  assert.match(reconciliation, /payment\.status === "paid" && Boolean\(order\.stock_deducted_at\)/);
 });
 
 test("cliques repetidos e requisições simultâneas reutilizam a mesma chave", async () => {

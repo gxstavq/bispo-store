@@ -112,6 +112,7 @@ export interface ShippingQuote {
 
 export interface PaymentEventView {
   id: string;
+  type?: string;
   status?: string;
   verified: boolean;
   date: string;

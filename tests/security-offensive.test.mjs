@@ -42,27 +42,55 @@ test("assinatura PagBank usa SHA-256 do token, hífen e corpo bruto", () => {
 test("webhook rejeita assinatura antes de consultar banco ou PagBank", () => {
   const webhook = source("app", "api", "webhooks", "pagbank", "route.ts");
   const verification = webhook.indexOf("verifyPagBankWebhookSignature");
-  const database = webhook.indexOf("createSupabaseServiceClient()");
-  const consultation = webhook.indexOf("consultPagBankCheckout(payment.checkout_id)");
+  const reconciliation = webhook.indexOf("reconcilePagBankPayment({");
   assert.ok(verification > 0);
-  assert.ok(database > verification);
-  assert.ok(consultation > verification);
+  assert.ok(reconciliation > verification);
   assert.match(webhook, /x-authenticity-token/i);
   assert.match(webhook, /status:\s*401/);
 });
 
-test("diagnóstico PagBank é temporário, assinado e exclusivo do Deploy Preview", () => {
+test("diagnóstico PagBank é Sandbox, server-side e exclusivo de administradores", () => {
   const route = source(
     "app", "api", "integrations", "pagbank", "checkouts", "[id]", "status", "route.ts",
   );
-  const diagnostic = source("lib", "integrations", "pagbank-diagnostic.ts");
-  assert.match(route, /process\.env\.CONTEXT !== "deploy-preview"/);
-  assert.match(route, /verifyPagBankDiagnosticToken/);
-  assert.match(route, /consultPagBankCheckout/);
+  const reconciliation = source("services", "pagbank", "reconciliation.ts");
+  const config = source("lib", "integrations", "config.ts");
+  assert.match(route, /getAdminSession/);
+  assert.match(route, /assertSameOrigin/);
+  assert.match(route, /pagbank-admin-reconciliation/);
+  assert.match(route, /reconcilePagBankPayment/);
   assert.match(route, /Cache-Control": "no-store"/);
-  assert.doesNotMatch(route, /Authorization|PAGBANK_TOKEN/);
-  assert.match(diagnostic, /MAX_AGE_MS = 5 \* 60 \* 1000/);
-  assert.match(diagnostic, /verifyCapabilityToken/);
+  assert.doesNotMatch(route, /process\.env\.CONTEXT|Authorization|PAGBANK_TOKEN/);
+  assert.match(reconciliation, /consultPagBankCheckout/);
+  assert.match(config, /baseUrl: "https:\/\/sandbox\.api\.pagseguro\.com"/);
+  assert.match(config, /sandboxOnly\("PAGBANK_ENV"\)/);
+  const panel = source("components", "order-status-select.tsx");
+  assert.match(panel, /Verificar pagamento no PagBank/);
+  assert.match(panel, /\/api\/integrations\/pagbank\/checkouts\//);
+});
+
+test("webhook registra somente metadados seguros antes da validação", () => {
+  const webhook = source("app", "api", "webhooks", "pagbank", "route.ts");
+  const reconciliation = source("services", "pagbank", "reconciliation.ts");
+  assert.match(webhook, /pagbank_webhook_observation/);
+  assert.match(webhook, /received_at/);
+  assert.match(webhook, /declared_body_bytes/);
+  assert.match(webhook, /signature_present/);
+  assert.match(webhook, /body_sha256/);
+  assert.match(webhook, /randomUUID\(\)/);
+  assert.match(webhook, /invalid_signature/);
+  assert.doesNotMatch(webhook, /console\.(?:info|warn)\(rawBody/);
+  assert.doesNotMatch(webhook, /authorization:/i);
+  assert.doesNotMatch(reconciliation, /customer|card_number|security_code|authorization/i);
+});
+
+test("webhook não depende de CSRF, sessão ou rate limiting do navegador", () => {
+  const webhook = source("app", "api", "webhooks", "pagbank", "route.ts");
+  const proxy = source("proxy.ts");
+  assert.doesNotMatch(webhook, /assertSameOrigin|requireAdmin|enforceRateLimit/);
+  assert.match(webhook, /verifyPagBankWebhookSignature/);
+  assert.match(proxy, /NextResponse\.next/);
+  assert.doesNotMatch(proxy, /api\/webhooks\/pagbank|redirect\(/);
 });
 
 test("mutações autenticadas têm origem e payload limitados", () => {

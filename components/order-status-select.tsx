@@ -1,6 +1,6 @@
 "use client";
 
-import { Check, CircleX, CreditCard, Save, Truck } from "lucide-react";
+import { Check, CircleX, CreditCard, RefreshCw, Save, Truck } from "lucide-react";
 import { useState } from "react";
 import {
   localReviewLabels,
@@ -78,6 +78,39 @@ export function OrderManagementPanel({
     if (result.printUrl) window.open(result.printUrl, "_blank", "noopener,noreferrer");
   }
 
+  async function verifyPagBankPayment() {
+    if (!order.payment?.checkoutId) return;
+    setSaving(true);
+    setMessage("");
+    const response = await fetch(
+      `/api/integrations/pagbank/checkouts/${encodeURIComponent(order.payment.checkoutId)}/status`,
+      { method: "POST" },
+    );
+    const result = await response.json() as {
+      error?: string;
+      paymentStatus?: string;
+      method?: string | null;
+      applied?: boolean;
+      duplicate?: boolean;
+    };
+    setSaving(false);
+    if (!response.ok) {
+      setMessage(result.error ?? "Não foi possível consultar o PagBank Sandbox.");
+      return;
+    }
+    const outcome = result.applied
+      ? "Pagamento confirmado e reconciliado pela API oficial."
+      : result.duplicate
+        ? "Este estado oficial já havia sido processado."
+        : "Status consultado sem alteração do pedido.";
+    setMessage(
+      `${outcome} Status: ${result.paymentStatus ?? "não informado"}`
+      + `${result.method ? ` · ${result.method}` : ""}`,
+    );
+    const refreshed = await fetch(`/api/orders/${order.id}`, { cache: "no-store" });
+    if (refreshed.ok) setOrder(await refreshed.json() as StoreOrder);
+  }
+
   const pendingReview = order.localDeliveryReview.status === "pending";
   const rejected = order.localDeliveryReview.status === "rejected";
   const approved = order.localDeliveryReview.status === "approved";
@@ -114,6 +147,16 @@ export function OrderManagementPanel({
         ID: {order.payment.checkoutId}<br />
         <a href={order.payment.paymentUrl} target="_blank" rel="noreferrer">Abrir link</a>
         {" · "}<a href={`https://wa.me/${order.customer.whatsapp.replace(/\D/g, "")}?text=${encodeURIComponent(`Olá! Segue o link de pagamento Sandbox do pedido ${order.id}: ${order.payment.paymentUrl}`)}`} target="_blank" rel="noreferrer">Enviar pelo WhatsApp</a>
+        <div className="decision-actions">
+          <button
+            type="button"
+            className="button button--dark"
+            disabled={saving}
+            onClick={() => void verifyPagBankPayment()}
+          >
+            <RefreshCw size={17} /> Verificar pagamento no PagBank
+          </button>
+        </div>
       </div>}
       {labelPurchaseEnabled ? <div className="admin-form-grid decision-fields">
         <label className="span-2">Chave da nota fiscal (44 dígitos)<input value={invoiceKey} onChange={(event) => setInvoiceKey(event.target.value)} /></label>

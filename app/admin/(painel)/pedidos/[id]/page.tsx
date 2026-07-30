@@ -64,7 +64,7 @@ export default async function OrderDetailsPage({ params }: { params: Promise<{ i
               <div><span>Total</span><strong>{formatCurrency(total)}</strong></div>
             </div>
             {order.payment?.events?.length ? <div className="order-history">
-              {order.payment.events.map((event) => <div key={event.id}><i /><div><strong>{event.verified ? "Notificação verificada" : "Notificação não confirmada"}{event.status ? ` · ${event.status}` : ""}</strong><span>{event.date}</span>{event.error && <p>{event.error}</p>}</div></div>)}
+              {order.payment.events.map((event) => <div key={event.id}><i /><div><strong>{event.type?.includes("reconciliation") ? "Reconciliação direta verificada" : event.verified ? "Notificação verificada" : "Notificação não confirmada"}{event.status ? ` · ${event.status}` : ""}</strong><span>{event.date}</span>{event.error && <p>{event.error}</p>}</div></div>)}
             </div> : null}
           </section>
           <section className="admin-panel">

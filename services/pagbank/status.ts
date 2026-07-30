@@ -23,6 +23,26 @@ function nestedString(value: unknown, paths: string[][]) {
   return undefined;
 }
 
+export function pagBankTransactionSummary(checkout: PagBankCheckoutStatusInput) {
+  const transaction = checkout.payments?.[0] ?? checkout.charges?.[0];
+  return {
+    id: nestedString(transaction, [["id"], ["transaction_id"]]),
+    status: nestedString(transaction, [["status"]]),
+    method: nestedString(transaction, [
+      ["payment_method", "type"],
+      ["payment_method"],
+      ["method", "type"],
+    ]),
+    createdAt: nestedString(transaction, [["created_at"]]),
+    updatedAt: nestedString(transaction, [["updated_at"]]),
+    paidAt: nestedString(transaction, [
+      ["paid_at"],
+      ["paid_date"],
+      ["payment_response", "paid_at"],
+    ]),
+  };
+}
+
 export function normalizePagBankStatus(checkout: PagBankCheckoutStatusInput) {
   const transaction = checkout.payments?.[0] ?? checkout.charges?.[0];
   const rawStatus = String(nestedString(transaction, [["status"]]) ?? checkout.status ?? "UNKNOWN").toUpperCase();
