@@ -4,12 +4,19 @@ import { createHash } from "node:crypto";
 import { createSupabaseServiceClient } from "@/lib/supabase/admin";
 import { recordIntegrationError } from "@/services/integration-errors";
 import {
+  consultPagBankCharge,
   consultPagBankCheckout,
+  consultPagBankOrder,
   normalizePagBankStatus,
   pagBankCheckoutTotalCents,
+  type PagBankCharge,
   type PagBankCheckout,
 } from "@/services/pagbank/client";
-import { consultedPagBankCheckoutMatchesPayment } from "@/services/pagbank/consistency";
+import {
+  consultedPagBankCheckoutMatchesPayment,
+  consultedPagBankOrderMatchesPayment,
+  pagBankChargeAmountCents,
+} from "@/services/pagbank/consistency";
 import { pagBankTransactionSummary } from "@/services/pagbank/status";
 
 export type PagBankReconciliationSource =
@@ -71,6 +78,21 @@ function safeEventId(checkout: PagBankCheckout) {
       checkout.id,
       transaction.id ?? "checkout",
       transaction.status ?? checkout.status ?? "UNKNOWN",
+    ].join("\0"))
+    .digest("hex");
+}
+
+function safeOrderEventId(input: {
+  providerOrderId: string;
+  providerChargeId: string;
+  rawStatus: string;
+}) {
+  return createHash("sha256")
+    .update([
+      "pagbank-order-confirmed-state-v1",
+      input.providerOrderId,
+      input.providerChargeId,
+      input.rawStatus,
     ].join("\0"))
     .digest("hex");
 }
@@ -146,6 +168,8 @@ async function beginOfficialStateEvent(input: {
   source: PagBankReconciliationSource;
   rawStatus: string;
   transactionId?: string;
+  providerOrderId?: string;
+  providerChargeId?: string;
 }) {
   const supabase = createSupabaseServiceClient();
   const eventPayload = {
@@ -153,6 +177,8 @@ async function beginOfficialStateEvent(input: {
     source: input.source,
     consulted_status: input.rawStatus,
     transaction_id: input.transactionId ?? null,
+    provider_order_id: input.providerOrderId ?? null,
+    provider_charge_id: input.providerChargeId ?? null,
   };
   const insertEvent = () => supabase
     .from("payment_events")
@@ -242,6 +268,8 @@ async function finishOfficialStateEvent(input: {
   rawStatus: string;
   method?: string;
   transactionId?: string;
+  providerOrderId?: string;
+  providerChargeId?: string;
   applied: boolean;
 }) {
   const supabase = createSupabaseServiceClient();
@@ -264,6 +292,8 @@ async function finishOfficialStateEvent(input: {
         consulted_status: input.rawStatus,
         payment_method: input.method ?? null,
         transaction_id: input.transactionId ?? null,
+        provider_order_id: input.providerOrderId ?? null,
+        provider_charge_id: input.providerChargeId ?? null,
         applied: input.applied,
       },
     })
@@ -413,6 +443,208 @@ export async function reconcilePagBankPayment(input: {
     transactionUpdatedAt: transaction.updatedAt ?? null,
     paidAt: transaction.paidAt ?? null,
     totalCents,
+    applied: shouldApply && !alreadyCompleted,
+    duplicate: false,
+    stockDeducted: confirmation?.stock_deducted
+      ?? Boolean(current.order.stock_deducted_at),
+    stockDeductedAt: current.order.stock_deducted_at,
+    stockError: confirmation?.stock_error ?? current.order.stock_deduction_error,
+    internalPaymentStatus: current.order.payment_status,
+    confirmedAt: current.payment.confirmed_at,
+  };
+}
+
+function exactlyOneCharge(charges: PagBankCharge[], chargeId?: string) {
+  if (chargeId) {
+    const matching = charges.filter((charge) => charge.id === chargeId);
+    if (matching.length === 1) return matching[0];
+    throw new PagBankReconciliationError(
+      "A cobrança informada não pertence ao pedido consultado.",
+      409,
+      "official_charge_mismatch",
+    );
+  }
+  if (charges.length === 1) return charges[0];
+  throw new PagBankReconciliationError(
+    "O pedido PagBank não possui uma cobrança inequívoca.",
+    409,
+    charges.length ? "ambiguous_official_charge" : "official_charge_not_found",
+  );
+}
+
+export async function reconcilePagBankOrderPayment(input: {
+  providerOrderId: string;
+  chargeId?: string;
+  orderNumber: string;
+  source: PagBankReconciliationSource;
+  applyNonPaid?: boolean;
+}) {
+  if (!input.providerOrderId.startsWith("ORDE_")) {
+    throw new PagBankReconciliationError(
+      "Identificador de pedido PagBank inválido.",
+      400,
+      "invalid_provider_order_id",
+    );
+  }
+  if (input.chargeId && !input.chargeId.startsWith("CHAR_")) {
+    throw new PagBankReconciliationError(
+      "Identificador de cobrança PagBank inválido.",
+      400,
+      "invalid_provider_charge_id",
+    );
+  }
+
+  const { payment, order } = await resolveStoredPayment({
+    orderNumber: input.orderNumber,
+  });
+  const providerOrder = await consultPagBankOrder(input.providerOrderId);
+  const embeddedCharge = exactlyOneCharge(
+    providerOrder.charges ?? [],
+    input.chargeId,
+  );
+  const charge = input.chargeId
+    ? await consultPagBankCharge(input.chargeId)
+    : embeddedCharge;
+  const chargeAmountCents = pagBankChargeAmountCents(charge);
+  if (!consultedPagBankOrderMatchesPayment({
+    providerOrderId: providerOrder.id,
+    referenceId: providerOrder.reference_id,
+    chargeId: charge.id,
+    chargeAmountCents,
+    expectedProviderOrderId: input.providerOrderId,
+    expectedChargeId: embeddedCharge.id,
+    expectedOrderNumber: order.order_number,
+    expectedAmount: payment.amount,
+  })) {
+    throw new PagBankReconciliationError(
+      "Pedido, cobrança, referência ou valor divergente.",
+      409,
+      "official_order_mismatch",
+    );
+  }
+
+  const normalized = normalizePagBankStatus({ charges: [charge] });
+  const transaction = pagBankTransactionSummary({ charges: [charge] });
+  const providerEventId = safeOrderEventId({
+    providerOrderId: providerOrder.id,
+    providerChargeId: charge.id,
+    rawStatus: normalized.rawStatus,
+  });
+  const event = await beginOfficialStateEvent({
+    paymentId: payment.id,
+    providerEventId,
+    checkoutId: payment.checkout_id!,
+    providerOrderId: providerOrder.id,
+    providerChargeId: charge.id,
+    source: input.source,
+    rawStatus: normalized.rawStatus,
+    transactionId: charge.id,
+  });
+
+  if (event.duplicate) {
+    const current = await resolveStoredPayment({
+      checkoutId: payment.checkout_id!,
+      orderNumber: order.order_number,
+    });
+    return {
+      checkoutId: payment.checkout_id!,
+      providerOrderId: providerOrder.id,
+      referenceId: providerOrder.reference_id!,
+      paymentStatus: normalized.rawStatus,
+      method: normalized.method ?? transaction.method ?? null,
+      transactionId: charge.id,
+      transactionCreatedAt: charge.created_at ?? null,
+      transactionUpdatedAt: charge.updated_at ?? null,
+      paidAt: charge.paid_at ?? null,
+      totalCents: chargeAmountCents!,
+      applied: false,
+      duplicate: true,
+      stockDeducted: Boolean(current.order.stock_deducted_at),
+      stockDeductedAt: current.order.stock_deducted_at,
+      stockError: current.order.stock_deduction_error,
+      internalPaymentStatus: current.order.payment_status,
+      confirmedAt: current.payment.confirmed_at,
+    };
+  }
+
+  let confirmation: ConfirmationRow | null = null;
+  const shouldApply = normalized.status === "paid" || input.applyNonPaid === true;
+  const alreadyCompleted = payment.status === "paid" && Boolean(order.stock_deducted_at);
+  try {
+    if (shouldApply && !alreadyCompleted) {
+      const supabase = createSupabaseServiceClient();
+      const { data, error } = await supabase.rpc("confirm_pagbank_payment", {
+        target_checkout_id: payment.checkout_id!,
+        confirmed_status: normalized.status,
+        confirmed_method: normalized.method ?? transaction.method ?? null,
+        provider_raw_status: normalized.rawStatus,
+      });
+      if (error) throw new Error(error.message);
+      confirmation = (Array.isArray(data) ? data[0] : data) as ConfirmationRow | null;
+    }
+    await finishOfficialStateEvent({
+      eventId: event.eventId,
+      checkoutId: payment.checkout_id!,
+      providerOrderId: providerOrder.id,
+      providerChargeId: charge.id,
+      source: input.source,
+      rawStatus: normalized.rawStatus,
+      method: normalized.method ?? transaction.method,
+      transactionId: charge.id,
+      applied: shouldApply && !alreadyCompleted,
+    });
+  } catch (error) {
+    const supabase = createSupabaseServiceClient();
+    await supabase
+      .from("payment_events")
+      .delete()
+      .eq("id", event.eventId)
+      .eq("verified", false);
+    await recordIntegrationError({
+      provider: "pagbank",
+      operation: "reconcile_order_payment",
+      orderId: payment.order_id,
+      retryable: true,
+      message: error instanceof Error ? error.message : "Falha desconhecida.",
+      safeContext: {
+        checkoutId: payment.checkout_id,
+        providerOrderId: providerOrder.id,
+        providerChargeId: charge.id,
+        source: input.source,
+      },
+    });
+    throw error;
+  }
+
+  const current = await resolveStoredPayment({
+    checkoutId: payment.checkout_id!,
+    orderNumber: order.order_number,
+  });
+  if (confirmation?.stock_error) {
+    await recordIntegrationError({
+      provider: "pagbank",
+      operation: "stock_deduction",
+      orderId: payment.order_id,
+      retryable: false,
+      message: confirmation.stock_error,
+      safeContext: {
+        checkoutId: payment.checkout_id,
+        providerOrderId: providerOrder.id,
+        providerChargeId: charge.id,
+      },
+    });
+  }
+  return {
+    checkoutId: payment.checkout_id!,
+    providerOrderId: providerOrder.id,
+    referenceId: providerOrder.reference_id!,
+    paymentStatus: normalized.rawStatus,
+    method: normalized.method ?? transaction.method ?? null,
+    transactionId: charge.id,
+    transactionCreatedAt: charge.created_at ?? null,
+    transactionUpdatedAt: charge.updated_at ?? null,
+    paidAt: charge.paid_at ?? null,
+    totalCents: chargeAmountCents!,
     applied: shouldApply && !alreadyCompleted,
     duplicate: false,
     stockDeducted: confirmation?.stock_deducted

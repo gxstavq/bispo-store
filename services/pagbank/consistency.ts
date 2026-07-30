@@ -28,3 +28,29 @@ export function consultedPagBankCheckoutMatchesPayment(input: {
     && input.referenceId === input.expectedOrderNumber
     && input.totalCents === cents(input.expectedAmount);
 }
+
+export function pagBankChargeAmountCents(input: {
+  amount?: {
+    value?: number;
+    summary?: { total?: number };
+  };
+}) {
+  const amount = Number(input.amount?.value ?? input.amount?.summary?.total);
+  return Number.isSafeInteger(amount) && amount >= 0 ? amount : null;
+}
+
+export function consultedPagBankOrderMatchesPayment(input: {
+  providerOrderId: string | undefined;
+  referenceId: string | undefined;
+  chargeId: string | undefined;
+  chargeAmountCents: number | null;
+  expectedProviderOrderId: string;
+  expectedChargeId?: string;
+  expectedOrderNumber: string;
+  expectedAmount: number | string;
+}) {
+  return input.providerOrderId === input.expectedProviderOrderId
+    && input.referenceId === input.expectedOrderNumber
+    && (!input.expectedChargeId || input.chargeId === input.expectedChargeId)
+    && input.chargeAmountCents === cents(input.expectedAmount);
+}

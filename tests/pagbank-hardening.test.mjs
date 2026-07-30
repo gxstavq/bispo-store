@@ -11,6 +11,8 @@ import { normalizePagBankStatus } from "../services/pagbank/status.ts";
 import { pagBankWebhookIdentifiers } from "../services/pagbank/webhook-association.ts";
 import {
   consultedPagBankCheckoutMatchesPayment,
+  consultedPagBankOrderMatchesPayment,
+  pagBankChargeAmountCents,
   storedPagBankPaymentMatchesOrder,
 } from "../services/pagbank/consistency.ts";
 import { pagBankShippingServiceType } from "../services/pagbank/shipping.ts";
@@ -151,17 +153,60 @@ test("webhook usa checkout_id explícito e ignora id transacional", () => {
       reference_id: "BSP-12AB34CD",
       id: "CHAR_TRANSACIONAL_DIFERENTE",
     }),
-    { checkoutId: "CHEC_123", referenceId: "BSP-12AB34CD" },
+    {
+      checkoutId: "CHEC_123",
+      providerOrderId: undefined,
+      chargeId: "CHAR_TRANSACIONAL_DIFERENTE",
+      referenceId: "BSP-12AB34CD",
+    },
   );
   assert.deepEqual(
     pagBankWebhookIdentifiers({
       reference_id: "BSP-12AB34CD",
       id: "ORDE_TRANSACIONAL_DIFERENTE",
+      charges: [{ id: "CHAR_COBRANCA_DIFERENTE", status: "PAID" }],
     }),
-    { checkoutId: undefined, referenceId: "BSP-12AB34CD" },
+    {
+      checkoutId: undefined,
+      providerOrderId: "ORDE_TRANSACIONAL_DIFERENTE",
+      chargeId: "CHAR_COBRANCA_DIFERENTE",
+      referenceId: "BSP-12AB34CD",
+    },
   );
   assert.throws(() => pagBankWebhookIdentifiers({ id: "CHAR_ISOLADO" }));
   assert.doesNotMatch(webhook, /body\.checkout_id \?\? body\.id/);
+});
+
+test("webhook ORDER consulta ORDE e CHAR e valida referência e valor oficiais", () => {
+  assert.match(webhook, /reconcilePagBankOrderPayment/);
+  assert.match(reconciliation, /consultPagBankOrder\(input\.providerOrderId\)/);
+  assert.match(reconciliation, /consultPagBankCharge\(input\.chargeId\)/);
+  assert.match(reconciliation, /consultedPagBankOrderMatchesPayment/);
+  assert.match(reconciliation, /expectedOrderNumber: order\.order_number/);
+  assert.match(reconciliation, /expectedAmount: payment\.amount/);
+  assert.match(reconciliation, /providerOrderId: providerOrder\.id/);
+  assert.match(reconciliation, /providerChargeId: charge\.id/);
+  assert.equal(pagBankChargeAmountCents({ amount: { value: 21650 } }), 21650);
+  assert.equal(consultedPagBankOrderMatchesPayment({
+    providerOrderId: "ORDE_1",
+    referenceId: "BSP-34BADA21",
+    chargeId: "CHAR_1",
+    chargeAmountCents: 21650,
+    expectedProviderOrderId: "ORDE_1",
+    expectedChargeId: "CHAR_1",
+    expectedOrderNumber: "BSP-34BADA21",
+    expectedAmount: 216.5,
+  }), true);
+  assert.equal(consultedPagBankOrderMatchesPayment({
+    providerOrderId: "ORDE_1",
+    referenceId: "BSP-DIVERGENTE",
+    chargeId: "CHAR_1",
+    chargeAmountCents: 21650,
+    expectedProviderOrderId: "ORDE_1",
+    expectedChargeId: "CHAR_1",
+    expectedOrderNumber: "BSP-34BADA21",
+    expectedAmount: 216.5,
+  }), false);
 });
 
 test("webhook rejeita ambiguidade, referência e valor divergentes antes do evento", () => {
@@ -196,6 +241,8 @@ test("webhook e reconciliação compartilham uma trava idempotente antes da RPC"
   assert.match(reconciliation, /error\?\.code !== "23505"/);
   assert.match(reconciliation, /if \(event\.duplicate\)/);
   assert.match(reconciliation, /payment\.status === "paid" && Boolean\(order\.stock_deducted_at\)/);
+  assert.match(webhook, /reconciliation_in_progress/);
+  assert.match(webhook, /duplicate:\s*true/);
 });
 
 test("cliques repetidos e requisições simultâneas reutilizam a mesma chave", async () => {

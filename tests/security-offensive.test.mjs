@@ -5,6 +5,7 @@ import test from "node:test";
 import { safeInternalPath, safeJsonForHtml } from "../lib/security/safe-values.ts";
 import {
   pagBankWebhookSignature,
+  validatePagBankWebhookSignature,
   verifyPagBankWebhookSignature,
 } from "../services/pagbank/webhook-signature.ts";
 
@@ -30,23 +31,42 @@ test("JSON-LD neutraliza fechamento de script e separadores perigosos", () => {
 
 test("assinatura PagBank usa SHA-256 do token, hífen e corpo bruto", () => {
   const token = "token-sandbox-de-teste";
-  const body = '{"id":"CHEC_TEST","status":"PAID"}';
+  const body = Buffer.from(
+    '{\n  "id":"ORDE_TEST",\n  "status":"PAID",\n  "nome":"João"\n}\n',
+    "utf8",
+  );
   const signature = pagBankWebhookSignature(body, token);
   assert.equal(signature.length, 64);
   assert.equal(verifyPagBankWebhookSignature(body, signature, token), true);
-  assert.equal(verifyPagBankWebhookSignature(`${body} `, signature, token), false);
+  const reformatted = Buffer.from(JSON.stringify(JSON.parse(body.toString("utf8"))), "utf8");
+  assert.equal(verifyPagBankWebhookSignature(reformatted, signature, token), false);
   assert.equal(verifyPagBankWebhookSignature(body, null, token), false);
   assert.equal(verifyPagBankWebhookSignature(body, "not-hex", token), false);
+  assert.deepEqual(
+    validatePagBankWebhookSignature(body, signature, token),
+    {
+      valid: true,
+      reason: "valid",
+      receivedLength: 64,
+      calculatedLength: 64,
+    },
+  );
+  assert.equal(
+    validatePagBankWebhookSignature(body, "0".repeat(64), token).reason,
+    "signature_digest_mismatch",
+  );
 });
 
 test("webhook rejeita assinatura antes de consultar banco ou PagBank", () => {
   const webhook = source("app", "api", "webhooks", "pagbank", "route.ts");
-  const verification = webhook.indexOf("verifyPagBankWebhookSignature");
+  const verification = webhook.indexOf("validatePagBankWebhookSignature");
   const reconciliation = webhook.indexOf("reconcilePagBankPayment({");
   assert.ok(verification > 0);
   assert.ok(reconciliation > verification);
   assert.match(webhook, /x-authenticity-token/i);
   assert.match(webhook, /status:\s*401/);
+  assert.match(webhook, /request\.arrayBuffer\(\)/);
+  assert.doesNotMatch(webhook, /request\.json\(\)|JSON\.stringify\(body\)/);
 });
 
 test("diagnóstico PagBank é Sandbox, server-side e exclusivo de administradores", () => {
@@ -76,10 +96,12 @@ test("webhook registra somente metadados seguros antes da validação", () => {
   assert.match(webhook, /received_at/);
   assert.match(webhook, /declared_body_bytes/);
   assert.match(webhook, /signature_present/);
+  assert.match(webhook, /received_signature_length/);
+  assert.match(webhook, /calculated_signature_length/);
   assert.match(webhook, /body_sha256/);
   assert.match(webhook, /randomUUID\(\)/);
-  assert.match(webhook, /invalid_signature/);
-  assert.doesNotMatch(webhook, /console\.(?:info|warn)\(rawBody/);
+  assert.match(webhook, /signatureValidation\.reason/);
+  assert.doesNotMatch(webhook, /console\.(?:info|warn|error)\(rawBody/);
   assert.doesNotMatch(webhook, /authorization:/i);
   assert.doesNotMatch(reconciliation, /customer|card_number|security_code|authorization/i);
 });
@@ -88,7 +110,7 @@ test("webhook não depende de CSRF, sessão ou rate limiting do navegador", () =
   const webhook = source("app", "api", "webhooks", "pagbank", "route.ts");
   const proxy = source("proxy.ts");
   assert.doesNotMatch(webhook, /assertSameOrigin|requireAdmin|enforceRateLimit/);
-  assert.match(webhook, /verifyPagBankWebhookSignature/);
+  assert.match(webhook, /validatePagBankWebhookSignature/);
   assert.match(proxy, /NextResponse\.next/);
   assert.doesNotMatch(proxy, /api\/webhooks\/pagbank|redirect\(/);
 });

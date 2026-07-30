@@ -26,6 +26,36 @@ export type PagBankCheckout = {
   links?: PagBankLink[];
 };
 
+export type PagBankCharge = {
+  id: string;
+  reference_id?: string;
+  status?: string;
+  created_at?: string;
+  updated_at?: string;
+  paid_at?: string;
+  amount?: {
+    value?: number;
+    currency?: string;
+    summary?: {
+      total?: number;
+      paid?: number;
+      refunded?: number;
+    };
+  };
+  payment_method?: {
+    type?: string;
+  } | string;
+  links?: PagBankLink[];
+};
+
+export type PagBankOrder = {
+  id: string;
+  reference_id?: string;
+  created_at?: string;
+  charges?: PagBankCharge[];
+  links?: PagBankLink[];
+};
+
 export type NormalizedPagBankStatus = {
   status: "paid" | "pending" | "in_analysis" | "declined" | "expired" | "cancelled";
   rawStatus: string;
@@ -87,6 +117,28 @@ export function consultPagBankCheckout(
 ) {
   return pagBankRequest<PagBankCheckout>(
     `/checkouts/${encodeURIComponent(checkoutId)}`,
+    { method: "GET" },
+    fetchImpl,
+  );
+}
+
+export function consultPagBankOrder(
+  orderId: string,
+  fetchImpl: FetchImplementation = fetch,
+) {
+  return pagBankRequest<PagBankOrder>(
+    `/orders/${encodeURIComponent(orderId)}`,
+    { method: "GET" },
+    fetchImpl,
+  );
+}
+
+export function consultPagBankCharge(
+  chargeId: string,
+  fetchImpl: FetchImplementation = fetch,
+) {
+  return pagBankRequest<PagBankCharge>(
+    `/charges/${encodeURIComponent(chargeId)}`,
     { method: "GET" },
     fetchImpl,
   );
