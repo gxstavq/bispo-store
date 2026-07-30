@@ -100,13 +100,34 @@ test("painel possui persistência Supabase, Storage e operações CRUD protegida
 
 test("checkout oferece análise local e cotação Melhor Envio Sandbox", () => {
   const checkout = readFileSync(join(root, "components", "checkout-form.tsx"), "utf8");
+  const quoteRoute = readFileSync(
+    join(root, "app", "api", "shipping", "quotes", "route.ts"),
+    "utf8",
+  );
+  const orderRoute = readFileSync(join(root, "app", "api", "orders", "route.ts"), "utf8");
+  const customerSession = readFileSync(
+    join(root, "lib", "auth", "customer-session.ts"),
+    "utf8",
+  );
   assert.match(checkout, /brazilianStates\.map/);
   assert.match(checkout, /Solicitar análise de entrega local grátis em até 5 km/);
   assert.match(checkout, /disabled=\{!localDeliveryCanBeRequested\}/);
   assert.match(checkout, /Calcular frete para meu endereço/);
   assert.match(checkout, /\/api\/shipping\/quotes/);
+  assert.match(checkout, /type="button"[\s\S]*calculateShipping/);
+  assert.doesNotMatch(checkout, /router\.push\("\/entrar\?next=\/checkout"\)/);
   assert.match(checkout, /createPaymentCheckout/);
   assert.match(checkout, /Nada será cobrado ou liberado automaticamente/i);
+  assert.match(quoteRoute, /getOrCreateCheckoutUser/);
+  assert.match(orderRoute, /getOrCreateCheckoutUser/);
+  assert.doesNotMatch(quoteRoute, /loginRequired/);
+  assert.doesNotMatch(orderRoute, /loginRequired/);
+  assert.match(customerSession, /guest-checkout-session/);
+  assert.match(customerSession, /limit:\s*5/);
+  assert.match(customerSession, /createSupabaseServiceClient/);
+  assert.match(customerSession, /signInWithPassword/);
+  assert.match(customerSession, /guest_checkout:\s*true/);
+  assert.doesNotMatch(customerSession, /NEXT_PUBLIC_[A-Z_]*(?:SECRET|SERVICE|TOKEN)/);
 });
 
 test("checkout consulta o CEP no servidor e preenche o endereço automaticamente", () => {

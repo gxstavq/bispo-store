@@ -16,6 +16,7 @@ import {
 } from "@/services/inventory/reservation-service";
 import { recordIntegrationError } from "@/services/integration-errors";
 import { pagBankReturnUrl } from "@/lib/orders/order-number";
+import { createOrderReturnToken } from "@/lib/orders/return-token";
 
 type OrderForPayment = {
   id: string;
@@ -77,7 +78,11 @@ function checkoutPayload(order: OrderForPayment, expirationDate: string) {
   const serviceType = shippingAmount > 0
     ? pagBankShippingServiceType(selectedQuote?.service_name)
     : undefined;
-  const returnUrl = pagBankReturnUrl(config.redirectUrl, order.order_number);
+  const returnUrl = pagBankReturnUrl(
+    config.redirectUrl,
+    order.order_number,
+    createOrderReturnToken(order.order_number),
+  );
   return {
     reference_id: order.order_number,
     items: order.order_items.map((item) => ({

@@ -1,12 +1,5 @@
 import type { CartItem, CheckoutData, StoreOrder } from "@/types/commerce";
 
-export class CustomerAuthenticationRequiredError extends Error {
-  constructor() {
-    super("Entre com seu e-mail para criar e acompanhar o pedido.");
-    this.name = "CustomerAuthenticationRequiredError";
-  }
-}
-
 export async function createOrder(
   items: CartItem[],
   customer: CheckoutData,
@@ -20,10 +13,7 @@ export async function createOrder(
     },
     body: JSON.stringify({ items, customer }),
   });
-  const result = await response.json() as StoreOrder & { error?: string; loginRequired?: boolean };
-  if (response.status === 401 && result.loginRequired) {
-    throw new CustomerAuthenticationRequiredError();
-  }
+  const result = await response.json() as StoreOrder & { error?: string };
   if (!response.ok) throw new Error(result.error ?? "Não foi possível criar o pedido.");
   return result;
 }

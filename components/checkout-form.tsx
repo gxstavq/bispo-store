@@ -12,7 +12,6 @@ import {
 import {
   createOrder,
   createPaymentCheckout,
-  CustomerAuthenticationRequiredError,
 } from "@/services/order-service";
 import type { CheckoutData, Product, ShippingQuote } from "@/types/commerce";
 import { useStore } from "./store-provider";
@@ -171,12 +170,7 @@ export function CheckoutForm({ products }: { products: Product[] }) {
       const result = await response.json() as {
         quotes?: ShippingQuote[];
         error?: string;
-        loginRequired?: boolean;
       };
-      if (response.status === 401 && result.loginRequired) {
-        router.push("/entrar?next=/checkout");
-        return;
-      }
       if (!response.ok || !result.quotes) throw new Error(result.error ?? "Não foi possível calcular o frete.");
       setQuotes(result.quotes);
       setQuotedCartKey(`${data.cep.replace(/\D/g, "")}:${cartKey}`);
@@ -220,10 +214,6 @@ export function CheckoutForm({ products }: { products: Product[] }) {
       clearCart();
       router.push(`/pedido-recebido?pedido=${orderId}`);
     } catch (caught) {
-      if (caught instanceof CustomerAuthenticationRequiredError) {
-        router.push("/entrar?next=/checkout");
-        return;
-      }
       if (orderId) {
         clearCart();
         router.push(`/pedido-recebido?pedido=${orderId}&pagamento=pendente`);

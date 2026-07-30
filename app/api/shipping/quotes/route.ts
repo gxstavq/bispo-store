@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { enforceRateLimit } from "@/lib/security/rate-limit";
 import { assertSameOrigin, readJsonBody, validationErrorResponse } from "@/lib/security/request";
-import { createSupabaseServerClient } from "@/lib/supabase/server";
+import { getOrCreateCheckoutUser } from "@/lib/auth/customer-session";
 import { validateCartItems } from "@/lib/validation/commerce";
 import { createMelhorEnvioQuotes } from "@/services/shipping/quote-service";
 import type { CartItem } from "@/types/commerce";
@@ -10,13 +10,13 @@ export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
 
 export async function POST(request: NextRequest) {
-  const supabase = await createSupabaseServerClient();
-  const { data: { user } } = await supabase.auth.getUser();
-  if (!user) {
+  let user;
+  try {
+    ({ user } = await getOrCreateCheckoutUser());
+  } catch {
     return NextResponse.json({
-      error: "Entre com seu e-mail antes de consultar o frete.",
-      loginRequired: true,
-    }, { status: 401 });
+      error: "Não foi possível iniciar o checkout agora. Tente novamente em instantes.",
+    }, { status: 503 });
   }
   let input: { postalCode?: string; items?: CartItem[] };
   try {

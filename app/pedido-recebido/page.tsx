@@ -10,19 +10,30 @@ import {
   paymentStatusLabels,
 } from "@/lib/order-status";
 import { isValidOrderNumber } from "@/lib/orders/order-number";
+import { verifyOrderReturnToken } from "@/lib/orders/return-token";
 import { createSupabaseServerClient } from "@/lib/supabase/server";
-import { orderRepository } from "@/repositories/order-repository";
+import {
+  findOrderForVerifiedReturn,
+  orderRepository,
+} from "@/repositories/order-repository";
 
 export const metadata: Metadata = { title: "Pedido recebido", robots: { index: false } };
 export const dynamic = "force-dynamic";
 
-export default async function OrderReceivedPage({ searchParams }: { searchParams: Promise<{ pedido?: string }> }) {
-  const { pedido } = await searchParams;
+export default async function OrderReceivedPage({ searchParams }: {
+  searchParams: Promise<{ pedido?: string; retorno?: string }>;
+}) {
+  const { pedido, retorno } = await searchParams;
   if (!isValidOrderNumber(pedido)) notFound();
   const supabase = await createSupabaseServerClient();
   const { data: { user } } = await supabase.auth.getUser();
-  if (!user) redirect(`/entrar?next=${encodeURIComponent(`/pedido-recebido?pedido=${pedido}`)}`);
-  const order = await orderRepository.findById(pedido);
+  const signedReturn = !user && verifyOrderReturnToken(pedido, retorno);
+  if (!user && !signedReturn) {
+    redirect(`/entrar?next=${encodeURIComponent(`/acompanhar-pedido?pedido=${pedido}`)}`);
+  }
+  const order = user
+    ? await orderRepository.findById(pedido)
+    : await findOrderForVerifiedReturn(pedido);
   if (!order) notFound();
   const localReview = order.deliveryChoice === "local_delivery_review";
   const paymentMessages = {

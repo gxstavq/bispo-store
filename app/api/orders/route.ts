@@ -1,6 +1,8 @@
 import { NextRequest, NextResponse } from "next/server";
 import { enforceRateLimit } from "@/lib/security/rate-limit";
 import { assertSameOrigin, readJsonBody, validationErrorResponse } from "@/lib/security/request";
+import { getOrCreateCheckoutUser } from "@/lib/auth/customer-session";
+import { createSupabaseServiceClient } from "@/lib/supabase/admin";
 import { createSupabaseServerClient } from "@/lib/supabase/server";
 import { validateCartItems, validateCheckoutData } from "@/lib/validation/commerce";
 import { orderRepository } from "@/repositories/order-repository";
@@ -19,14 +21,15 @@ export async function GET() {
 }
 
 export async function POST(request: NextRequest) {
-  const supabase = await createSupabaseServerClient();
-  const { data: { user } } = await supabase.auth.getUser();
-  if (!user) {
+  let session;
+  try {
+    session = await getOrCreateCheckoutUser();
+  } catch {
     return NextResponse.json({
-      error: "Acesse sua conta por e-mail antes de finalizar o pedido.",
-      loginRequired: true,
-    }, { status: 401 });
+      error: "Não foi possível iniciar o checkout agora. Tente novamente em instantes.",
+    }, { status: 503 });
   }
+  const { supabase, user } = session;
   let input: { items?: CartItem[]; customer?: CheckoutData };
   const idempotencyKey = request.headers.get("idempotency-key");
   try {
@@ -117,6 +120,25 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({ error: `Pedido não criado: ${error.message}` }, { status: 400 });
   }
   const orderNumber = Array.isArray(data) ? data[0]?.order_number : data?.order_number;
+  if (orderNumber) {
+    const service = createSupabaseServiceClient();
+    const { data: createdOrder, error: createdOrderError } = await service
+      .from("orders")
+      .select("customer_id")
+      .eq("order_number", orderNumber)
+      .single();
+    const { error: customerEmailError } = createdOrder
+      ? await service
+        .from("customers")
+        .update({ email: input.customer.email.trim().toLowerCase() })
+        .eq("id", createdOrder.customer_id)
+      : { error: createdOrderError };
+    if (createdOrderError || customerEmailError) {
+      return NextResponse.json({
+        error: "Pedido criado, mas o e-mail para acompanhamento não pôde ser confirmado.",
+      }, { status: 500 });
+    }
+  }
   const order = orderNumber ? await orderRepository.findById(orderNumber) : null;
   return order
     ? NextResponse.json(order, { status: 201 })

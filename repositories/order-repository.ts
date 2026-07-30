@@ -1,6 +1,7 @@
 import "server-only";
 
 import { createSupabaseServerClient } from "@/lib/supabase/server";
+import { createSupabaseServiceClient } from "@/lib/supabase/admin";
 import { hasSupabasePublicEnv } from "@/lib/supabase/env";
 import type { StoreOrder } from "@/types/commerce";
 
@@ -284,3 +285,15 @@ export class SupabaseOrderRepository implements OrderRepository {
 }
 
 export const orderRepository: OrderRepository = new SupabaseOrderRepository();
+
+export async function findOrderForVerifiedReturn(orderNumber: string) {
+  if (!hasSupabasePublicEnv()) return null;
+  const supabase = createSupabaseServiceClient();
+  const { data, error } = await supabase
+    .from("orders")
+    .select(orderSelect)
+    .eq("order_number", orderNumber)
+    .maybeSingle();
+  if (error) throw new Error(error.message);
+  return data ? mapOrder(data as unknown as OrderRecord) : null;
+}

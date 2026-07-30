@@ -14,6 +14,10 @@ import {
   storedPagBankPaymentMatchesOrder,
 } from "../services/pagbank/consistency.ts";
 import { pagBankShippingServiceType } from "../services/pagbank/shipping.ts";
+import {
+  createCapabilityToken,
+  verifyCapabilityToken,
+} from "../lib/security/capability-token.ts";
 
 const root = process.cwd();
 const migration = readFileSync(
@@ -73,18 +77,42 @@ test("IN_ANALYSIS possui estado próprio e não é convertido em pending", () =>
 });
 
 test("retorno PagBank inclui e valida o número real do pedido", () => {
+  const returnToken = createCapabilityToken(
+    "chave-local-de-teste",
+    "pagbank-order-return-v1",
+    "BSP-12AB34CD",
+  );
   const result = pagBankReturnUrl(
     "https://deploy-preview-1--bispo-store-homologacao.netlify.app/pedido-recebido",
     "BSP-12AB34CD",
+    returnToken,
   );
   assert.equal(
     result,
-    "https://deploy-preview-1--bispo-store-homologacao.netlify.app/pedido-recebido?pedido=BSP-12AB34CD",
+    `https://deploy-preview-1--bispo-store-homologacao.netlify.app/pedido-recebido?pedido=BSP-12AB34CD&retorno=${returnToken}`,
+  );
+  assert.equal(
+    verifyCapabilityToken(
+      "chave-local-de-teste",
+      "pagbank-order-return-v1",
+      "BSP-12AB34CD",
+      returnToken,
+    ),
+    true,
+  );
+  assert.equal(
+    verifyCapabilityToken(
+      "chave-local-de-teste",
+      "pagbank-order-return-v1",
+      "BSP-FFFFFFFF",
+      returnToken,
+    ),
+    false,
   );
   assert.equal(isValidOrderNumber("BSP-12AB34CD"), true);
   assert.equal(isValidOrderNumber("../../admin"), false);
   assert.throws(() => pagBankReturnUrl("https://example.test/pedido-recebido", "invalido"));
-  assert.match(paymentService, /pagBankReturnUrl\(config\.redirectUrl, order\.order_number\)/);
+  assert.match(paymentService, /createOrderReturnToken\(order\.order_number\)/);
 });
 
 test("frete PagBank envia somente service_type aceito pela API", () => {
@@ -104,6 +132,9 @@ test("página de retorno não considera o redirecionamento uma aprovação", () 
   assert.match(returnPage, /cancelled:/);
   assert.match(returnPage, /expired:/);
   assert.match(returnPage, /isValidOrderNumber\(pedido\)/);
+  assert.match(returnPage, /verifyOrderReturnToken\(pedido, retorno\)/);
+  assert.match(returnPage, /findOrderForVerifiedReturn\(pedido\)/);
+  assert.doesNotMatch(returnPage, /if \(!user\) redirect/);
 });
 
 test("webhook usa checkout_id explícito e ignora id transacional", () => {

@@ -51,6 +51,20 @@ test("webhook rejeita assinatura antes de consultar banco ou PagBank", () => {
   assert.match(webhook, /status:\s*401/);
 });
 
+test("diagnóstico PagBank é temporário, assinado e exclusivo do Deploy Preview", () => {
+  const route = source(
+    "app", "api", "integrations", "pagbank", "checkouts", "[id]", "status", "route.ts",
+  );
+  const diagnostic = source("lib", "integrations", "pagbank-diagnostic.ts");
+  assert.match(route, /process\.env\.CONTEXT !== "deploy-preview"/);
+  assert.match(route, /verifyPagBankDiagnosticToken/);
+  assert.match(route, /consultPagBankCheckout/);
+  assert.match(route, /Cache-Control": "no-store"/);
+  assert.doesNotMatch(route, /Authorization|PAGBANK_TOKEN/);
+  assert.match(diagnostic, /MAX_AGE_MS = 5 \* 60 \* 1000/);
+  assert.match(diagnostic, /verifyCapabilityToken/);
+});
+
 test("mutações autenticadas têm origem e payload limitados", () => {
   const routes = [
     ["app", "api", "orders", "route.ts"],
