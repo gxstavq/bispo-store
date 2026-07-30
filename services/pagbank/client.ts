@@ -27,7 +27,7 @@ export type PagBankCheckout = {
 };
 
 export type NormalizedPagBankStatus = {
-  status: "paid" | "pending" | "declined" | "expired" | "cancelled";
+  status: "paid" | "pending" | "in_analysis" | "declined" | "expired" | "cancelled";
   rawStatus: string;
   method?: string;
 };

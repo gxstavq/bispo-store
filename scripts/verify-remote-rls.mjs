@@ -29,7 +29,7 @@ const protectedTables = [
   "admin_users", "store_settings", "audit_logs", "customers", "addresses", "orders",
   "order_items", "shipping_quotes", "shipping_decisions", "payments",
   "payment_events", "shipment_labels", "order_status_history", "integration_errors",
-  "integration_credentials", "oauth_states",
+  "integration_credentials", "oauth_states", "inventory_reservations",
 ];
 for (const table of protectedTables) {
   const { data, error } = await anonymous.from(table).select("*").limit(1);

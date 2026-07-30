@@ -5,6 +5,7 @@ import { createSupabaseServerClient } from "@/lib/supabase/server";
 import { validateCartItems, validateCheckoutData } from "@/lib/validation/commerce";
 import { orderRepository } from "@/repositories/order-repository";
 import { lookupPostalAddress, PostalCodeLookupError } from "@/services/address/viacep";
+import { isValidOrderIdempotencyKey } from "@/lib/orders/idempotency-key";
 import type { CartItem, CheckoutData } from "@/types/commerce";
 
 export const runtime = "nodejs";
@@ -27,8 +28,15 @@ export async function POST(request: NextRequest) {
     }, { status: 401 });
   }
   let input: { items?: CartItem[]; customer?: CheckoutData };
+  const idempotencyKey = request.headers.get("idempotency-key");
   try {
     assertSameOrigin(request);
+    if (!isValidOrderIdempotencyKey(idempotencyKey)) {
+      return NextResponse.json(
+        { error: "Chave de idempotência ausente ou inválida." },
+        { status: 400 },
+      );
+    }
     const raw = await readJsonBody<{ items?: unknown; customer?: unknown }>(request);
     input = {
       items: validateCartItems(raw.items),
@@ -92,8 +100,22 @@ export async function POST(request: NextRequest) {
     requested_delivery_choice: input.customer.deliveryChoice,
     order_notes: input.customer.notes || null,
     selected_shipping_quote_id: input.customer.selectedShippingQuoteId ?? null,
+    requested_idempotency_key: idempotencyKey,
   });
-  if (error) return NextResponse.json({ error: `Pedido não criado: ${error.message}` }, { status: 400 });
+  if (error) {
+    if (
+      error.code === "55P03"
+      || error.message.includes("lock timeout")
+      || error.message.includes("insufficient_available_stock")
+      || error.message.includes("variant_unavailable")
+    ) {
+      return NextResponse.json(
+        { error: "Um dos itens acabou de ficar sem estoque. Revise o carrinho e tente novamente." },
+        { status: 409 },
+      );
+    }
+    return NextResponse.json({ error: `Pedido não criado: ${error.message}` }, { status: 400 });
+  }
   const orderNumber = Array.isArray(data) ? data[0]?.order_number : data?.order_number;
   const order = orderNumber ? await orderRepository.findById(orderNumber) : null;
   return order

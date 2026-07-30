@@ -8,7 +8,13 @@ import {
   PagBankApiError,
   type PagBankCheckout,
 } from "@/services/pagbank/client";
+import {
+  releaseOrderStockReservation,
+  reserveOrderStock,
+  stockReservationExpiration,
+} from "@/services/inventory/reservation-service";
 import { recordIntegrationError } from "@/services/integration-errors";
+import { pagBankReturnUrl } from "@/lib/orders/order-number";
 
 type OrderForPayment = {
   id: string;
@@ -60,13 +66,14 @@ export function pagBankIdempotencyKey(orderId: string, attempt: number) {
   return createHash("sha256").update(`pagbank:sandbox:checkout:${orderId}:v1:${attempt}`).digest("hex");
 }
 
-function checkoutPayload(order: OrderForPayment) {
+function checkoutPayload(order: OrderForPayment, expirationDate: string) {
   const config = getPagBankConfig();
   const address = one(order.addresses);
   const shippingAmount = Number(order.shipping_amount);
   const selectedQuote = order.selected_quote
     ? one(order.selected_quote)
     : null;
+  const returnUrl = pagBankReturnUrl(config.redirectUrl, order.order_number);
   return {
     reference_id: order.order_number,
     items: order.order_items.map((item) => ({
@@ -98,11 +105,11 @@ function checkoutPayload(order: OrderForPayment) {
       { type: "PIX" },
       { type: "BOLETO" },
     ],
-    redirect_url: config.redirectUrl,
-    return_url: config.redirectUrl,
+    redirect_url: returnUrl,
+    return_url: returnUrl,
     notification_urls: [config.notificationUrl],
     payment_notification_urls: [config.notificationUrl],
-    expiration_date: new Date(Date.now() + 2 * 60 * 60 * 1000).toISOString(),
+    expiration_date: expirationDate,
   };
 }
 
@@ -172,9 +179,15 @@ export async function createPagBankCheckoutForOrder(orderNumber: string) {
     throw new Error("Já existe uma criação de checkout em andamento. Aguarde ou revise o erro no painel.");
   }
   if (existing?.checkout_id && existing.payment_url) {
-    const reusable = ["pending", "paid"].includes(existing.status)
+    const reusable = ["pending", "in_analysis", "paid"].includes(existing.status)
       && (!existing.expires_at || new Date(existing.expires_at).getTime() > Date.now());
     if (reusable) {
+      if (existing.status !== "paid") {
+        await reserveOrderStock(
+          order.id,
+          existing.expires_at ?? stockReservationExpiration(),
+        );
+      }
       return {
         checkoutId: existing.checkout_id,
         paymentUrl: existing.payment_url,
@@ -185,6 +198,8 @@ export async function createPagBankCheckoutForOrder(orderNumber: string) {
     }
   }
   const idempotencyKey = pagBankIdempotencyKey(order.id, (previousPayments?.length ?? 0) + 1);
+  const checkoutExpiresAt = stockReservationExpiration();
+  await reserveOrderStock(order.id, checkoutExpiresAt);
 
   const { data: payment, error: insertError } = await supabase.from("payments").insert({
     order_id: order.id,
@@ -212,13 +227,15 @@ export async function createPagBankCheckoutForOrder(orderNumber: string) {
     throw new Error("A criação idempotente do pagamento já está em andamento.");
   }
 
+  let checkoutCreated = false;
   try {
     const response = await createPagBankCheckoutRequest(
-      checkoutPayload(order),
+      checkoutPayload(order, checkoutExpiresAt),
       idempotencyKey,
     );
     const paymentUrl = securePaymentUrl(response);
     if (!response.id || !paymentUrl) throw new Error("O PagBank não retornou checkout_id e link PAY.");
+    checkoutCreated = true;
     const { error: updateError } = await supabase.from("payments").update({
       checkout_id: response.id,
       payment_url: paymentUrl,
@@ -256,11 +273,27 @@ export async function createPagBankCheckoutForOrder(orderNumber: string) {
       reused: false,
     };
   } catch (error) {
-    const uncertain = !(error instanceof PagBankApiError);
+    const uncertain = checkoutCreated || !(error instanceof PagBankApiError);
     await supabase.from("payments").update({
       status: uncertain ? "creation_uncertain" : "creation_failed",
       last_error: error instanceof Error ? error.message : "Falha desconhecida.",
     }).eq("id", payment.id);
+    if (!uncertain) {
+      try {
+        await releaseOrderStockReservation(order.id, "pagbank_checkout_creation_failed");
+      } catch (releaseError) {
+        await recordIntegrationError({
+          provider: "pagbank",
+          operation: "release_stock_reservation",
+          orderId: order.id,
+          retryable: true,
+          message: releaseError instanceof Error
+            ? releaseError.message
+            : "Falha desconhecida ao liberar a reserva.",
+          safeContext: { orderNumber },
+        });
+      }
+    }
     await recordIntegrationError({
       provider: "pagbank",
       operation: "create_checkout",

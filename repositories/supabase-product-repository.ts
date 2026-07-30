@@ -218,13 +218,18 @@ export async function saveSupabaseProduct(input: Product, id?: string) {
     if (imagesError) throw new Error(imagesError.message);
   }
 
-  const { error: deleteVariantsError } = await supabase.from("product_variants").delete().eq("product_id", productId);
-  if (deleteVariantsError) throw new Error(deleteVariantsError.message);
   const variants = variantRows(productId, input);
-  if (variants.length) {
-    const { error: variantsError } = await supabase.from("product_variants").insert(variants);
-    if (variantsError) throw new Error(variantsError.message);
-  }
+  const { error: variantsError } = await supabase.rpc("replace_product_variants", {
+    target_product_id: productId,
+    variants_data: variants.map(({ sku, size, color, stock, active }) => ({
+      sku,
+      size,
+      color,
+      stock,
+      active,
+    })),
+  });
+  if (variantsError) throw new Error(variantsError.message);
 
   const [result] = await fetchProducts({ includeInactive: true, slug: input.slug });
   if (!result) throw new Error("Produto salvo, mas não pôde ser recarregado.");

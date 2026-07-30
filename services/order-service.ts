@@ -10,10 +10,14 @@ export class CustomerAuthenticationRequiredError extends Error {
 export async function createOrder(
   items: CartItem[],
   customer: CheckoutData,
+  idempotencyKey: string,
 ): Promise<StoreOrder> {
   const response = await fetch("/api/orders", {
     method: "POST",
-    headers: { "Content-Type": "application/json" },
+    headers: {
+      "Content-Type": "application/json",
+      "Idempotency-Key": idempotencyKey,
+    },
     body: JSON.stringify({ items, customer }),
   });
   const result = await response.json() as StoreOrder & { error?: string; loginRequired?: boolean };

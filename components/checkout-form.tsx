@@ -6,6 +6,10 @@ import { FormEvent, useEffect, useMemo, useState } from "react";
 import { brazilianStates } from "@/lib/brazilian-states";
 import { formatCurrency, whatsappUrl } from "@/lib/format";
 import {
+  clearOrderIdempotencyKey,
+  getOrCreateOrderIdempotencyKey,
+} from "@/lib/orders/idempotency-key";
+import {
   createOrder,
   createPaymentCheckout,
   CustomerAuthenticationRequiredError,
@@ -198,14 +202,21 @@ export function CheckoutForm({ products }: { products: Product[] }) {
     setError("");
     let orderId = createdOrderId;
     try {
-      orderId = createdOrderId || (await createOrder(items, data)).id;
+      const attemptFingerprint = JSON.stringify({ items, customer: data });
+      const idempotencyKey = getOrCreateOrderIdempotencyKey(
+        window.sessionStorage,
+        attemptFingerprint,
+      );
+      orderId = createdOrderId || (await createOrder(items, data, idempotencyKey)).id;
       if (!createdOrderId) setCreatedOrderId(orderId);
       if (data.deliveryChoice === "shipping_quote") {
         const payment = await createPaymentCheckout(orderId);
+        clearOrderIdempotencyKey(window.sessionStorage);
         clearCart();
         window.location.assign(payment.paymentUrl);
         return;
       }
+      clearOrderIdempotencyKey(window.sessionStorage);
       clearCart();
       router.push(`/pedido-recebido?pedido=${orderId}`);
     } catch (caught) {

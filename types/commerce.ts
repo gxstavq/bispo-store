@@ -69,6 +69,7 @@ export type LocalDeliveryReviewStatus = "not_requested" | "pending" | "approved"
 export type PaymentStatus =
   | "not_generated"
   | "awaiting_payment"
+  | "in_analysis"
   | "paid"
   | "declined"
   | "expired"

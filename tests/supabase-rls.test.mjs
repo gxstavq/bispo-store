@@ -9,6 +9,10 @@ const rls = readFileSync(join(root, "supabase", "migrations", "20260727171000_rl
 const orderFunctions = readFileSync(join(root, "supabase", "migrations", "20260727173000_order_functions.sql"), "utf8");
 const hardening = readFileSync(join(root, "supabase", "migrations", "20260727174000_harden_order_writes.sql"), "utf8");
 const integrations = readFileSync(join(root, "supabase", "migrations", "20260727175000_sandbox_integrations.sql"), "utf8");
+const pagBankHardening = readFileSync(
+  join(root, "supabase", "migrations", "20260729200000_pagbank_idempotency_inventory_reservations.sql"),
+  "utf8",
+);
 const envExample = readFileSync(join(root, ".env.example"), "utf8");
 
 function sourceFiles(directory) {
@@ -84,6 +88,13 @@ test("cotação pertence ao usuário e confirmação PagBank é exclusiva da ser
   assert.match(integrations, /revoke all on function public\.confirm_pagbank_payment[\s\S]*authenticated/i);
   assert.match(integrations, /grant execute on function public\.confirm_pagbank_payment[\s\S]*to service_role/i);
   assert.match(integrations, /revoke all on function public\.create_customer_order[\s\S]*from public, anon/i);
+});
+
+test("reservas de estoque são inacessíveis ao cliente e exclusivas da service role", () => {
+  assert.match(pagBankHardening, /alter table public\.inventory_reservations enable row level security/i);
+  assert.match(pagBankHardening, /revoke all on public\.inventory_reservations from public, anon, authenticated/i);
+  assert.match(pagBankHardening, /reserve_order_stock[\s\S]*to service_role/i);
+  assert.match(pagBankHardening, /release_order_stock_reservation[\s\S]*to service_role/i);
 });
 
 test("persistência local foi removida do runtime e o JSON de origem foi preservado", () => {

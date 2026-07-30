@@ -1,7 +1,11 @@
 import { createHash } from "node:crypto";
-import { copyFile, mkdir, readdir, stat, writeFile } from "node:fs/promises";
+import { execFile } from "node:child_process";
+import { copyFile, mkdir, readFile, readdir, stat, writeFile } from "node:fs/promises";
 import path from "node:path";
+import { promisify } from "node:util";
 import { createClient } from "@supabase/supabase-js";
+
+const execFileAsync = promisify(execFile);
 
 const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
 const serviceRoleKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
@@ -42,6 +46,7 @@ const tables = [
   "shipping_decisions",
   "payments",
   "payment_events",
+  "inventory_reservations",
   "shipment_labels",
   "order_status_history",
   "store_settings",
@@ -50,6 +55,7 @@ const tables = [
   "integration_credentials",
   "oauth_states",
 ];
+const optionalTables = new Set(["inventory_reservations"]);
 
 const manifest = {
   format: "bispo-store-supabase-application-backup-v1",
@@ -87,6 +93,13 @@ async function exportTable(table) {
       .range(offset, offset + pageSize - 1);
 
     if (error) {
+      if (
+        optionalTables.has(table)
+        && (error.code === "42P01" || error.code === "PGRST205")
+      ) {
+        manifest.tables[table] = null;
+        return;
+      }
       throw new Error(`Falha ao exportar a tabela ${table}: ${error.message}`);
     }
 
@@ -145,22 +158,31 @@ async function exportStorageFolder(bucketName, remoteFolder = "") {
         continue;
       }
 
-      const { data: blob, error: downloadError } = await supabase.storage
-        .from(bucketName)
-        .download(remotePath);
-      if (downloadError) {
-        throw new Error(`Falha ao baixar ${bucketName}/${remotePath}: ${downloadError.message}`);
-      }
-
-      const bytes = Buffer.from(await blob.arrayBuffer());
       const relativePath = path.join("storage", bucketName, ...remotePath.split("/"));
       const destination = path.join(backupDirectory, relativePath);
       await mkdir(path.dirname(destination), { recursive: true });
-      await writeFile(destination, bytes, { mode: 0o600 });
+      let storedBytes;
+      try {
+        const existing = await stat(destination);
+        const remoteSize = Number(item.metadata?.size);
+        if (Number.isFinite(remoteSize) && existing.size === remoteSize) {
+          storedBytes = await readFile(destination);
+        }
+      } catch {}
+      if (!storedBytes) {
+        const { data: blob, error: downloadError } = await supabase.storage
+          .from(bucketName)
+          .download(remotePath);
+        if (downloadError) {
+          throw new Error(`Falha ao baixar ${bucketName}/${remotePath}: ${downloadError.message}`);
+        }
+        storedBytes = Buffer.from(await blob.arrayBuffer());
+        await writeFile(destination, storedBytes, { mode: 0o600 });
+      }
       manifest.files[relativePath.replaceAll("\\", "/")] = createHash("sha256")
-        .update(bytes)
+        .update(storedBytes)
         .digest("hex");
-      exported.push({ path: remotePath, size: bytes.length });
+      exported.push({ path: remotePath, size: storedBytes.length });
     }
 
     if (!data || data.length < 1000) break;
@@ -193,9 +215,70 @@ async function copyMigrations() {
   for (const entry of await readdir(source)) {
     const sourceFile = path.join(source, entry);
     if ((await stat(sourceFile)).isFile() && entry.endsWith(".sql")) {
-      await copyFile(sourceFile, path.join(destination, entry));
+      const destinationFile = path.join(destination, entry);
+      await copyFile(sourceFile, destinationFile);
+      const contents = await readFile(destinationFile);
+      manifest.files[path.join("schema", "migrations", entry).replaceAll("\\", "/")] =
+        createHash("sha256").update(contents).digest("hex");
     }
   }
+}
+
+async function exportAppliedMigrations() {
+  const executable = process.platform === "win32" ? "npx.cmd" : "npx";
+  const { stdout } = await execFileAsync(
+    executable,
+    ["--yes", "supabase@latest", "migration", "list", "--linked"],
+    {
+      cwd: workspace,
+      encoding: "utf8",
+      maxBuffer: 1024 * 1024,
+      windowsHide: true,
+      shell: process.platform === "win32",
+    },
+  );
+  const jsonStart = stdout.indexOf("{");
+  if (jsonStart < 0) {
+    throw new Error("O Supabase CLI não retornou o histórico de migrations em JSON.");
+  }
+  const parsed = JSON.parse(stdout.slice(jsonStart));
+  const applied = (parsed.migrations ?? [])
+    .filter((migration) => migration.remote)
+    .map(({ remote, time }) => ({ version: remote, appliedAt: time }));
+  await writeJson(path.join("schema", "applied-migrations.json"), applied);
+  manifest.appliedMigrations = applied.length;
+}
+
+async function listFilesRecursively(directory, prefix = "") {
+  const files = [];
+  for (const entry of await readdir(directory, { withFileTypes: true })) {
+    const relativePath = path.join(prefix, entry.name);
+    if (entry.isDirectory()) {
+      files.push(...await listFilesRecursively(path.join(directory, entry.name), relativePath));
+    } else if (
+      entry.name !== "SHA256SUMS.txt"
+      && !entry.name.startsWith("backup-progress.")
+    ) {
+      files.push(relativePath);
+    }
+  }
+  return files;
+}
+
+async function writeChecksumFile() {
+  const files = (await listFilesRecursively(backupDirectory))
+    .sort((left, right) => left.localeCompare(right));
+  const lines = [];
+  for (const relativePath of files) {
+    const contents = await readFile(path.join(backupDirectory, relativePath));
+    const digest = createHash("sha256").update(contents).digest("hex");
+    lines.push(`${digest}  ${relativePath.replaceAll("\\", "/")}`);
+  }
+  await writeFile(
+    path.join(backupDirectory, "SHA256SUMS.txt"),
+    `${lines.join("\n")}\n`,
+    { encoding: "utf8", mode: 0o600 },
+  );
 }
 
 await mkdir(backupDirectory, { recursive: true, mode: 0o700 });
@@ -206,7 +289,9 @@ for (const table of tables) {
 await exportAuthUsers();
 await exportStorage();
 await copyMigrations();
+await exportAppliedMigrations();
 await writeJson("manifest.json", manifest);
+await writeChecksumFile();
 
 const storageObjectCount = Object.values(manifest.storage)
   .reduce((total, bucket) => total + bucket.objects.length, 0);

@@ -32,6 +32,7 @@ export function normalizePagBankStatus(checkout: PagBankCheckoutStatusInput) {
     ["method", "type"],
   ]);
   if (["PAID", "APPROVED"].includes(rawStatus)) return { status: "paid" as const, rawStatus, method };
+  if (rawStatus === "IN_ANALYSIS") return { status: "in_analysis" as const, rawStatus, method };
   if (["DECLINED", "DENIED"].includes(rawStatus)) return { status: "declined" as const, rawStatus, method };
   if (rawStatus === "EXPIRED") return { status: "expired" as const, rawStatus, method };
   if (["CANCELED", "CANCELLED"].includes(rawStatus)) return { status: "cancelled" as const, rawStatus, method };

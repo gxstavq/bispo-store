@@ -47,6 +47,7 @@ export const localReviewLabels: Record<LocalDeliveryReviewStatus, string> = {
 export const paymentStatusLabels: Record<PaymentStatus, string> = {
   not_generated: "Pagamento ainda não liberado",
   awaiting_payment: "Aguardando pagamento",
+  in_analysis: "Em análise",
   paid: "Pago",
   declined: "Recusado",
   expired: "Expirado",

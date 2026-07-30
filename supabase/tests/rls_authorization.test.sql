@@ -13,7 +13,8 @@ select ok(
         'customers', 'addresses', 'orders', 'order_items', 'shipping_quotes',
         'shipping_decisions', 'payments', 'payment_events', 'shipment_labels',
         'order_status_history', 'store_settings', 'audit_logs',
-        'integration_credentials', 'oauth_states', 'integration_errors'
+        'integration_credentials', 'oauth_states', 'integration_errors',
+        'inventory_reservations'
       ])
   ),
   'RLS está habilitado em todas as tabelas da aplicação'

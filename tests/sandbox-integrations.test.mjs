@@ -34,6 +34,7 @@ test("crédito e Pix aprovados, boleto pendente e pagamento recusado são normal
   });
   assert.equal(normalizePagBankStatus({ payments: [{ status: "PAID", payment_method: { type: "PIX" } }] }).status, "paid");
   assert.equal(normalizePagBankStatus({ payments: [{ status: "WAITING", payment_method: { type: "BOLETO" } }] }).status, "pending");
+  assert.equal(normalizePagBankStatus({ payments: [{ status: "IN_ANALYSIS" }] }).status, "in_analysis");
   assert.equal(normalizePagBankStatus({ payments: [{ status: "DECLINED" }] }).status, "declined");
 });
 
