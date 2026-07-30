@@ -13,6 +13,7 @@ import {
   consultedPagBankCheckoutMatchesPayment,
   storedPagBankPaymentMatchesOrder,
 } from "../services/pagbank/consistency.ts";
+import { pagBankShippingServiceType } from "../services/pagbank/shipping.ts";
 
 const root = process.cwd();
 const migration = readFileSync(
@@ -84,6 +85,14 @@ test("retorno PagBank inclui e valida o número real do pedido", () => {
   assert.equal(isValidOrderNumber("../../admin"), false);
   assert.throws(() => pagBankReturnUrl("https://example.test/pedido-recebido", "invalido"));
   assert.match(paymentService, /pagBankReturnUrl\(config\.redirectUrl, order\.order_number\)/);
+});
+
+test("frete PagBank envia somente service_type aceito pela API", () => {
+  assert.equal(pagBankShippingServiceType("PAC"), "PAC");
+  assert.equal(pagBankShippingServiceType("sedex"), "SEDEX");
+  assert.equal(pagBankShippingServiceType("Jadlog Package"), undefined);
+  assert.equal(pagBankShippingServiceType("Melhor Envio"), undefined);
+  assert.equal(pagBankShippingServiceType(null), undefined);
 });
 
 test("página de retorno não considera o redirecionamento uma aprovação", () => {

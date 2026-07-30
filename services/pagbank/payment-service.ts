@@ -8,6 +8,7 @@ import {
   PagBankApiError,
   type PagBankCheckout,
 } from "@/services/pagbank/client";
+import { pagBankShippingServiceType } from "@/services/pagbank/shipping";
 import {
   releaseOrderStockReservation,
   reserveOrderStock,
@@ -73,6 +74,9 @@ function checkoutPayload(order: OrderForPayment, expirationDate: string) {
   const selectedQuote = order.selected_quote
     ? one(order.selected_quote)
     : null;
+  const serviceType = shippingAmount > 0
+    ? pagBankShippingServiceType(selectedQuote?.service_name)
+    : undefined;
   const returnUrl = pagBankReturnUrl(config.redirectUrl, order.order_number);
   return {
     reference_id: order.order_number,
@@ -83,7 +87,7 @@ function checkoutPayload(order: OrderForPayment, expirationDate: string) {
     })),
     shipping: {
       type: shippingAmount === 0 ? "FREE" : "FIXED",
-      service_type: shippingAmount === 0 ? "ENTREGA_LOCAL" : selectedQuote?.service_name ?? "MELHOR_ENVIO",
+      ...(serviceType ? { service_type: serviceType } : {}),
       ...(shippingAmount > 0 ? { amount: cents(shippingAmount) } : {}),
       address: {
         country: "BRA",
