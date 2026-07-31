@@ -1,6 +1,8 @@
 import "server-only";
 
+import { unstable_cache } from "next/cache";
 import { createSupabaseServerClient } from "@/lib/supabase/server";
+import { createSupabaseServiceClient } from "@/lib/supabase/admin";
 import { hasSupabasePublicEnv } from "@/lib/supabase/env";
 import type { Product, ProductCategory } from "@/types/commerce";
 
@@ -141,29 +143,97 @@ function variantRows(productId: string, product: Product) {
   }));
 }
 
-export async function fetchProducts(options?: {
+export type ProductQueryOptions = {
   includeInactive?: boolean;
   id?: string;
+  ids?: string[];
   slug?: string;
   category?: ProductCategory;
   search?: string;
-}) {
-  if (!hasSupabasePublicEnv()) return [];
-  const supabase = await createSupabaseServerClient();
-  let query = supabase.from("products").select(productSelect).is("deleted_at", null);
+  status?: Product["status"];
+  isNew?: boolean;
+  featured?: boolean;
+  onSale?: boolean;
+  sort?: "newest" | "menor" | "maior";
+  offset?: number;
+  limit?: number;
+};
+
+type ProductQueryResult = {
+  products: Product[];
+  total: number;
+};
+
+async function executeProductQuery(
+  options: ProductQueryOptions,
+  publicRead: boolean,
+  count = false,
+): Promise<ProductQueryResult> {
+  if (!hasSupabasePublicEnv()) return { products: [], total: 0 };
+  const supabase = publicRead
+    ? createSupabaseServiceClient()
+    : await createSupabaseServerClient();
+  let query = supabase
+    .from("products")
+    .select(productSelect, count ? { count: "exact" } : undefined)
+    .is("deleted_at", null);
   if (!options?.includeInactive) query = query.eq("status", "active");
   if (options?.id) query = query.eq("id", options.id);
+  if (options?.ids?.length) query = query.in("id", options.ids);
   if (options?.slug) query = query.eq("slug", options.slug);
   if (options?.category) query = query.eq("categories.slug", options.category);
+  if (options?.status) query = query.eq("status", options.status);
+  if (options?.isNew !== undefined) query = query.eq("is_new", options.isNew);
+  if (options?.featured !== undefined) query = query.eq("featured", options.featured);
+  if (options?.onSale) query = query.not("promotional_price", "is", null);
   if (options?.search) {
     const term = options.search.replace(/[^\p{L}\p{N}\s-]/gu, " ").replace(/\s+/g, " ").trim();
     if (term) query = query.or(`name.ilike.%${term}%,description.ilike.%${term}%,code.ilike.%${term}%`);
   }
-  const { data, error } = await query.order("created_at", { ascending: false });
+  if (options?.sort === "menor") {
+    query = query.order("price", { ascending: true });
+  } else if (options?.sort === "maior") {
+    query = query.order("price", { ascending: false });
+  } else {
+    query = query.order("created_at", { ascending: false });
+  }
+  if (options?.limit !== undefined) {
+    const offset = Math.max(0, options.offset ?? 0);
+    query = query.range(offset, offset + Math.max(1, options.limit) - 1);
+  }
+  const { data, error, count: total } = await query;
   if (error) throw new Error(`Falha ao consultar produtos: ${error.message}`);
-  return (data as unknown as ProductRecord[]).map(mapProductRecord);
+  const products = (data as unknown as ProductRecord[]).map(mapProductRecord);
+  return { products, total: count ? total ?? products.length : products.length };
 }
 
+const fetchCachedPublicProducts = unstable_cache(
+  async (serializedOptions: string, count: boolean) =>
+    executeProductQuery(
+      JSON.parse(serializedOptions) as ProductQueryOptions,
+      true,
+      count,
+    ),
+  ["public-products-v2"],
+  { revalidate: 60, tags: ["public-products"] },
+);
+
+export async function fetchProducts(options: ProductQueryOptions = {}) {
+  if (!hasSupabasePublicEnv()) return [];
+  const result = options.includeInactive
+    ? await executeProductQuery(options, false)
+    : await fetchCachedPublicProducts(JSON.stringify(options), false);
+  return result.products;
+}
+
+export async function fetchProductPage(
+  options: ProductQueryOptions & { offset: number; limit: number },
+) {
+  if (!hasSupabasePublicEnv()) return { products: [], total: 0 };
+  return options.includeInactive
+    ? executeProductQuery(options, false, true)
+    : fetchCachedPublicProducts(JSON.stringify(options), true);
+}
 export async function saveSupabaseProduct(input: Product, id?: string) {
   const supabase = await createSupabaseServerClient();
   const { data: category, error: categoryError } = await supabase

@@ -1,17 +1,22 @@
 import type { Metadata } from "next";
 import { CatalogView } from "@/components/catalog-view";
 import { PublicShell } from "@/components/public-shell";
-import { productRepository } from "@/repositories/product-repository";
+import { fetchProductPage } from "@/repositories/supabase-product-repository";
 
 export const metadata: Metadata = {
   title: "Catálogo completo",
   description: "Explore tênis, calças e conjuntos da coleção demonstrativa Bispo Store.",
 };
-export const dynamic = "force-dynamic";
+export const revalidate = 60;
 
 export default async function CatalogPage({ searchParams }: { searchParams: Promise<{ filtro?: string }> }) {
   const { filtro } = await searchParams;
-  const products = await productRepository.list();
+  const { products, total } = await fetchProductPage({
+    offset: 0,
+    limit: 24,
+    isNew: filtro === "lancamentos" ? true : undefined,
+    onSale: filtro === "ofertas",
+  });
   return (
     <PublicShell>
       <section className="page-hero page-hero--catalog">
@@ -22,7 +27,11 @@ export default async function CatalogPage({ searchParams }: { searchParams: Prom
         </div>
       </section>
       <section className="section container">
-        <CatalogView products={products} initialFilter={filtro} />
+        <CatalogView
+          initialProducts={products}
+          initialTotal={total}
+          initialFilter={filtro}
+        />
       </section>
     </PublicShell>
   );

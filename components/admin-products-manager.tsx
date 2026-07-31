@@ -3,43 +3,62 @@
 import Image from "next/image";
 import Link from "next/link";
 import { Copy, EyeOff, Pencil, Search, Send, Trash2 } from "lucide-react";
-import { useCallback, useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { formatCurrency } from "@/lib/format";
 import { allCategoryLabels as adminCategoryLabels } from "@/lib/product-rules";
 import type { Product, ProductCategory, ProductStatus } from "@/types/commerce";
 
 export function AdminProductsManager() {
   const [products, setProducts] = useState<Product[]>([]);
+  const [total, setTotal] = useState(0);
+  const [page, setPage] = useState(1);
   const [search, setSearch] = useState("");
   const [category, setCategory] = useState<ProductCategory | "all">("all");
   const [status, setStatus] = useState<ProductStatus | "all">("all");
   const [message, setMessage] = useState("");
   const [loading, setLoading] = useState(true);
 
-  const load = useCallback(async () => {
-    const response = await fetch("/api/products?includeInactive=true", { cache: "no-store" });
-    setProducts(await response.json() as Product[]);
-    setLoading(false);
-  }, []);
+  const pageSize = 25;
+
+  const load = useCallback(async (signal?: AbortSignal) => {
+    setLoading(true);
+    const query = new URLSearchParams({
+      includeInactive: "true",
+      paginated: "true",
+      page: String(page),
+      pageSize: String(pageSize),
+    });
+    if (search.trim()) query.set("search", search.trim());
+    if (category !== "all") query.set("category", category);
+    if (status !== "all") query.set("status", status);
+    const response = await fetch(`/api/products?${query}`, {
+      cache: "no-store",
+      signal,
+    });
+    const result = await response.json() as {
+      products?: Product[];
+      total?: number;
+      error?: string;
+    };
+    if (!response.ok || !result.products || result.total === undefined) {
+      if (!signal?.aborted) setMessage(result.error ?? "Não foi possível carregar os produtos.");
+    } else {
+      setProducts(result.products);
+      setTotal(result.total);
+    }
+    if (!signal?.aborted) setLoading(false);
+  }, [category, page, search, status]);
 
   useEffect(() => {
-    let active = true;
-    void fetch("/api/products?includeInactive=true", { cache: "no-store" })
-      .then((response) => response.json())
-      .then((data: Product[]) => {
-        if (!active) return;
-        setProducts(data);
-        setLoading(false);
-      });
-    return () => { active = false; };
-  }, []);
-
-  const visible = useMemo(() => products.filter((product) => {
-    const haystack = `${product.name} ${product.code}`.toLocaleLowerCase("pt-BR");
-    return haystack.includes(search.toLocaleLowerCase("pt-BR"))
-      && (category === "all" || product.category === category)
-      && (status === "all" || (product.status ?? (product.active ? "active" : "inactive")) === status);
-  }), [category, products, search, status]);
+    const controller = new AbortController();
+    const timer = window.setTimeout(() => {
+      void load(controller.signal);
+    }, search ? 250 : 0);
+    return () => {
+      window.clearTimeout(timer);
+      controller.abort();
+    };
+  }, [load, search]);
 
   async function action(product: Product, operation: "duplicate" | "publish" | "deactivate" | "delete") {
     if (operation === "delete" && !window.confirm(`Excluir ${product.name}? O arquivo da foto não será apagado.`)) return;
@@ -66,12 +85,12 @@ export function AdminProductsManager() {
   return (
     <>
       <div className="admin-toolbar admin-products-toolbar">
-        <div className="admin-search"><Search size={17} /><input value={search} onChange={(event) => setSearch(event.target.value)} placeholder="Buscar produto ou código..." /></div>
-        <select value={category} onChange={(event) => setCategory(event.target.value as ProductCategory | "all")}>
+        <div className="admin-search"><Search size={17} /><input value={search} onChange={(event) => { setSearch(event.target.value); setPage(1); }} placeholder="Buscar produto ou código..." /></div>
+        <select value={category} onChange={(event) => { setCategory(event.target.value as ProductCategory | "all"); setPage(1); }}>
           <option value="all">Todas as categorias</option>
           {Object.entries(adminCategoryLabels).map(([value, label]) => <option value={value} key={value}>{label}</option>)}
         </select>
-        <select value={status} onChange={(event) => setStatus(event.target.value as ProductStatus | "all")}>
+        <select value={status} onChange={(event) => { setStatus(event.target.value as ProductStatus | "all"); setPage(1); }}>
           <option value="all">Todos os status</option>
           <option value="active">Ativos</option>
           <option value="inactive">Inativos</option>
@@ -80,7 +99,7 @@ export function AdminProductsManager() {
         </select>
       </div>
       <div className="admin-list-summary">
-        <span>{loading ? "Carregando..." : `${visible.length} de ${products.length} produtos`}</span>
+        <span>{loading ? "Carregando..." : `${products.length} de ${total} produtos`}</span>
         <span>Dados persistidos no <strong>Supabase Postgres</strong></span>
       </div>
       {message && <div className="admin-feedback" role="status">{message}</div>}
@@ -89,7 +108,7 @@ export function AdminProductsManager() {
           <table className="admin-table admin-products-table">
             <thead><tr><th>Produto</th><th>Categoria</th><th>Preço</th><th>Estoque</th><th>Revisão</th><th>Status</th><th>Ações</th></tr></thead>
             <tbody>
-              {visible.map((product) => {
+              {products.map((product) => {
                 const cover = product.coverImage ?? product.images[0];
                 const coverIndex = product.images.indexOf(cover);
                 const thumb = product.thumbnails?.[coverIndex] ?? cover;
@@ -99,7 +118,7 @@ export function AdminProductsManager() {
                     <td>
                       <div className="admin-product-cell">
                         <span className="admin-product-thumb">
-                          {thumb && (thumb.startsWith("/") || /^https?:\/\//.test(thumb)) ? <Image src={thumb} alt="" fill sizes="42px" unoptimized /> : null}
+                          {thumb && (thumb.startsWith("/") || /^https?:\/\//.test(thumb)) ? <Image src={thumb} alt="" fill sizes="42px" quality={70} /> : null}
                         </span>
                         <div><strong>{product.name}</strong><small>{product.code} · {product.images.length} imagens</small></div>
                       </div>
@@ -125,6 +144,13 @@ export function AdminProductsManager() {
           </table>
         </div>
       </section>
+      {total > pageSize && (
+        <div className="admin-pagination">
+          <button type="button" className="button button--dark" disabled={loading || page === 1} onClick={() => setPage((current) => Math.max(1, current - 1))}>Anterior</button>
+          <span>Página {page} de {Math.ceil(total / pageSize)}</span>
+          <button type="button" className="button button--dark" disabled={loading || page * pageSize >= total} onClick={() => setPage((current) => current + 1)}>Próxima</button>
+        </div>
+      )}
     </>
   );
 }

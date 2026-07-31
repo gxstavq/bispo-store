@@ -10,8 +10,10 @@ import {
   consultPagBankOrderByCharge,
   normalizePagBankStatus,
   pagBankCheckoutTotalCents,
+  PagBankApiError,
   type PagBankCharge,
   type PagBankCheckout,
+  type PagBankOrder,
 } from "@/services/pagbank/client";
 import {
   consultedPagBankCheckoutMatchesPayment,
@@ -36,6 +38,8 @@ type PaymentRow = {
   checkout_id: string | null;
   amount: number | string;
   status: string;
+  raw_status: string | null;
+  payment_method: string | null;
   confirmed_at: string | null;
   provider_payload: unknown;
   orders: {
@@ -119,7 +123,8 @@ async function resolveStoredPayment(input: {
   let query = supabase
     .from("payments")
     .select(`
-      id, order_id, checkout_id, amount, status, confirmed_at, provider_payload,
+      id, order_id, checkout_id, amount, status, raw_status, payment_method,
+      confirmed_at, provider_payload,
       orders!inner(
         order_number, total, status, payment_status,
         stock_deducted_at, stock_deduction_error
@@ -551,14 +556,65 @@ export async function reconcilePagBankOrderPayment(input: {
   const { payment, order } = await resolveStoredPayment({
     orderNumber: input.orderNumber,
   });
-  const providerOrder = await consultPagBankOrder(input.providerOrderId);
+  let providerOrder: PagBankOrder;
+  let charge: PagBankCharge;
+  try {
+    providerOrder = await consultPagBankOrder(input.providerOrderId);
+    const embeddedCharge = exactlyOneCharge(
+      providerOrder.charges ?? [],
+      input.chargeId,
+    );
+    charge = input.chargeId
+      ? await consultPagBankCharge(input.chargeId)
+      : embeddedCharge;
+  } catch (error) {
+    if (error instanceof PagBankApiError) {
+      await recordIntegrationError({
+        provider: "pagbank",
+        operation: "consult_payment_status",
+        orderId: payment.order_id,
+        retryable: [502, 503, 504].includes(error.status),
+        errorCode: error.timedOut
+          ? "consultation_timeout"
+          : `pagbank_http_${error.status}`,
+        message: "A consulta de status do pagamento falhou após as tentativas permitidas.",
+        safeContext: {
+          endpoint: error.endpoint,
+          httpStatus: error.status,
+          attempts: error.attempts,
+          timedOut: error.timedOut,
+        },
+      });
+      if (payment.status === "paid" && order.stock_deducted_at) {
+        return {
+          checkoutId: payment.checkout_id!,
+          providerOrderId: input.providerOrderId,
+          referenceId: order.order_number,
+          paymentStatus: payment.raw_status ?? "PAID",
+          method: payment.payment_method,
+          transactionId: input.chargeId ?? null,
+          transactionCreatedAt: null,
+          transactionUpdatedAt: null,
+          paidAt: payment.confirmed_at,
+          totalCents: Math.round(Number(payment.amount) * 100),
+          applied: false,
+          duplicate: true,
+          stale: true,
+          warning: "Pagamento já confirmado pelo PagBank. Não foi possível realizar uma nova consulta neste momento.",
+          stockDeducted: true,
+          stockDeductedAt: order.stock_deducted_at,
+          stockError: order.stock_deduction_error,
+          internalPaymentStatus: order.payment_status,
+          confirmedAt: payment.confirmed_at,
+        };
+      }
+    }
+    throw error;
+  }
   const embeddedCharge = exactlyOneCharge(
     providerOrder.charges ?? [],
     input.chargeId,
   );
-  const charge = input.chargeId
-    ? await consultPagBankCharge(input.chargeId)
-    : embeddedCharge;
   const chargeAmountCents = pagBankChargeAmountCents(charge);
   if (!consultedPagBankOrderMatchesPayment({
     providerOrderId: providerOrder.id,

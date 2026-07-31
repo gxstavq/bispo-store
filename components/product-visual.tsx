@@ -38,8 +38,7 @@ export function ProductVisual({
           sizes={compact ? "(max-width: 560px) 50vw, (max-width: 1060px) 33vw, 25vw" : "(max-width: 820px) 100vw, 55vw"}
           priority={priority}
           loading={priority ? "eager" : "lazy"}
-          quality={85}
-          unoptimized
+          quality={75}
         />
         {showStatus && product.needsReview && <span className="review-stamp">CADASTRO PENDENTE</span>}
       </div>

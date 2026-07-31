@@ -3,8 +3,17 @@ import { requireAdmin } from "@/lib/auth/admin";
 import { defaultsForCategory } from "@/lib/product-rules";
 import { assertSameOrigin, readJsonBody, validationErrorResponse } from "@/lib/security/request";
 import { validateProduct } from "@/lib/validation/commerce";
-import { fetchProducts, saveSupabaseProduct } from "@/repositories/supabase-product-repository";
-import type { Product } from "@/types/commerce";
+import {
+  fetchProductPage,
+  fetchProducts,
+  saveSupabaseProduct,
+} from "@/repositories/supabase-product-repository";
+import type {
+  Product,
+  ProductCategory,
+  ProductStatus,
+  SellableProductCategory,
+} from "@/types/commerce";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
@@ -12,7 +21,78 @@ export const dynamic = "force-dynamic";
 export async function GET(request: NextRequest) {
   const includeInactive = request.nextUrl.searchParams.get("includeInactive") === "true";
   if (includeInactive) await requireAdmin();
-  return NextResponse.json(await fetchProducts({ includeInactive }));
+  const ids = (request.nextUrl.searchParams.get("ids") ?? "")
+    .split(",")
+    .map((value) => value.trim())
+    .filter((value) => /^[0-9a-f]{8}-[0-9a-f-]{27}$/i.test(value))
+    .slice(0, 30);
+  const categoryValue = request.nextUrl.searchParams.get("category");
+  const category = ["tenis", "calcas", "conjuntos"].includes(categoryValue ?? "")
+    ? categoryValue as SellableProductCategory
+    : undefined;
+  const statusValue = request.nextUrl.searchParams.get("status");
+  const status = includeInactive
+    && ["active", "inactive", "draft", "archived"].includes(statusValue ?? "")
+    ? statusValue as ProductStatus
+    : undefined;
+  const filter = request.nextUrl.searchParams.get("filter");
+  const sortValue = request.nextUrl.searchParams.get("sort");
+  const sort = sortValue === "menor" || sortValue === "maior"
+    ? sortValue
+    : "newest";
+  const search = request.nextUrl.searchParams.get("search") ?? undefined;
+
+  if (ids.length) {
+    const products = await fetchProducts({ includeInactive, ids });
+    return NextResponse.json(products, {
+      headers: {
+        "Cache-Control": includeInactive
+          ? "private, no-store"
+          : "private, max-age=60",
+      },
+    });
+  }
+
+  if (request.nextUrl.searchParams.get("paginated") === "true") {
+    const page = Math.max(1, Number(request.nextUrl.searchParams.get("page")) || 1);
+    const pageSize = Math.min(
+      50,
+      Math.max(1, Number(request.nextUrl.searchParams.get("pageSize")) || 24),
+    );
+    const result = await fetchProductPage({
+      includeInactive,
+      offset: (page - 1) * pageSize,
+      limit: pageSize,
+      category: category as ProductCategory | undefined,
+      status,
+      search,
+      isNew: filter === "lancamentos" || sortValue === "novos"
+        ? true
+        : undefined,
+      onSale: filter === "ofertas",
+      sort,
+    });
+    return NextResponse.json({ ...result, page, pageSize }, {
+      headers: {
+        "Cache-Control": includeInactive
+          ? "private, no-store"
+          : "public, s-maxage=60, stale-while-revalidate=300",
+      },
+    });
+  }
+
+  return NextResponse.json(await fetchProducts({
+    includeInactive,
+    category: category as ProductCategory | undefined,
+    status,
+    search,
+  }), {
+    headers: {
+      "Cache-Control": includeInactive
+        ? "private, no-store"
+        : "public, s-maxage=60, stale-while-revalidate=300",
+    },
+  });
 }
 
 export async function POST(request: NextRequest) {

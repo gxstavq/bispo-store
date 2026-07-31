@@ -1,16 +1,20 @@
 import type { Metadata } from "next";
-import { ProductGrid } from "@/components/product-grid";
+import { CatalogView } from "@/components/catalog-view";
 import { PublicShell } from "@/components/public-shell";
-import { productRepository } from "@/repositories/product-repository";
+import { fetchProductPage } from "@/repositories/supabase-product-repository";
 
 export const metadata: Metadata = {
   title: "Conjuntos",
   description: "Conjuntos da curadoria urbana Bispo Store.",
 };
-export const dynamic = "force-dynamic";
+export const revalidate = 60;
 
 export default async function SetsPage() {
-  const products = await productRepository.findByCategory("conjuntos");
+  const { products, total } = await fetchProductPage({
+    category: "conjuntos",
+    offset: 0,
+    limit: 24,
+  });
   return (
     <PublicShell>
       <section className="category-hero category-hero--sets">
@@ -21,8 +25,9 @@ export default async function SetsPage() {
         </div>
       </section>
       <section className="section container">
-        <div className="category-results"><strong>{products.length} conjuntos</strong><span>Produtos demonstrativos</span></div>
-        {products.length ? <ProductGrid products={products} /> : <div className="empty-state"><strong>Categoria preparada.</strong><p>Os produtos de conjuntos poderão ser cadastrados pelo painel.</p></div>}
+        {products.length
+          ? <CatalogView initialProducts={products} initialTotal={total} initialCategory="conjuntos" />
+          : <div className="empty-state"><strong>Categoria preparada.</strong><p>Os produtos de conjuntos poderão ser cadastrados pelo painel.</p></div>}
       </section>
     </PublicShell>
   );

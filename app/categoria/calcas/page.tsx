@@ -1,16 +1,20 @@
 import type { Metadata } from "next";
-import { ProductGrid } from "@/components/product-grid";
+import { CatalogView } from "@/components/catalog-view";
 import { PublicShell } from "@/components/public-shell";
-import { productRepository } from "@/repositories/product-repository";
+import { fetchProductPage } from "@/repositories/supabase-product-repository";
 
 export const metadata: Metadata = {
   title: "Calças",
   description: "Calças da curadoria urbana Bispo Store.",
 };
-export const dynamic = "force-dynamic";
+export const revalidate = 60;
 
 export default async function PantsPage() {
-  const products = await productRepository.findByCategory("calcas");
+  const { products, total } = await fetchProductPage({
+    category: "calcas",
+    offset: 0,
+    limit: 24,
+  });
   return (
     <PublicShell>
       <section className="category-hero category-hero--clothes">
@@ -21,8 +25,9 @@ export default async function PantsPage() {
         </div>
       </section>
       <section className="section container">
-        <div className="category-results"><strong>{products.length} peças</strong><span>Produtos demonstrativos</span></div>
-        {products.length ? <ProductGrid products={products} /> : <div className="empty-state"><strong>Categoria preparada.</strong><p>Os produtos de calças poderão ser cadastrados pelo painel.</p></div>}
+        {products.length
+          ? <CatalogView initialProducts={products} initialTotal={total} initialCategory="calcas" />
+          : <div className="empty-state"><strong>Categoria preparada.</strong><p>Os produtos de calças poderão ser cadastrados pelo painel.</p></div>}
       </section>
     </PublicShell>
   );

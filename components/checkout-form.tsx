@@ -13,8 +13,9 @@ import {
   createOrder,
   createPaymentCheckout,
 } from "@/services/order-service";
-import type { CheckoutData, Product, ShippingQuote } from "@/types/commerce";
+import type { CheckoutData, ShippingQuote } from "@/types/commerce";
 import { useStore } from "./store-provider";
+import { useCartProducts } from "./use-cart-products";
 
 const initialData: CheckoutData = {
   fullName: "", whatsapp: "", email: "", cep: "", street: "", number: "", complement: "",
@@ -37,9 +38,10 @@ function formatPostalCode(value: string) {
   return digits.length > 5 ? `${digits.slice(0, 5)}-${digits.slice(5)}` : digits;
 }
 
-export function CheckoutForm({ products }: { products: Product[] }) {
+export function CheckoutForm() {
   const router = useRouter();
   const { items, clearCart } = useStore();
+  const { products, loading: productsLoading } = useCartProducts(items);
   const [data, setData] = useState<CheckoutData>(initialData);
   const [quotes, setQuotes] = useState<ShippingQuote[]>([]);
   const [quotedCartKey, setQuotedCartKey] = useState("");
@@ -233,6 +235,10 @@ export function CheckoutForm({ products }: { products: Product[] }) {
         <button className="button button--dark" onClick={() => router.push("/catalogo")}>Ir ao catálogo</button>
       </div>
     );
+  }
+
+  if (productsLoading) {
+    return <div className="empty-cart"><p>Carregando os itens do checkout...</p></div>;
   }
 
   return (

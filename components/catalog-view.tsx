@@ -1,38 +1,98 @@
 "use client";
 
 import { SlidersHorizontal } from "lucide-react";
-import { useMemo, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { publicCategoryLabels } from "@/lib/product-rules";
 import type { Product, SellableProductCategory } from "@/types/commerce";
 import { ProductGrid } from "./product-grid";
 
-export function CatalogView({ products, initialFilter }: { products: Product[]; initialFilter?: string }) {
-  const [category, setCategory] = useState<SellableProductCategory | "todos">("todos");
-  const [sort, setSort] = useState("destaques");
+const PAGE_SIZE = 24;
 
-  const visible = useMemo(() => {
-    let filtered = [...products];
-    if (category !== "todos") filtered = filtered.filter((product) => product.category === category);
-    if (initialFilter === "ofertas") filtered = filtered.filter((product) => product.promotionalPrice);
-    if (initialFilter === "lancamentos") filtered = filtered.filter((product) => product.isNew);
-    if (sort === "menor") filtered.sort((a, b) => (a.promotionalPrice ?? a.price) - (b.promotionalPrice ?? b.price));
-    if (sort === "maior") filtered.sort((a, b) => (b.promotionalPrice ?? b.price) - (a.promotionalPrice ?? a.price));
-    if (sort === "novos") filtered.sort((a, b) => Number(b.isNew) - Number(a.isNew));
-    return filtered;
-  }, [category, initialFilter, products, sort]);
+type CatalogSort = "destaques" | "novos" | "menor" | "maior";
+
+type CatalogPageResponse = {
+  products?: Product[];
+  total?: number;
+  error?: string;
+};
+
+export function CatalogView({
+  initialProducts,
+  initialTotal,
+  initialFilter,
+  initialCategory = "todos",
+}: {
+  initialProducts: Product[];
+  initialTotal: number;
+  initialFilter?: string;
+  initialCategory?: SellableProductCategory | "todos";
+}) {
+  const [products, setProducts] = useState(initialProducts);
+  const [total, setTotal] = useState(initialTotal);
+  const [category, setCategory] = useState<SellableProductCategory | "todos">(initialCategory);
+  const [sort, setSort] = useState<CatalogSort>("destaques");
+  const [page, setPage] = useState(1);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState("");
+  const initialRender = useRef(true);
+
+  const load = useCallback(async (targetPage: number, append: boolean, signal?: AbortSignal) => {
+    setLoading(true);
+    setError("");
+    const query = new URLSearchParams({
+      paginated: "true",
+      page: String(targetPage),
+      pageSize: String(PAGE_SIZE),
+      sort,
+    });
+    if (category !== "todos") query.set("category", category);
+    if (initialFilter) query.set("filter", initialFilter);
+    try {
+      const response = await fetch(`/api/products?${query}`, {
+        signal,
+        cache: "no-store",
+      });
+      const result = await response.json() as CatalogPageResponse;
+      if (!response.ok || !result.products || result.total === undefined) {
+        throw new Error(result.error ?? "Não foi possível carregar os produtos.");
+      }
+      setProducts((current) => append
+        ? [...current, ...result.products!.filter(
+          (product) => !current.some((item) => item.id === product.id),
+        )]
+        : result.products!);
+      setTotal(result.total);
+      setPage(targetPage);
+    } catch (caught) {
+      if (signal?.aborted) return;
+      setError(caught instanceof Error ? caught.message : "Não foi possível carregar os produtos.");
+    } finally {
+      if (!signal?.aborted) setLoading(false);
+    }
+  }, [category, initialFilter, sort]);
+
+  useEffect(() => {
+    if (initialRender.current) {
+      initialRender.current = false;
+      return;
+    }
+    const controller = new AbortController();
+    void load(1, false, controller.signal);
+    return () => controller.abort();
+  }, [load]);
 
   return (
     <>
       <div className="catalog-toolbar">
         <div className="filter-group">
           <SlidersHorizontal size={18} />
-          <button className={category === "todos" ? "is-active" : ""} onClick={() => setCategory("todos")}>Todos</button>
+          <button type="button" className={category === "todos" ? "is-active" : ""} onClick={() => setCategory("todos")}>Todos</button>
           {(Object.entries(publicCategoryLabels) as Array<[SellableProductCategory, string]>).map(([key, label]) => (
-            <button key={key} className={category === key ? "is-active" : ""} onClick={() => setCategory(key)}>{label}</button>
+            <button type="button" key={key} className={category === key ? "is-active" : ""} onClick={() => setCategory(key)}>{label}</button>
           ))}
         </div>
         <label>Ordenar
-          <select value={sort} onChange={(event) => setSort(event.target.value)}>
+          <select value={sort} onChange={(event) => setSort(event.target.value as CatalogSort)}>
             <option value="destaques">Destaques</option>
             <option value="novos">Lançamentos</option>
             <option value="menor">Menor preço</option>
@@ -40,8 +100,21 @@ export function CatalogView({ products, initialFilter }: { products: Product[]; 
           </select>
         </label>
       </div>
-      <p className="result-count">{visible.length} produtos demonstrativos encontrados</p>
-      <ProductGrid products={visible} />
+      <p className="result-count">{total} produtos encontrados</p>
+      <ProductGrid products={products} />
+      {error && <div className="admin-feedback" role="alert">{error}</div>}
+      {products.length < total && (
+        <div className="catalog-load-more">
+          <button
+            type="button"
+            className="button button--dark"
+            disabled={loading}
+            onClick={() => void load(page + 1, true)}
+          >
+            {loading ? "Carregando..." : `Carregar mais produtos (${products.length} de ${total})`}
+          </button>
+        </div>
+      )}
     </>
   );
 }

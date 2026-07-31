@@ -184,7 +184,7 @@ export function ProductFormDemo({ productId }: { productId?: string }) {
             <div className="admin-image-grid">
               {product.images.map((image, index) => (
                 <article key={`${image}-${index}`} className={product.coverImage === image ? "admin-image-card is-cover" : "admin-image-card"}>
-                  <div><Image src={image} alt={`Imagem ${index + 1} de ${product.name || "produto"}`} fill sizes="180px" unoptimized /></div>
+                  <div><Image src={image} alt={`Imagem ${index + 1} de ${product.name || "produto"}`} fill sizes="180px" quality={75} /></div>
                   <span>{index + 1}{product.coverImage === image ? " · PRINCIPAL" : ""}</span>
                   <div className="admin-image-actions">
                     <button type="button" onClick={() => moveImage(index, -1)} disabled={index === 0} aria-label="Mover imagem para cima"><ArrowUp size={15} /></button>

@@ -6,23 +6,24 @@ import { ProductVisual } from "@/components/product-visual";
 import { PublicShell } from "@/components/public-shell";
 import { SectionTitle } from "@/components/section-title";
 import { whatsappUrl } from "@/lib/format";
-import { productRepository } from "@/repositories/product-repository";
+import { fetchProducts } from "@/repositories/supabase-product-repository";
 
 export const metadata: Metadata = {
   title: "Moda urbana com presença",
   description: "Descubra a coleção de tênis, calças e conjuntos da Bispo Store.",
 };
-export const dynamic = "force-dynamic";
+export const revalidate = 60;
 
 export default async function Home() {
-  const active = await productRepository.list();
-  const sneakers = active.filter((product) => product.category === "tenis").slice(0, 4);
-  const pants = active.filter((product) => product.category === "calcas").slice(0, 4);
-  const sets = active.filter((product) => product.category === "conjuntos").slice(0, 4);
-  const launches = active.filter((product) => product.isNew).slice(0, 4);
-  const offers = active.filter((product) => product.promotionalPrice).slice(0, 4);
-  const bestSellers = active.filter((product) => product.featured).slice(0, 4);
-  const heroProduct = active[0];
+  const [sneakers, pants, sets, launches, offers, bestSellers] = await Promise.all([
+    fetchProducts({ category: "tenis", limit: 4 }),
+    fetchProducts({ category: "calcas", limit: 4 }),
+    fetchProducts({ category: "conjuntos", limit: 4 }),
+    fetchProducts({ isNew: true, limit: 4 }),
+    fetchProducts({ onSale: true, limit: 4 }),
+    fetchProducts({ featured: true, limit: 4 }),
+  ]);
+  const heroProduct = launches[0] ?? sneakers[0] ?? pants[0] ?? sets[0];
 
   return (
     <PublicShell>

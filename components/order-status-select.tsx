@@ -101,20 +101,29 @@ export function OrderManagementPanel({
       method?: string | null;
       applied?: boolean;
       duplicate?: boolean;
+      stale?: boolean;
+      warning?: string;
+      confirmedAt?: string | null;
     };
     setSaving(false);
     if (!response.ok) {
-      setMessage(result.error ?? "Não foi possível consultar o PagBank Sandbox.");
+      setMessage(
+        order.paymentStatus === "paid"
+          ? `Pagamento já confirmado pelo PagBank. Não foi possível realizar uma nova consulta neste momento.${order.payment?.confirmedAt ? ` Última confirmação: ${order.payment.confirmedAt}.` : ""}`
+          : result.error ?? "Não foi possível consultar o PagBank Sandbox.",
+      );
       return;
     }
-    const outcome = result.applied
+    const outcome = result.warning
+      ?? (result.applied
       ? "Pagamento confirmado e reconciliado pela API oficial."
       : result.duplicate
         ? "Este estado oficial já havia sido processado."
-        : "Status consultado sem alteração do pedido.";
+        : "Status consultado sem alteração do pedido.");
     setMessage(
       `${outcome} Status: ${result.paymentStatus ?? "não informado"}`
-      + `${result.method ? ` · ${result.method}` : ""}`,
+      + `${result.method ? ` · ${result.method}` : ""}`
+      + `${result.confirmedAt || order.payment?.confirmedAt ? ` · Última confirmação: ${result.confirmedAt ?? order.payment?.confirmedAt}` : ""}`,
     );
     const refreshed = await fetch(`/api/orders/${order.id}`, { cache: "no-store" });
     if (refreshed.ok) {
@@ -158,6 +167,7 @@ export function OrderManagementPanel({
       {order.payment?.paymentUrl && <div className="admin-feedback">
         <strong>Checkout PagBank Sandbox</strong><br />
         ID: {order.payment.checkoutId}<br />
+        {order.payment.confirmedAt && <>Última confirmação bem-sucedida: {order.payment.confirmedAt}<br /></>}
         <a href={order.payment.paymentUrl} target="_blank" rel="noreferrer">Abrir link</a>
         {" · "}<a href={`https://wa.me/${order.customer.whatsapp.replace(/\D/g, "")}?text=${encodeURIComponent(`Olá! Segue o link de pagamento Sandbox do pedido ${order.id}: ${order.payment.paymentUrl}`)}`} target="_blank" rel="noreferrer">Enviar pelo WhatsApp</a>
         <label className="admin-inline-field">

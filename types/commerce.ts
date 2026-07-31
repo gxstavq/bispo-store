@@ -126,6 +126,7 @@ export interface OrderPaymentView {
   paymentUrl?: string;
   method?: string;
   providerStatus?: string;
+  confirmedAt?: string;
   createdAt?: string;
   expiresAt?: string;
   events: PaymentEventView[];

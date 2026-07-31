@@ -68,10 +68,23 @@ export class PagBankApiError extends Error {
     message: string,
     public readonly status: number,
     public readonly payload?: unknown,
+    public readonly endpoint?: string,
+    public readonly attempts = 1,
+    public readonly timedOut = false,
   ) {
     super(message);
     this.name = "PagBankApiError";
   }
+}
+
+const RETRYABLE_STATUS = new Set([502, 503, 504]);
+const CONSULTATION_TIMEOUT_MS = 8_000;
+const MAX_CONSULTATION_RETRIES = 2;
+
+function retryDelay(attempt: number) {
+  return new Promise((resolve) => {
+    setTimeout(resolve, 200 * attempt);
+  });
 }
 
 async function pagBankRequest<T>(
@@ -80,24 +93,66 @@ async function pagBankRequest<T>(
   fetchImpl: FetchImplementation = fetch,
 ) {
   const config = getPagBankConfig();
-  const response = await fetchImpl(`${config.baseUrl}${path}`, {
-    ...init,
-    headers: {
-      Accept: "application/json",
-      "Content-Type": "application/json",
-      Authorization: `Bearer ${config.token}`,
-      ...init.headers,
-    },
-    cache: "no-store",
-  });
-  const payload = await response.json().catch(() => ({}));
-  if (!response.ok) {
-    const message = typeof payload === "object" && payload && "error_messages" in payload
-      ? JSON.stringify(payload.error_messages)
-      : "Falha na comunicação com o PagBank.";
-    throw new PagBankApiError(message, response.status, payload);
+  const maxRetries = init.method === "GET" ? MAX_CONSULTATION_RETRIES : 0;
+  for (let attempt = 1; attempt <= maxRetries + 1; attempt += 1) {
+    const controller = new AbortController();
+    const timeout = setTimeout(() => controller.abort(), CONSULTATION_TIMEOUT_MS);
+    try {
+      const response = await fetchImpl(`${config.baseUrl}${path}`, {
+        ...init,
+        headers: {
+          Accept: "application/json",
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${config.token}`,
+          ...init.headers,
+        },
+        signal: controller.signal,
+        cache: "no-store",
+      });
+      const payload = await response.json().catch(() => ({}));
+      if (response.ok) return payload as T;
+      if (RETRYABLE_STATUS.has(response.status) && attempt <= maxRetries) {
+        await retryDelay(attempt);
+        continue;
+      }
+      const message = typeof payload === "object" && payload && "error_messages" in payload
+        ? JSON.stringify(payload.error_messages)
+        : "Falha na comunicação com o PagBank.";
+      throw new PagBankApiError(
+        message,
+        response.status,
+        payload,
+        path,
+        attempt,
+      );
+    } catch (error) {
+      if (error instanceof PagBankApiError) throw error;
+      const timedOut = error instanceof Error && error.name === "AbortError";
+      if (attempt <= maxRetries) {
+        await retryDelay(attempt);
+        continue;
+      }
+      throw new PagBankApiError(
+        timedOut
+          ? "A consulta ao PagBank excedeu o tempo limite."
+          : "Falha temporária na comunicação com o PagBank.",
+        504,
+        undefined,
+        path,
+        attempt,
+        timedOut,
+      );
+    } finally {
+      clearTimeout(timeout);
+    }
   }
-  return payload as T;
+  throw new PagBankApiError(
+    "Falha temporária na comunicação com o PagBank.",
+    503,
+    undefined,
+    path,
+    maxRetries + 1,
+  );
 }
 
 export function createPagBankCheckoutRequest(

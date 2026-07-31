@@ -12,17 +12,13 @@ import {
   shippingStatusLabels,
 } from "@/lib/order-status";
 import { orderRepository } from "@/repositories/order-repository";
-import { fetchProducts } from "@/repositories/supabase-product-repository";
 import { safeIntegrationConfiguration } from "@/lib/integrations/config";
 
 export const dynamic = "force-dynamic";
 
 export default async function OrderDetailsPage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = await params;
-  const [order, products] = await Promise.all([
-    orderRepository.findById(id),
-    fetchProducts({ includeInactive: true }),
-  ]);
+  const order = await orderRepository.findById(id);
   if (!order) notFound();
   const total = order.subtotal + (order.shippingAmount ?? 0);
   return (
@@ -39,11 +35,10 @@ export default async function OrderDetailsPage({ params }: { params: Promise<{ i
           <section className="admin-panel order-products">
             <div className="admin-panel__header"><div><span>ITENS</span><h2>Produtos do pedido</h2></div></div>
             {order.items.map((item) => {
-              const product = products.find((candidate) => candidate.id === item.productId);
-              const name = item.productName ?? product?.name ?? "Produto arquivado";
-              const code = item.productCode ?? product?.code ?? "SEM-SKU";
-              const unitPrice = item.unitPrice ?? product?.promotionalPrice ?? product?.price ?? 0;
-              return <div className="order-product-row" key={`${item.productId}-${item.size}-${item.color}`}><div className="mini-product">{product?.visual.type === "shoe" ? "SNK" : "WR"}</div><div><strong>{name}</strong><span>{code} · Tam. {item.size} · {item.color}</span></div><b>{item.quantity}×</b><strong>{formatCurrency(unitPrice * item.quantity)}</strong></div>;
+              const name = item.productName ?? "Produto arquivado";
+              const code = item.productCode ?? "SEM-SKU";
+              const unitPrice = item.unitPrice ?? 0;
+              return <div className="order-product-row" key={`${item.productId}-${item.size}-${item.color}`}><div className="mini-product">BS</div><div><strong>{name}</strong><span>{code} · Tam. {item.size} · {item.color}</span></div><b>{item.quantity}×</b><strong>{formatCurrency(unitPrice * item.quantity)}</strong></div>;
             })}
             <div className="order-totals">
               <div><span>Valor dos produtos</span><strong>{formatCurrency(order.subtotal)}</strong></div>

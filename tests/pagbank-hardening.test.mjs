@@ -57,6 +57,10 @@ const reconciliation = readFileSync(
   join(root, "services", "pagbank", "reconciliation.ts"),
   "utf8",
 );
+const pagBankClient = readFileSync(
+  join(root, "services", "pagbank", "client.ts"),
+  "utf8",
+);
 const returnPage = readFileSync(join(root, "app", "pedido-recebido", "page.tsx"), "utf8");
 const paymentService = readFileSync(join(root, "services", "pagbank", "payment-service.ts"), "utf8");
 const reservationService = readFileSync(
@@ -230,6 +234,21 @@ test("consulta direta mantém estados não pagos como pendentes", () => {
   const directCall = reconciliation.indexOf("export async function reconcilePagBankDirectPayment");
   const directSource = reconciliation.slice(directCall);
   assert.match(directSource, /applyNonPaid: false/);
+});
+
+test("consulta PagBank repete somente falhas temporárias e preserva pagamento confirmado", () => {
+  assert.match(pagBankClient, /MAX_CONSULTATION_RETRIES = 2/);
+  assert.match(pagBankClient, /new Set\(\[502, 503, 504\]\)/);
+  assert.match(pagBankClient, /200 \* attempt/);
+  assert.match(pagBankClient, /CONSULTATION_TIMEOUT_MS = 8_000/);
+  assert.match(pagBankClient, /init\.method === "GET"/);
+  assert.match(reconciliation, /operation: "consult_payment_status"/);
+  assert.match(reconciliation, /httpStatus: error\.status/);
+  assert.match(reconciliation, /attempts: error\.attempts/);
+  assert.match(reconciliation, /payment\.status === "paid" && order\.stock_deducted_at/);
+  assert.match(reconciliation, /Pagamento já confirmado pelo PagBank/);
+  assert.match(reconciliation, /applied: false/);
+  assert.match(reconciliation, /stockDeducted: true/);
 });
 
 test("webhook usa checkout_id explícito e ignora id transacional", () => {

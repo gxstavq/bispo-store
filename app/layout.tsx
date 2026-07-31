@@ -1,5 +1,4 @@
 import type { Metadata } from "next";
-import { StoreProvider } from "@/components/store-provider";
 import "./globals.css";
 
 export const metadata: Metadata = {
@@ -43,7 +42,7 @@ export default function RootLayout({ children }: Readonly<{ children: React.Reac
   return (
     <html lang="pt-BR">
       <body>
-        <StoreProvider>{children}</StoreProvider>
+        {children}
       </body>
     </html>
   );

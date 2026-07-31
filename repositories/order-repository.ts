@@ -23,7 +23,7 @@ const orderSelect = `
   shipping_decisions(id, decision, note, decided_at, decided_by),
   payments(
     id, status, external_reference, checkout_id, payment_url, payment_method,
-    raw_status, expires_at, provider_payload, created_at,
+    raw_status, confirmed_at, expires_at, provider_payload, created_at,
     payment_events(id, event_type, provider_status, verified, verification_error, received_at)
   ),
   selected_quote:shipping_quotes!orders_selected_shipping_quote_id_fkey(
@@ -86,6 +86,7 @@ type OrderRecord = {
     payment_url: string | null;
     payment_method: string | null;
     raw_status: string | null;
+    confirmed_at: string | null;
     expires_at: string | null;
     provider_payload: unknown;
     created_at: string;
@@ -225,6 +226,9 @@ function mapOrder(row: OrderRecord): StoreOrder {
       paymentUrl: latestPayment.payment_url ?? undefined,
       method: latestPayment.payment_method ?? undefined,
       providerStatus: latestPayment.raw_status ?? undefined,
+      confirmedAt: latestPayment.confirmed_at
+        ? formatDate(latestPayment.confirmed_at)
+        : undefined,
       createdAt: formatDate(latestPayment.created_at),
       expiresAt: latestPayment.expires_at ? formatDate(latestPayment.expires_at) : undefined,
       events: [...(latestPayment.payment_events ?? [])]

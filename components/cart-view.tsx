@@ -3,14 +3,19 @@
 import Link from "next/link";
 import { ArrowRight, Minus, Plus, ShoppingBag, Trash2, Truck } from "lucide-react";
 import { formatCurrency } from "@/lib/format";
-import type { Product } from "@/types/commerce";
 import { useStore } from "./store-provider";
 import { ProductVisual } from "./product-visual";
+import { useCartProducts } from "./use-cart-products";
 
-export function CartView({ products }: { products: Product[] }) {
+export function CartView() {
   const { items, updateQuantity, removeItem } = useStore();
+  const { products, loading } = useCartProducts(items);
   const rows = items.map((item, index) => ({ item, index, product: products.find((product) => product.id === item.productId) })).filter((row) => row.product);
   const subtotal = rows.reduce((sum, row) => sum + (row.product?.promotionalPrice ?? row.product?.price ?? 0) * row.item.quantity, 0);
+
+  if (items.length && loading) {
+    return <div className="empty-cart"><p>Carregando os itens do carrinho...</p></div>;
+  }
 
   if (!rows.length) {
     return (

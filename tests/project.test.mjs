@@ -221,3 +221,27 @@ test("configurações administrativas continuam disponíveis se o status OAuth f
   assert.match(form, /Status indisponível/);
   assert.match(form, /As demais configurações continuam disponíveis/);
 });
+
+test("catálogo e painéis evitam carregar todos os produtos de uma vez", () => {
+  const catalogPage = readFileSync(join(root, "app", "catalogo", "page.tsx"), "utf8");
+  const catalog = readFileSync(join(root, "components", "catalog-view.tsx"), "utf8");
+  const cartPage = readFileSync(join(root, "app", "carrinho", "page.tsx"), "utf8");
+  const checkoutPage = readFileSync(join(root, "app", "checkout", "page.tsx"), "utf8");
+  const cartProducts = readFileSync(join(root, "components", "use-cart-products.ts"), "utf8");
+  const adminProducts = readFileSync(join(root, "components", "admin-products-manager.tsx"), "utf8");
+  const productVisual = readFileSync(join(root, "components", "product-visual.tsx"), "utf8");
+  const proxy = readFileSync(join(root, "proxy.ts"), "utf8");
+
+  assert.match(catalogPage, /limit: 24/);
+  assert.match(catalog, /PAGE_SIZE = 24/);
+  assert.match(catalog, /Carregar mais produtos/);
+  assert.doesNotMatch(cartPage, /productRepository|fetchProducts/);
+  assert.doesNotMatch(checkoutPage, /productRepository|fetchProducts/);
+  assert.match(cartProducts, /\/api\/products\?ids=/);
+  assert.match(adminProducts, /pageSize = 25/);
+  assert.match(adminProducts, /paginated/);
+  assert.doesNotMatch(productVisual, /unoptimized/);
+  assert.match(productVisual, /loading=\{priority \? "eager" : "lazy"\}/);
+  assert.doesNotMatch(proxy, /_next\/static\|_next\/image/);
+  assert.match(proxy, /"\/admin\/:path\*"/);
+});
