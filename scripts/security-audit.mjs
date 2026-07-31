@@ -32,11 +32,15 @@ for (const file of auditedRoots.flatMap((directory) => files(join(root, director
     /NEXT_PUBLIC_(?:PAGBANK|MELHOR_ENVIO|SUPABASE_SERVICE_ROLE|INTEGRATION_ENCRYPTION)/i,
     `${label}: segredo público`,
   );
-  assert.doesNotMatch(
-    source,
-    /https:\/\/api\.pagseguro\.com|https:\/\/melhorenvio\.com\.br\/api/i,
-    `${label}: endpoint de produção`,
-  );
+  if (label === join("lib", "integrations", "pagbank-environment.ts")) {
+    assert.match(source, /production: "https:\/\/api\.pagseguro\.com"/);
+  } else {
+    assert.doesNotMatch(
+      source,
+      /https:\/\/api\.pagseguro\.com|https:\/\/melhorenvio\.com\.br\/api/i,
+      `${label}: endpoint de produção fora da configuração autorizada`,
+    );
+  }
   if (!label.endsWith(".env.example")) {
     assert.doesNotMatch(
       source,

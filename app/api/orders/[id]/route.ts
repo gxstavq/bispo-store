@@ -138,7 +138,7 @@ export async function PATCH(request: NextRequest, { params }: { params: Promise<
       await createPagBankCheckoutForOrder(id);
     } catch (error) {
       return NextResponse.json({
-        error: error instanceof Error ? error.message : "Não foi possível criar o Checkout PagBank Sandbox.",
+        error: error instanceof Error ? error.message : "Não foi possível criar o Checkout PagBank.",
       }, { status: 502 });
     }
   }

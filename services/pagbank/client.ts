@@ -167,6 +167,17 @@ export function createPagBankCheckoutRequest(
   }, fetchImpl);
 }
 
+export function inactivatePagBankCheckout(
+  checkoutId: string,
+  fetchImpl: FetchImplementation = fetch,
+) {
+  return pagBankRequest<Record<string, unknown>>(
+    `/checkouts/${encodeURIComponent(checkoutId)}/inactivate`,
+    { method: "POST" },
+    fetchImpl,
+  );
+}
+
 export function consultPagBankCheckout(
   checkoutId: string,
   fetchImpl: FetchImplementation = fetch,

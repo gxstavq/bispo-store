@@ -71,15 +71,18 @@ test("homologação Netlify bloqueia indexação em todas as camadas", () => {
   assert.doesNotMatch(netlify, /SUPABASE|PAGBANK|MELHOR_ENVIO|STORE_CNPJ/);
 });
 
-test("integrações Sandbox ficam em rotas e serviços de servidor", () => {
+test("integrações ficam em rotas e serviços de servidor com ambientes explícitos", () => {
   const config = readFileSync(join(root, "lib", "integrations", "config.ts"), "utf8");
+  const pagBankEnvironment = readFileSync(join(root, "lib", "integrations", "pagbank-environment.ts"), "utf8");
   const env = readFileSync(join(root, ".env.example"), "utf8");
   const melhorEnvioCallback = readFileSync(
     join(root, "app", "api", "integrations", "melhor-envio", "callback", "route.ts"),
     "utf8",
   );
   assert.match(config, /sandbox\.melhorenvio\.com\.br/);
-  assert.match(config, /sandbox\.api\.pagseguro\.com/);
+  assert.match(pagBankEnvironment, /sandbox\.api\.pagseguro\.com/);
+  assert.match(pagBankEnvironment, /https:\/\/api\.pagseguro\.com/);
+  assert.match(pagBankEnvironment, /value !== "sandbox" && value !== "production"/);
   assert.doesNotMatch(env, /NEXT_PUBLIC_(?:PAGBANK|MELHOR_ENVIO)/);
   assert.match(env, /^ENABLE_MELHOR_ENVIO_LABEL_PURCHASE=$/m);
   assert.match(melhorEnvioCallback, /process\.env\.NEXT_PUBLIC_SITE_URL/);

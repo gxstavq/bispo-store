@@ -70,7 +70,7 @@ test("webhook rejeita assinatura antes de consultar banco ou PagBank", () => {
   assert.doesNotMatch(webhook, /request\.json\(\)|JSON\.stringify\(body\)/);
 });
 
-test("diagnóstico PagBank é Sandbox, server-side e exclusivo de administradores", () => {
+test("diagnóstico PagBank é server-side, dependente do ambiente e exclusivo de administradores", () => {
   const route = source(
     "app", "api", "integrations", "pagbank", "checkouts", "[id]", "status", "route.ts",
   );
@@ -90,8 +90,9 @@ test("diagnóstico PagBank é Sandbox, server-side e exclusivo de administradore
   assert.match(directRoute, /reconcilePagBankDirectPayment/);
   assert.doesNotMatch(directRoute, /process\.env\.CONTEXT|Authorization|PAGBANK_TOKEN/);
   assert.match(reconciliation, /consultPagBankCheckout/);
-  assert.match(config, /baseUrl: "https:\/\/sandbox\.api\.pagseguro\.com"/);
-  assert.match(config, /sandboxOnly\("PAGBANK_ENV"\)/);
+  assert.match(config, /getPagBankEnvironment\(\)/);
+  assert.match(config, /token: required\("PAGBANK_TOKEN"\)/);
+  assert.doesNotMatch(config, /NEXT_PUBLIC_PAGBANK/);
   const panel = source("components", "order-status-select.tsx");
   assert.match(panel, /Verificar pagamento no PagBank/);
   assert.match(panel, /\/api\/integrations\/pagbank\/orders\//);
@@ -133,6 +134,7 @@ test("mutações autenticadas têm origem e payload limitados", () => {
     ["app", "api", "admin", "settings", "route.ts"],
     ["app", "api", "admin", "uploads", "route.ts"],
     ["app", "api", "orders", "[id]", "route.ts"],
+    ["app", "api", "orders", "[id]", "payment-checkout", "cancel", "route.ts"],
     ["app", "api", "admin", "orders", "[id]", "label", "route.ts"],
   ];
   for (const parts of routes) {
@@ -174,8 +176,11 @@ test("origem oficial inesperada não amplia a allowlist", () => {
 
 test("checkout rejeita total zero e URL de pagamento não HTTPS", () => {
   const payment = source("services", "pagbank", "payment-service.ts");
+  const environment = source("lib", "integrations", "pagbank-environment.ts");
   assert.match(payment, /total do pedido deve ser maior que zero/i);
-  assert.match(payment, /url\.protocol === "https:"/);
+  assert.match(payment, /isPagBankPaymentUrl/);
+  assert.match(environment, /url\.protocol === "https:"/);
+  assert.match(environment, /PAGBANK_PAYMENT_HOSTS\[environment\]\.has\(url\.hostname\)/);
   assert.match(payment, /currentPrice !== Number\(item\.unit_price\)/);
   assert.match(payment, /product_variants\.stock|Estoque insuficiente/);
 });

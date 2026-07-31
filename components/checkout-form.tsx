@@ -14,6 +14,7 @@ import {
   createPaymentCheckout,
 } from "@/services/order-service";
 import type { CheckoutData, ShippingQuote } from "@/types/commerce";
+import type { PagBankEnvironment } from "@/lib/integrations/pagbank-environment";
 import { useStore } from "./store-provider";
 import { useCartProducts } from "./use-cart-products";
 
@@ -38,7 +39,11 @@ function formatPostalCode(value: string) {
   return digits.length > 5 ? `${digits.slice(0, 5)}-${digits.slice(5)}` : digits;
 }
 
-export function CheckoutForm() {
+export function CheckoutForm({
+  pagBankEnvironment,
+}: {
+  pagBankEnvironment: PagBankEnvironment | null;
+}) {
   const router = useRouter();
   const { items, clearCart } = useStore();
   const { products, loading: productsLoading } = useCartProducts(items);
@@ -57,6 +62,7 @@ export function CheckoutForm() {
   const selectedQuote = quotes.find((quote) => quote.id === data.selectedShippingQuoteId);
   const quoteIsCurrent = quotedCartKey === `${data.cep.replace(/\D/g, "")}:${cartKey}`;
   const localDeliveryCanBeRequested = data.state === "SP";
+  const pagBankIsSandbox = pagBankEnvironment === "sandbox";
   const subtotal = useMemo(() => items.reduce((sum, item) => {
     const product = products.find((candidate) => candidate.id === item.productId);
     return sum + (product?.promotionalPrice ?? product?.price ?? 0) * item.quantity;
@@ -244,9 +250,9 @@ export function CheckoutForm() {
   return (
     <form className="checkout-layout" onSubmit={submit}>
       <div className="checkout-form">
-        <div className="demo-banner"><LockKeyhole /><div><strong>Ambiente Sandbox — nenhum pagamento real será processado.</strong><span>O pagamento acontece somente na página segura de testes do PagBank; a Bispo Store não coleta dados de cartão.</span></div></div>
+        <div className="demo-banner"><LockKeyhole /><div><strong>{pagBankIsSandbox ? "Ambiente Sandbox — nenhum pagamento real será processado." : "Pagamento seguro processado pelo PagBank."}</strong><span>{pagBankIsSandbox ? "O pagamento acontece somente na página segura de testes do PagBank." : "Você será redirecionado ao checkout hospedado oficial do PagBank."} A Bispo Store não coleta dados de cartão.</span></div></div>
         <section className="form-section">
-          <div className="form-section__title"><span>01</span><div><h2>Contato</h2><p>Usaremos seus dados apenas para este pedido de teste.</p></div></div>
+          <div className="form-section__title"><span>01</span><div><h2>Contato</h2><p>Usaremos seus dados apenas para processar este pedido.</p></div></div>
           <div className="form-grid">
             <label className="span-2">Nome completo<input required value={data.fullName} onChange={(e) => update("fullName", e.target.value)} /></label>
             <label>WhatsApp<input required value={data.whatsapp} onChange={(e) => update("whatsapp", e.target.value)} placeholder="(11) 99999-9999" /></label>
@@ -328,8 +334,8 @@ export function CheckoutForm() {
         })}
         <div className="shipping-alert"><Truck /><p><strong>{data.deliveryChoice === "local_delivery_review" ? "Análise local pendente." : selectedQuote ? `${selectedQuote.carrier} · ${selectedQuote.service}` : "Selecione o frete."}</strong> {data.deliveryChoice === "local_delivery_review" ? "Nenhuma cobrança será criada agora." : selectedQuote ? formatCurrency(selectedQuote.amount) : "Cotação necessária."}</p></div>
         <div className="summary-total"><span>Total {selectedQuote ? "com frete" : "sem frete"}</span><strong>{formatCurrency(subtotal + (selectedQuote?.amount ?? 0))}</strong></div>
-        <button className="button button--red button--full" disabled={submitting || (data.deliveryChoice === "shipping_quote" && !selectedQuote)}>{submitting ? "Processando..." : <>{data.deliveryChoice === "local_delivery_review" ? "Solicitar análise local" : "Ir ao PagBank Sandbox"} <ArrowRight size={18} /></>}</button>
-        <small className="checkout-legal">Produtos, preços, frete e estoque serão recalculados no servidor. Para frete normal, você será redirecionado ao Checkout PagBank Sandbox.</small>
+        <button className="button button--red button--full" disabled={submitting || (data.deliveryChoice === "shipping_quote" && !selectedQuote) || !pagBankEnvironment}>{submitting ? "Processando..." : <>{data.deliveryChoice === "local_delivery_review" ? "Solicitar análise local" : pagBankIsSandbox ? "Ir ao PagBank Sandbox" : "Ir ao PagBank"} <ArrowRight size={18} /></>}</button>
+        <small className="checkout-legal">Produtos, preços, frete e estoque serão recalculados no servidor. Para frete normal, você será redirecionado ao Checkout PagBank {pagBankIsSandbox ? "Sandbox" : "oficial"}.</small>
       </aside>
     </form>
   );

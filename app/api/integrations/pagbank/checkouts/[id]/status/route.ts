@@ -54,7 +54,7 @@ export async function POST(
       }, { status: error.status });
     }
     return NextResponse.json({
-      error: "Não foi possível consultar o Checkout Sandbox.",
+      error: "Não foi possível consultar o Checkout PagBank.",
     }, { status: 502 });
   }
 }

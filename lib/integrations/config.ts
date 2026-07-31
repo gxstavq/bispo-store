@@ -1,5 +1,10 @@
 import "server-only";
 
+import {
+  resolvePagBankEnvironment,
+  type PagBankEnvironment,
+} from "@/lib/integrations/pagbank-environment";
+
 function required(name: string) {
   const value = process.env[name]?.trim();
   if (!value) throw new Error(`Integração não configurada: ${name}.`);
@@ -12,6 +17,31 @@ function sandboxOnly(name: string) {
     throw new Error(`${name} deve permanecer como sandbox até aprovação manual.`);
   }
   return value;
+}
+
+function requiredHttpsUrl(name: string) {
+  const value = required(name);
+  let url: URL;
+  try {
+    url = new URL(value);
+  } catch {
+    throw new Error(`Integração configurada com URL inválida: ${name}.`);
+  }
+  if (url.protocol !== "https:" || url.username || url.password) {
+    throw new Error(`Integração configurada com URL insegura: ${name}.`);
+  }
+  return url;
+}
+
+function assertProductionPagBankUrl(name: string, url: URL, pathname: string) {
+  if (
+    url.origin !== "https://bispostorebr.com.br"
+    || url.pathname.replace(/\/$/u, "") !== pathname
+    || url.search
+    || url.hash
+  ) {
+    throw new Error(`${name} deve usar a URL oficial da Bispo Store em produção.`);
+  }
 }
 
 export function getMelhorEnvioConfig() {
@@ -28,13 +58,31 @@ export function getMelhorEnvioConfig() {
 }
 
 export function getPagBankConfig() {
-  sandboxOnly("PAGBANK_ENV");
+  const selected = getPagBankEnvironment();
+  const notificationUrl = requiredHttpsUrl("PAGBANK_NOTIFICATION_URL");
+  const redirectUrl = requiredHttpsUrl("PAGBANK_REDIRECT_URL");
+  if (selected.environment === "production") {
+    assertProductionPagBankUrl(
+      "PAGBANK_NOTIFICATION_URL",
+      notificationUrl,
+      "/api/webhooks/pagbank",
+    );
+    assertProductionPagBankUrl(
+      "PAGBANK_REDIRECT_URL",
+      redirectUrl,
+      "/pedido-recebido",
+    );
+  }
   return {
-    baseUrl: "https://sandbox.api.pagseguro.com",
+    ...selected,
     token: required("PAGBANK_TOKEN"),
-    notificationUrl: required("PAGBANK_NOTIFICATION_URL"),
-    redirectUrl: required("PAGBANK_REDIRECT_URL"),
+    notificationUrl: notificationUrl.toString(),
+    redirectUrl: redirectUrl.toString(),
   };
+}
+
+export function getPagBankEnvironment() {
+  return resolvePagBankEnvironment(process.env.PAGBANK_ENV?.trim());
 }
 
 export function isMelhorEnvioLabelPurchaseEnabled() {
@@ -52,6 +100,12 @@ export function getIntegrationEncryptionKey() {
 }
 
 export function safeIntegrationConfiguration() {
+  let pagBankEnvironment: PagBankEnvironment | null = null;
+  try {
+    pagBankEnvironment = getPagBankEnvironment().environment;
+  } catch {
+    pagBankEnvironment = null;
+  }
   return {
     melhorEnvioSandbox: process.env.MELHOR_ENVIO_ENV === "sandbox",
     melhorEnvioConfigured: Boolean(
@@ -60,12 +114,13 @@ export function safeIntegrationConfiguration() {
       && process.env.MELHOR_ENVIO_REDIRECT_URI
       && process.env.MELHOR_ENVIO_ENV === "sandbox",
     ),
-    pagBankSandbox: process.env.PAGBANK_ENV === "sandbox",
+    pagBankEnvironment,
+    pagBankSandbox: pagBankEnvironment === "sandbox",
     pagBankConfigured: Boolean(
       process.env.PAGBANK_TOKEN
       && process.env.PAGBANK_NOTIFICATION_URL
       && process.env.PAGBANK_REDIRECT_URL
-      && process.env.PAGBANK_ENV === "sandbox",
+      && pagBankEnvironment,
     ),
     labelPurchaseEnabled: isMelhorEnvioLabelPurchaseEnabled(),
   };

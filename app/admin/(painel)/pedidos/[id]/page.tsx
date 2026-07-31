@@ -21,6 +21,7 @@ export default async function OrderDetailsPage({ params }: { params: Promise<{ i
   const order = await orderRepository.findById(id);
   if (!order) notFound();
   const total = order.subtotal + (order.shippingAmount ?? 0);
+  const integrations = safeIntegrationConfiguration();
   return (
     <>
       <Link href="/admin/pedidos" className="admin-back"><ArrowLeft size={17} /> Voltar aos pedidos</Link>
@@ -79,7 +80,8 @@ export default async function OrderDetailsPage({ params }: { params: Promise<{ i
             <div className="admin-panel__header"><div><span>DECISÃO</span><h2>Gerenciar pedido</h2></div></div>
             <OrderManagementPanel
               initial={order}
-              labelPurchaseEnabled={safeIntegrationConfiguration().labelPurchaseEnabled}
+              labelPurchaseEnabled={integrations.labelPurchaseEnabled}
+              pagBankEnvironment={integrations.pagBankEnvironment}
             />
           </section>
         </aside>

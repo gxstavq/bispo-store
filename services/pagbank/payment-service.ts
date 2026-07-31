@@ -1,7 +1,13 @@
 import "server-only";
 
 import { createHash } from "node:crypto";
-import { getPagBankConfig } from "@/lib/integrations/config";
+import {
+  getPagBankConfig,
+} from "@/lib/integrations/config";
+import {
+  isPagBankPaymentUrl,
+  type PagBankEnvironment,
+} from "@/lib/integrations/pagbank-environment";
 import { createSupabaseServiceClient } from "@/lib/supabase/admin";
 import {
   createPagBankCheckoutRequest,
@@ -53,19 +59,29 @@ function cents(value: number) {
   return Math.round((value + Number.EPSILON) * 100);
 }
 
-function securePaymentUrl(checkout: PagBankCheckout) {
+function securePaymentUrl(
+  checkout: PagBankCheckout,
+  environment: PagBankEnvironment,
+) {
   const value = checkout.links?.find((link) => link.rel === "PAY")?.href;
   if (!value) return undefined;
   try {
-    const url = new URL(value);
-    return url.protocol === "https:" ? url.toString() : undefined;
+    return isPagBankPaymentUrl(value, environment)
+      ? new URL(value).toString()
+      : undefined;
   } catch {
     return undefined;
   }
 }
 
-export function pagBankIdempotencyKey(orderId: string, attempt: number) {
-  return createHash("sha256").update(`pagbank:sandbox:checkout:${orderId}:v1:${attempt}`).digest("hex");
+export function pagBankIdempotencyKey(
+  orderId: string,
+  attempt: number,
+  environment: PagBankEnvironment,
+) {
+  return createHash("sha256")
+    .update(`pagbank:${environment}:checkout:${orderId}:v1:${attempt}`)
+    .digest("hex");
 }
 
 function checkoutPayload(order: OrderForPayment, expirationDate: string) {
@@ -157,6 +173,7 @@ function validateOrderForPayment(order: OrderForPayment) {
 }
 
 export async function createPagBankCheckoutForOrder(orderNumber: string) {
+  const environment = getPagBankConfig().environment;
   const supabase = createSupabaseServiceClient();
   const { data, error } = await supabase
     .from("orders")
@@ -206,7 +223,11 @@ export async function createPagBankCheckoutForOrder(orderNumber: string) {
       };
     }
   }
-  const idempotencyKey = pagBankIdempotencyKey(order.id, (previousPayments?.length ?? 0) + 1);
+  const idempotencyKey = pagBankIdempotencyKey(
+    order.id,
+    (previousPayments?.length ?? 0) + 1,
+    environment,
+  );
   const checkoutExpiresAt = stockReservationExpiration();
   await reserveOrderStock(order.id, checkoutExpiresAt);
 
@@ -216,7 +237,7 @@ export async function createPagBankCheckoutForOrder(orderNumber: string) {
     amount: total,
     status: "creating",
     idempotency_key: idempotencyKey,
-    provider_payload: { environment: "sandbox", request_started: true },
+    provider_payload: { environment, request_started: true },
   }).select("id").single();
   if (insertError) {
     const { data: concurrent } = await supabase
@@ -242,7 +263,7 @@ export async function createPagBankCheckoutForOrder(orderNumber: string) {
       checkoutPayload(order, checkoutExpiresAt),
       idempotencyKey,
     );
-    const paymentUrl = securePaymentUrl(response);
+    const paymentUrl = securePaymentUrl(response, environment);
     if (!response.id || !paymentUrl) throw new Error("O PagBank não retornou checkout_id e link PAY.");
     checkoutCreated = true;
     const { error: updateError } = await supabase.from("payments").update({
@@ -272,7 +293,7 @@ export async function createPagBankCheckoutForOrder(orderNumber: string) {
       provider_event_id: `checkout-created-${response.id}`,
       provider_status: response.status ?? "ACTIVE",
       verified: true,
-      payload: { checkout_id: response.id, environment: "sandbox" },
+      payload: { checkout_id: response.id, environment },
     });
     return {
       checkoutId: response.id,
@@ -316,6 +337,9 @@ export async function createPagBankCheckoutForOrder(orderNumber: string) {
   }
 }
 
-export function extractPagBankPaymentUrl(checkout: PagBankCheckout) {
-  return securePaymentUrl(checkout);
+export function extractPagBankPaymentUrl(
+  checkout: PagBankCheckout,
+  environment: PagBankEnvironment,
+) {
+  return securePaymentUrl(checkout, environment);
 }

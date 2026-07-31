@@ -1,6 +1,9 @@
 import { createHash, randomUUID } from "node:crypto";
 import { NextRequest, NextResponse } from "next/server";
-import { getPagBankConfig } from "@/lib/integrations/config";
+import {
+  getPagBankConfig,
+  getPagBankEnvironment,
+} from "@/lib/integrations/config";
 import {
   PagBankReconciliationError,
   reconcilePagBankOrderPayment,
@@ -44,7 +47,13 @@ function observeWebhook(input: Observation) {
     received_signature_length: input.receivedSignatureLength,
     calculated_signature_length: input.calculatedSignatureLength,
     body_sha256: input.bodySha256,
-    environment: "sandbox",
+    environment: (() => {
+      try {
+        return getPagBankEnvironment().environment;
+      } catch {
+        return "invalid";
+      }
+    })(),
   }));
 }
 
@@ -114,7 +123,7 @@ export async function POST(request: NextRequest) {
       requestId,
       phase: "validation",
       result: "rejected",
-      reason: "sandbox_configuration_unavailable",
+      reason: "pagbank_configuration_unavailable",
       bodyBytes,
       bodySha256,
       signaturePresent,

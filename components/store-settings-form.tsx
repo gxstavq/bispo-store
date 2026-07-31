@@ -3,11 +3,13 @@
 import { Save, ShieldCheck } from "lucide-react";
 import { useState } from "react";
 import type { StoreSettings } from "@/types/commerce";
+import type { PagBankEnvironment } from "@/lib/integrations/pagbank-environment";
 
 type IntegrationStatus = {
   melhorEnvioSandbox: boolean;
   melhorEnvioConfigured: boolean;
   pagBankSandbox: boolean;
+  pagBankEnvironment: PagBankEnvironment | null;
   pagBankConfigured: boolean;
   labelPurchaseEnabled: boolean;
 };
@@ -91,10 +93,10 @@ export function StoreSettingsForm({
             </div></div>
           </section>
           <section className="admin-panel admin-form-section">
-            <div className="admin-panel__header"><div><span>INTEGRAÇÕES</span><h2>Ambiente de testes</h2></div></div>
+            <div className="admin-panel__header"><div><span>INTEGRAÇÕES</span><h2>Ambientes configurados</h2></div></div>
             <div className="integration-list">
               <div><span><i className="is-demo" /> Melhor Envio</span><strong>{melhorEnvio.unavailable ? "Status indisponível" : melhorEnvio.connected ? "Sandbox conectado" : integrations.melhorEnvioConfigured ? "OAuth pronto" : "Variáveis pendentes"}</strong></div>
-              <div><span><i className="is-demo" /> PagBank</span><strong>{integrations.pagBankConfigured ? "Sandbox configurado" : "Variáveis pendentes"}</strong></div>
+              <div><span><i className={integrations.pagBankEnvironment === "sandbox" ? "is-demo" : ""} /> PagBank</span><strong>{integrations.pagBankConfigured ? integrations.pagBankEnvironment === "production" ? "Produção configurada" : "Sandbox configurado" : "Variáveis pendentes ou inválidas"}</strong></div>
               <div><span><i /> Etiquetas</span><strong>{integrations.labelPurchaseEnabled ? "Habilitadas" : "Desativadas por padrão"}</strong></div>
             </div>
             {melhorEnvio.expiresAt && <p className="settings-note">Token atual válido até {new Date(melhorEnvio.expiresAt).toLocaleString("pt-BR")}.</p>}

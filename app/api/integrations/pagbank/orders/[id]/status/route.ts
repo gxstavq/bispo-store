@@ -75,7 +75,7 @@ export async function POST(
       }, { status: error.status });
     }
     return NextResponse.json({
-      error: "Não foi possível consultar o pagamento no PagBank Sandbox.",
+      error: "Não foi possível consultar o pagamento no PagBank.",
     }, { status: 502 });
   }
 }
