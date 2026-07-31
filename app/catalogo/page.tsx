@@ -5,7 +5,7 @@ import { fetchProductPage } from "@/repositories/supabase-product-repository";
 
 export const metadata: Metadata = {
   title: "Catálogo completo",
-  description: "Explore tênis, calças e conjuntos da coleção demonstrativa Bispo Store.",
+  description: "Explore tênis, calças e conjuntos da Bispo Store.",
 };
 export const revalidate = 60;
 
@@ -21,9 +21,9 @@ export default async function CatalogPage({ searchParams }: { searchParams: Prom
     <PublicShell>
       <section className="page-hero page-hero--catalog">
         <div className="container">
-          <span>DROP DEMO 001</span>
+          <span>COLEÇÃO BISPO STORE</span>
           <h1>{filtro === "ofertas" ? "Ofertas" : filtro === "lancamentos" ? "Lançamentos" : "Catálogo completo"}</h1>
-          <p>Uma vitrine conceitual pronta para receber os produtos reais da Bispo Store.</p>
+          <p>Tênis, calças e conjuntos selecionados para o seu estilo.</p>
         </div>
       </section>
       <section className="section container">

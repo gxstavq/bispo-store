@@ -31,6 +31,7 @@ export interface Product {
   active: boolean;
   status?: ProductStatus;
   needsReview?: boolean;
+  imagesConfirmed?: boolean;
   archivedAt?: string;
   archiveReason?: string;
   demo: true;

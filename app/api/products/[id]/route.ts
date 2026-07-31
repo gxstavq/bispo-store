@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { requireAdmin } from "@/lib/auth/admin";
 import { defaultsForCategory } from "@/lib/product-rules";
+import { productCompleteness } from "@/lib/products/completeness";
 import { assertSameOrigin, readJsonBody, validationErrorResponse } from "@/lib/security/request";
 import { validateProduct } from "@/lib/validation/commerce";
 import {
@@ -54,7 +55,12 @@ export async function PUT(request: NextRequest, { params }: { params: Promise<{ 
     demo: true,
   };
   try {
-    return NextResponse.json(await saveSupabaseProduct(validateProduct(product), id));
+    const validated = validateProduct(product);
+    const completeness = productCompleteness(validated);
+    return NextResponse.json(await saveSupabaseProduct({
+      ...validated,
+      needsReview: !completeness.complete,
+    }, id));
   } catch (error) {
     return NextResponse.json({ error: error instanceof Error ? error.message : "Produto não salvo." }, { status: 400 });
   }

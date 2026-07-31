@@ -143,17 +143,19 @@ test("mutações autenticadas têm origem e payload limitados", () => {
   assert.match(source("app", "api", "admin", "uploads", "route.ts"), /validImageSignature/);
 });
 
-test("origens Netlify são exatas e reconhecidas pelas variáveis oficiais", () => {
+test("domínios oficiais e origens Netlify autorizadas são exatos", () => {
+  const official = "https://bispostorebr.com.br";
+  const www = "https://www.bispostorebr.com.br";
   const main = "https://bispo-store-homologacao.netlify.app";
   const preview = "https://deploy-preview-1--bispo-store-homologacao.netlify.app";
-  const allowed = allowedRequestOrigins("https://internal.netlify", {
-    NEXT_PUBLIC_SITE_URL: main,
+  const allowed = allowedRequestOrigins(www, {
+    NEXT_PUBLIC_SITE_URL: official,
     URL: main,
     DEPLOY_PRIME_URL: preview,
     NODE_ENV: "production",
   });
 
-  assert.deepEqual([...allowed].sort(), [main, preview].sort());
+  assert.deepEqual([...allowed].sort(), [official, www, main, preview].sort());
   assert.equal(allowed.has("https://evil.netlify.app"), false);
   assert.equal(allowed.has("https://other--bispo-store-homologacao.netlify.app"), false);
   assert.equal(allowed.has("https://internal.netlify"), false);

@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { requireAdmin } from "@/lib/auth/admin";
 import { isSellableCategory } from "@/lib/product-rules";
+import { productCompleteness } from "@/lib/products/completeness";
 import { assertSameOrigin, readJsonBody, validationErrorResponse } from "@/lib/security/request";
 import { validateProduct } from "@/lib/validation/commerce";
 import { fetchProducts, saveSupabaseProduct } from "@/repositories/supabase-product-repository";
@@ -37,11 +38,18 @@ export async function POST(request: NextRequest, { params }: { params: Promise<{
         status: "draft",
         active: false,
         needsReview: true,
+        imagesConfirmed: false,
       })), { status: 201 });
     }
     if (action === "publish") {
       if (!isSellableCategory(product.category)) {
         return NextResponse.json({ error: "Mova o produto para uma categoria ativa antes de publicar." }, { status: 400 });
+      }
+      const completeness = productCompleteness(product);
+      if (!completeness.complete) {
+        return NextResponse.json({
+          error: `Complete o cadastro antes de publicar: ${completeness.missing.join(", ")}.`,
+        }, { status: 400 });
       }
       return NextResponse.json(await saveSupabaseProduct(validateProduct({
         ...product,

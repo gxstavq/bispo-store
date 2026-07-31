@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { requireAdmin } from "@/lib/auth/admin";
 import { defaultsForCategory } from "@/lib/product-rules";
+import { productCompleteness } from "@/lib/products/completeness";
 import { assertSameOrigin, readJsonBody, validationErrorResponse } from "@/lib/security/request";
 import { validateProduct } from "@/lib/validation/commerce";
 import {
@@ -113,6 +114,7 @@ export async function POST(request: NextRequest) {
     price: input.price ?? 0,
     promotionalPrice: input.promotionalPrice,
     images: input.images ?? [],
+    thumbnails: input.thumbnails,
     coverImage: input.coverImage,
     imageType: "photo",
     sizes: input.sizes ?? ["38", "39", "40", "41", "42"],
@@ -128,12 +130,18 @@ export async function POST(request: NextRequest) {
     isNew: input.isNew ?? false,
     active: input.status === "active",
     status: input.status ?? "draft",
-    needsReview: input.needsReview ?? true,
+    needsReview: true,
+    imagesConfirmed: input.imagesConfirmed ?? false,
     demo: true,
     visual: input.visual ?? { accent: "#ef2b35", secondary: "#f7f7f4", type: category === "tenis" ? "shoe" : "bottom" },
   };
   try {
-    return NextResponse.json(await saveSupabaseProduct(validateProduct(product)), { status: 201 });
+    const validated = validateProduct(product);
+    const completeness = productCompleteness(validated);
+    return NextResponse.json(await saveSupabaseProduct({
+      ...validated,
+      needsReview: !completeness.complete,
+    }), { status: 201 });
   } catch (error) {
     return NextResponse.json({ error: error instanceof Error ? error.message : "Produto não salvo." }, { status: 400 });
   }

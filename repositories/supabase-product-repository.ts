@@ -1,6 +1,6 @@
 import "server-only";
 
-import { unstable_cache } from "next/cache";
+import { revalidateTag, unstable_cache } from "next/cache";
 import { createSupabaseServerClient } from "@/lib/supabase/server";
 import { createSupabaseServiceClient } from "@/lib/supabase/admin";
 import { hasSupabasePublicEnv } from "@/lib/supabase/env";
@@ -108,6 +108,7 @@ export function mapProductRecord(row: ProductRecord): Product {
     active: row.status === "active",
     status: row.status,
     needsReview: row.needs_review,
+    imagesConfirmed: !row.needs_review && images.length > 0,
     demo: true,
     visual: {
       accent: "#ef2b35",
@@ -344,6 +345,7 @@ export async function saveSupabaseProduct(input: Product, id?: string) {
   });
   if (variantsError) throw new Error(variantsError.message);
 
+  revalidateTag("public-products", { expire: 0 });
   const [result] = await fetchProducts({ includeInactive: true, slug: input.slug });
   if (!result) throw new Error("Produto salvo, mas não pôde ser recarregado.");
   return result;
@@ -356,4 +358,5 @@ export async function softDeleteSupabaseProduct(id: string) {
     .update({ status: "archived", shipping_enabled: false, published_at: null })
     .eq("id", id);
   if (error) throw new Error(error.message);
+  revalidateTag("public-products", { expire: 0 });
 }

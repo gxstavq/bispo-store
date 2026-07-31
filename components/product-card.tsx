@@ -29,7 +29,7 @@ export function ProductCard({
       <div className="product-card__body">
         <span className="eyebrow">
           {product.code}
-          {showInternalLabels && <> · {product.needsReview ? "PENDENTE DE REVISÃO" : "DADO DEMO"}</>}
+          {showInternalLabels && product.needsReview && <> · CADASTRO PENDENTE</>}
         </span>
         <Link href={`/produto/${product.slug}`}><h3>{product.name}</h3></Link>
         <div className="price-row">

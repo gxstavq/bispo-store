@@ -50,9 +50,9 @@ export function ProductVisual({
       className={`product-visual product-visual--${product.visual.type} ${compact ? "product-visual--compact" : ""}`}
       style={{ "--accent": product.visual.accent, "--secondary": product.visual.secondary } as React.CSSProperties}
       role="img"
-      aria-label={`${showStatus ? "Imagem demonstrativa" : "Imagem"} de ${product.name}${label ? ` — ${label}` : ""}`}
+      aria-label={`Imagem de ${product.name}${label ? ` — ${label}` : ""}`}
     >
-      {showStatus && <span className="demo-stamp">IMAGEM DEMO</span>}
+      {showStatus && product.needsReview && <span className="demo-stamp">CADASTRO PENDENTE</span>}
       <span className="visual-orbit" />
       {product.visual.type === "shoe" && (
         <span className="shoe-shape"><i /><b /></span>

@@ -5,6 +5,7 @@ import { ProductDetail } from "@/components/product-detail";
 import { ProductGrid } from "@/components/product-grid";
 import { PublicShell } from "@/components/public-shell";
 import { publicCategoryLabels } from "@/lib/product-rules";
+import { isProductComplete } from "@/lib/products/completeness";
 import { SectionTitle } from "@/components/section-title";
 import { formatCurrency } from "@/lib/format";
 import { safeJsonForHtml } from "@/lib/security/request";
@@ -27,6 +28,9 @@ export async function generateMetadata({ params }: ProductPageProps): Promise<Me
     title: product.name,
     description: product.description,
     openGraph: { title: `${product.name} | Bispo Store`, description: product.description },
+    robots: isProductComplete(product)
+      ? undefined
+      : { index: false, follow: true },
   };
 }
 
@@ -45,13 +49,13 @@ export default async function ProductPage({ params }: ProductPageProps) {
     name: product.name,
     description: product.description,
     sku: product.code,
-    image: [`${process.env.NEXT_PUBLIC_SITE_URL ?? "https://bispastore.com.br"}/logo-bispo-store.png`],
+    image: product.images,
     offers: {
       "@type": "Offer",
       priceCurrency: "BRL",
       price: product.promotionalPrice ?? product.price,
       availability: "https://schema.org/InStock",
-      url: `${process.env.NEXT_PUBLIC_SITE_URL ?? "https://bispastore.com.br"}/produto/${product.slug}`,
+      url: `${process.env.NEXT_PUBLIC_SITE_URL ?? "https://bispostorebr.com.br"}/produto/${product.slug}`,
     },
   };
 
@@ -67,8 +71,8 @@ export default async function ProductPage({ params }: ProductPageProps) {
           <ProductGrid products={related} />
         </div>
       </section>
-      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: safeJsonForHtml(structuredData) }} />
-      <span className="sr-only">Preço demonstrativo: {formatCurrency(product.promotionalPrice ?? product.price)}</span>
+      {isProductComplete(product) && <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: safeJsonForHtml(structuredData) }} />}
+      <span className="sr-only">Preço: {formatCurrency(product.promotionalPrice ?? product.price)}</span>
     </PublicShell>
   );
 }

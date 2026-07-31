@@ -14,7 +14,7 @@ export default async function SearchPage({ searchParams }: { searchParams: Promi
         <div className="container">
           <span>PESQUISA</span>
           <h1>{q ? `Resultados para “${q}”` : "O que você procura?"}</h1>
-          <p>{result.length} produtos demonstrativos encontrados.</p>
+          <p>{result.length} produtos encontrados.</p>
         </div>
       </section>
       <section className="section container">

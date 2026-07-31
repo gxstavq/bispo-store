@@ -545,6 +545,26 @@ textarea { resize: vertical; }
 .admin-image-actions button.is-danger { color: var(--red-dark); }
 .admin-upload-control { min-height: 180px; cursor: pointer; }
 .admin-upload-control input { position: absolute; width: 1px; height: 1px; opacity: 0; pointer-events: none; }
+.admin-image-confirmation { padding: 12px; border: 1px solid #d9d5cd; background: #f7f5f0; line-height: 1.45; }
+.admin-album-section .admin-panel__header > strong { color: var(--muted); font-size: 9px; text-transform: uppercase; }
+.admin-album-search { min-height: 42px; padding: 0 12px; display: flex !important; align-items: center; flex-direction: row !important; gap: 8px !important; border: 1px solid #d8d5cf; background: white; }
+.admin-album-search svg { flex: 0 0 auto; color: var(--muted); }
+.admin-album-search input { min-height: 38px !important; padding: 0 !important; border: 0 !important; outline: 0; }
+.admin-album-grid { max-height: 560px; padding: 2px; display: grid; grid-template-columns: repeat(5,minmax(0,1fr)); gap: 10px; overflow-y: auto; }
+.admin-album-card { min-width: 0; padding: 0; overflow: hidden; border: 1px solid #d8d5cf; background: #f7f5f0; color: var(--ink); text-align: left; cursor: pointer; }
+.admin-album-card:hover { border-color: #8d8981; }
+.admin-album-card.is-selected { border: 2px solid var(--green); cursor: default; }
+.admin-album-card:disabled { opacity: 1; }
+.admin-album-card__visual { position: relative; display: block; aspect-ratio: 1; background: white; }
+.admin-album-card__visual img { object-fit: contain; }
+.admin-album-card__name, .admin-album-card__meta { display: flex; align-items: center; gap: 4px; padding: 6px 7px 0; overflow: hidden; font-size: 8px; white-space: nowrap; text-overflow: ellipsis; }
+.admin-album-card__meta { padding-bottom: 7px; color: var(--muted); }
+.admin-album-card.is-selected .admin-album-card__meta { color: #176b46; font-weight: 900; }
+.admin-completeness { padding: 11px; display: grid; gap: 4px; border: 1px solid #e9d3a8; background: #fff0d7; }
+.admin-completeness.is-complete { border-color: #b9d7c8; background: #e5f5ed; }
+.admin-completeness strong { font-size: 10px; }
+.admin-completeness span { color: #755b2d; font-size: 9px; line-height: 1.5; }
+.admin-completeness.is-complete span { color: #246b4a; }
 .local-persistence-note { padding: 15px; display: flex; flex-direction: column; gap: 4px; background: #fff0d7; border: 1px solid #e9d3a8; }
 .local-persistence-note strong { font-size: 10px; }
 .local-persistence-note span { color: #755b2d; font-size: 9px; line-height: 1.5; }
@@ -753,6 +773,7 @@ textarea { resize: vertical; }
   .admin-login__brand h1 { font-size: 50px; }
   .admin-login__brand::after { font-size: 230px; }
   .admin-image-grid { grid-template-columns: 1fr 1fr; }
+  .admin-album-grid { grid-template-columns: 1fr 1fr; max-height: 480px; }
   .product-actions { min-width: 180px; }
   .product-actions span { display: none; }
 }

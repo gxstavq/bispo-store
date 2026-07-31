@@ -1,10 +1,11 @@
 "use client";
 
 import Image from "next/image";
-import { ArrowDown, ArrowUp, ImagePlus, Save, Star, Trash2 } from "lucide-react";
+import { ArrowDown, ArrowUp, CheckCircle2, ImagePlus, Save, Search, Star, Trash2 } from "lucide-react";
 import { ChangeEvent, useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { defaultsForCategory } from "@/lib/product-rules";
+import { productCompleteness } from "@/lib/products/completeness";
 import type { PackagingCategory, Product, ProductStatus, SellableProductCategory } from "@/types/commerce";
 
 const blankProduct: Product = {
@@ -31,9 +32,17 @@ const blankProduct: Product = {
   active: false,
   status: "draft",
   needsReview: true,
+  imagesConfirmed: false,
   demo: true,
   imageType: "photo",
   visual: { accent: "#ef2b35", secondary: "#f7f7f4", type: "shoe" },
+};
+
+type AlbumImage = {
+  storagePath: string;
+  url: string;
+  thumbnailUrl: string;
+  associationCount: number;
 };
 
 export function ProductFormDemo({ productId }: { productId?: string }) {
@@ -42,6 +51,9 @@ export function ProductFormDemo({ productId }: { productId?: string }) {
   const [loading, setLoading] = useState(Boolean(productId));
   const [saving, setSaving] = useState(false);
   const [message, setMessage] = useState("");
+  const [albumImages, setAlbumImages] = useState<AlbumImage[]>([]);
+  const [albumLoading, setAlbumLoading] = useState(true);
+  const [albumSearch, setAlbumSearch] = useState("");
 
   useEffect(() => {
     if (!productId) return;
@@ -50,6 +62,17 @@ export function ProductFormDemo({ productId }: { productId?: string }) {
       .then((data: Product) => setProduct(data))
       .finally(() => setLoading(false));
   }, [productId]);
+
+  useEffect(() => {
+    fetch("/api/admin/uploads", { cache: "no-store" })
+      .then(async (response) => {
+        const result = await response.json() as { images?: AlbumImage[]; error?: string };
+        if (!response.ok) throw new Error(result.error ?? "Não foi possível carregar o álbum.");
+        setAlbumImages(result.images ?? []);
+      })
+      .catch((error: unknown) => setMessage(error instanceof Error ? error.message : "Não foi possível carregar o álbum."))
+      .finally(() => setAlbumLoading(false));
+  }, []);
 
   const update = <K extends keyof Product>(key: K, value: Product[K]) =>
     setProduct((current) => ({ ...current, [key]: value }));
@@ -77,7 +100,7 @@ export function ProductFormDemo({ productId }: { productId?: string }) {
       if (thumbnails && thumbnails.length === images.length) {
         [thumbnails[index], thumbnails[destination]] = [thumbnails[destination], thumbnails[index]];
       }
-      return { ...current, images, thumbnails };
+      return { ...current, images, thumbnails, imagesConfirmed: false, needsReview: true };
     });
   }
 
@@ -89,27 +112,50 @@ export function ProductFormDemo({ productId }: { productId?: string }) {
       coverImage: current.coverImage === image
         ? current.images.filter((candidate) => candidate !== image)[0]
         : current.coverImage,
+      imagesConfirmed: false,
+      needsReview: true,
     }));
   }
 
+  function selectAlbumImage(image: AlbumImage) {
+    setProduct((current) => {
+      if (current.images.includes(image.url)) return current;
+      return {
+        ...current,
+        images: [...current.images, image.url],
+        thumbnails: [...(current.thumbnails ?? []), image.thumbnailUrl],
+        coverImage: current.coverImage ?? image.url,
+        imageType: "photo",
+        imagesConfirmed: false,
+        needsReview: true,
+      };
+    });
+  }
+
   async function upload(event: ChangeEvent<HTMLInputElement>) {
-    const file = event.target.files?.[0];
-    if (!file) return;
-    const form = new FormData();
-    form.append("file", file);
-    const response = await fetch("/api/admin/uploads", { method: "POST", body: form });
-    const result = await response.json() as { path?: string; error?: string };
-    if (!response.ok || !result.path) {
-      setMessage(result.error ?? "Falha no envio da imagem.");
-      return;
+    const files = [...(event.target.files ?? [])];
+    if (!files.length) return;
+    setMessage("Enviando imagens...");
+    for (const file of files) {
+      const form = new FormData();
+      form.append("file", file);
+      const response = await fetch("/api/admin/uploads", { method: "POST", body: form });
+      const result = await response.json() as { path?: string; thumbnailUrl?: string; storagePath?: string; error?: string };
+      if (!response.ok || !result.path || !result.storagePath) {
+        setMessage(result.error ?? "Falha no envio da imagem.");
+        event.target.value = "";
+        return;
+      }
+      const uploaded: AlbumImage = {
+        storagePath: result.storagePath,
+        url: result.path,
+        thumbnailUrl: result.thumbnailUrl ?? result.path,
+        associationCount: 0,
+      };
+      setAlbumImages((current) => [uploaded, ...current.filter((image) => image.storagePath !== uploaded.storagePath)]);
+      selectAlbumImage(uploaded);
     }
-    setProduct((current) => ({
-      ...current,
-      images: [...current.images, result.path!],
-      thumbnails: [...(current.thumbnails ?? []), result.path!],
-      coverImage: current.coverImage ?? result.path,
-      imageType: "photo",
-    }));
+    setMessage(`${files.length} ${files.length === 1 ? "imagem enviada" : "imagens enviadas"}. Confirme a seleção antes de salvar.`);
     event.target.value = "";
   }
 
@@ -128,6 +174,7 @@ export function ProductFormDemo({ productId }: { productId?: string }) {
         heightCm: product.heightCm ?? null,
         active: product.status === "active",
         needsReview: product.needsReview,
+        imagesConfirmed: product.imagesConfirmed,
       }),
     });
     const saved = await response.json() as Product & { error?: string };
@@ -143,6 +190,12 @@ export function ProductFormDemo({ productId }: { productId?: string }) {
   }
 
   if (loading) return <div className="admin-panel">Carregando produto...</div>;
+
+  const completeness = productCompleteness(product);
+  const normalizedAlbumSearch = albumSearch.trim().toLocaleLowerCase("pt-BR");
+  const visibleAlbumImages = normalizedAlbumSearch
+    ? albumImages.filter((image) => image.storagePath.toLocaleLowerCase("pt-BR").includes(normalizedAlbumSearch))
+    : albumImages;
 
   return (
     <>
@@ -189,16 +242,66 @@ export function ProductFormDemo({ productId }: { productId?: string }) {
                   <div className="admin-image-actions">
                     <button type="button" onClick={() => moveImage(index, -1)} disabled={index === 0} aria-label="Mover imagem para cima"><ArrowUp size={15} /></button>
                     <button type="button" onClick={() => moveImage(index, 1)} disabled={index === product.images.length - 1} aria-label="Mover imagem para baixo"><ArrowDown size={15} /></button>
-                    <button type="button" onClick={() => update("coverImage", image)} aria-label="Definir como imagem principal"><Star size={15} /></button>
-                    <button type="button" className="is-danger" onClick={() => removeImage(image)} aria-label="Remover imagem"><Trash2 size={15} /></button>
+                    <button type="button" onClick={() => setProduct((current) => ({ ...current, coverImage: image, imagesConfirmed: false, needsReview: true }))} aria-label="Definir como imagem principal"><Star size={15} /></button>
+                    <button type="button" className="is-danger" onClick={() => removeImage(image)} aria-label="Remover imagem somente deste produto"><Trash2 size={15} /></button>
                   </div>
                 </article>
               ))}
               <label className="upload-placeholder admin-upload-control">
-                <ImagePlus size={28} /><strong>Adicionar imagem</strong><span>JPG, PNG, WEBP ou AVIF</span>
-                <input type="file" accept="image/jpeg,image/png,image/webp,image/avif" onChange={(event) => void upload(event)} />
+                <ImagePlus size={28} /><strong>Adicionar imagens</strong><span>JPG, PNG, WEBP ou AVIF · máximo 12 MB cada</span>
+                <input type="file" multiple accept="image/jpeg,image/png,image/webp,image/avif" onChange={(event) => void upload(event)} />
               </label>
             </div>
+            <p className="admin-section-note">Remover aqui desfaz somente a associação com este produto. O arquivo permanece no álbum.</p>
+            <label className="admin-toggle admin-image-confirmation">
+              <input
+                type="checkbox"
+                checked={product.imagesConfirmed ?? false}
+                disabled={!product.images.length}
+                onChange={(event) => setProduct((current) => ({
+                  ...current,
+                  imagesConfirmed: event.target.checked,
+                  needsReview: event.target.checked ? current.needsReview : true,
+                }))}
+              />
+              Confirmo que as imagens selecionadas pertencem a este produto e estão na ordem correta
+            </label>
+          </section>
+          <section className="admin-panel admin-form-section admin-album-section">
+            <div className="admin-panel__header">
+              <div><span>FOTOS BISPO STORE</span><h2>Álbum de imagens</h2></div>
+              <strong>{albumImages.length} arquivos</strong>
+            </div>
+            <p className="admin-section-note">Selecione somente as fotos que pertencem a este produto. Nenhuma associação é feita automaticamente.</p>
+            <label className="admin-album-search">
+              <Search size={17} />
+              <input value={albumSearch} onChange={(event) => setAlbumSearch(event.target.value)} placeholder="Buscar pelo nome do arquivo" />
+            </label>
+            {albumLoading ? (
+              <p className="admin-section-note">Carregando o álbum...</p>
+            ) : (
+              <div className="admin-album-grid">
+                {visibleAlbumImages.map((image) => {
+                  const selected = product.images.includes(image.url);
+                  return (
+                    <button
+                      type="button"
+                      key={image.storagePath}
+                      className={selected ? "admin-album-card is-selected" : "admin-album-card"}
+                      onClick={() => selectAlbumImage(image)}
+                      disabled={selected}
+                    >
+                      <span className="admin-album-card__visual"><Image src={image.thumbnailUrl} alt="" fill sizes="(max-width: 700px) 40vw, 140px" quality={65} /></span>
+                      <span className="admin-album-card__name" title={image.storagePath}>{image.storagePath.split("/").at(-1)}</span>
+                      <span className="admin-album-card__meta">
+                        {selected ? <><CheckCircle2 size={13} /> Selecionada</> : image.associationCount ? `Usada em ${image.associationCount} produto(s)` : "Disponível"}
+                      </span>
+                    </button>
+                  );
+                })}
+                {!visibleAlbumImages.length && <p className="admin-section-note">Nenhuma imagem encontrada.</p>}
+              </div>
+            )}
           </section>
         </div>
         <aside>
@@ -210,7 +313,12 @@ export function ProductFormDemo({ productId }: { productId?: string }) {
             <div className="admin-checks">
               <label><input type="checkbox" checked={product.featured} onChange={(event) => update("featured", event.target.checked)} /> Produto em destaque</label>
               <label><input type="checkbox" checked={product.isNew} onChange={(event) => update("isNew", event.target.checked)} /> Marcar como lançamento</label>
-              <label><input type="checkbox" checked={product.needsReview ?? false} onChange={(event) => update("needsReview", event.target.checked)} /> Cadastro pendente de revisão</label>
+              <div className={completeness.complete ? "admin-completeness is-complete" : "admin-completeness"}>
+                <strong>{completeness.complete ? "Cadastro completo" : "Cadastro pendente"}</strong>
+                {completeness.complete
+                  ? <span>O produto está pronto para publicação e indexação futura.</span>
+                  : <span>Falta: {completeness.missing.join(", ")}.</span>}
+              </div>
             </div>
           </section>
           <div className="local-persistence-note"><strong>Persistência Supabase</strong><span>Produtos, variantes e associações de imagem são salvos no Postgres; os arquivos são enviados ao Storage. Todas as alterações exigem perfil administrativo.</span></div>

@@ -1,10 +1,11 @@
 import type { MetadataRoute } from "next";
+import { isProductComplete } from "@/lib/products/completeness";
 import { productRepository } from "@/repositories/product-repository";
 
 export const revalidate = 3600;
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
-  const baseUrl = process.env.NEXT_PUBLIC_SITE_URL ?? "https://bispastore.com.br";
+  const baseUrl = process.env.NEXT_PUBLIC_SITE_URL ?? "https://bispostorebr.com.br";
   const products = await productRepository.list();
   const staticRoutes = [
     "", "/catalogo", "/categoria/tenis", "/categoria/calcas", "/categoria/conjuntos", "/sobre", "/contato",
@@ -17,7 +18,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
       changeFrequency: route === "" ? "weekly" as const : "monthly" as const,
       priority: route === "" ? 1 : route.includes("categoria") || route === "/catalogo" ? 0.8 : 0.5,
     })),
-    ...products.map((product) => ({
+    ...products.filter(isProductComplete).map((product) => ({
       url: `${baseUrl}/produto/${product.slug}`,
       lastModified: new Date(),
       changeFrequency: "weekly" as const,

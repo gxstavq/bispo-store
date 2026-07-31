@@ -1,4 +1,6 @@
 const AUTHORIZED_NETLIFY_ORIGINS = new Set([
+  "https://bispostorebr.com.br",
+  "https://www.bispostorebr.com.br",
   "https://bispo-store-homologacao.netlify.app",
   "https://deploy-preview-1--bispo-store-homologacao.netlify.app",
 ]);

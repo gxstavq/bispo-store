@@ -45,7 +45,7 @@ export function ProductDetail({ product }: { product: Product }) {
 
       <div className="product-info">
         <div className="product-info__top">
-          <span className="demo-pill">PRODUTO DEMONSTRATIVO</span>
+          {product.needsReview && <span className="demo-pill">CADASTRO PENDENTE</span>}
           <span className="stock-status"><i /> {product.stock} unidades disponíveis</span>
         </div>
         <span className="eyebrow">{product.code}</span>

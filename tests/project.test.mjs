@@ -98,6 +98,37 @@ test("painel possui persistência Supabase, Storage e operações CRUD protegida
   assert.ok(existsSync(join(root, "proxy.ts")));
 });
 
+test("painel administra o álbum sem apagar arquivos nem agrupar fotos automaticamente", () => {
+  const uploadRoute = readFileSync(join(root, "app", "api", "admin", "uploads", "route.ts"), "utf8");
+  const form = readFileSync(join(root, "components", "product-form-demo.tsx"), "utf8");
+  const repository = readFileSync(join(root, "repositories", "supabase-product-repository.ts"), "utf8");
+  assert.match(uploadRoute, /export async function GET/);
+  assert.match(uploadRoute, /\.from\("product_images"\)/);
+  assert.match(uploadRoute, /\.list\(adminPrefix/);
+  assert.match(uploadRoute, /validImageSignature/);
+  assert.match(uploadRoute, /12 \* 1024 \* 1024/);
+  assert.doesNotMatch(uploadRoute, /storage[\s\S]*\.remove\(/);
+  assert.match(form, /Álbum de imagens/);
+  assert.match(form, /selectAlbumImage/);
+  assert.match(form, /multiple accept="image\/jpeg,image\/png,image\/webp,image\/avif"/);
+  assert.match(form, /Definir como imagem principal/);
+  assert.match(form, /moveImage/);
+  assert.match(form, /imagesConfirmed/);
+  assert.match(repository, /revalidateTag\("public-products", \{ expire: 0 \}\)/);
+});
+
+test("produtos incompletos não entram no sitemap nem recebem dados estruturados", () => {
+  const sitemap = readFileSync(join(root, "app", "sitemap.ts"), "utf8");
+  const productPage = readFileSync(join(root, "app", "produto", "[slug]", "page.tsx"), "utf8");
+  const card = readFileSync(join(root, "components", "product-card.tsx"), "utf8");
+  const detail = readFileSync(join(root, "components", "product-detail.tsx"), "utf8");
+  assert.match(sitemap, /products\.filter\(isProductComplete\)/);
+  assert.match(productPage, /index: false, follow: true/);
+  assert.match(productPage, /isProductComplete\(product\) && <script/);
+  assert.doesNotMatch(card, /DADO DEMO/);
+  assert.doesNotMatch(detail, /PRODUTO DEMONSTRATIVO/);
+});
+
 test("checkout oferece análise local e cotação Melhor Envio Sandbox", () => {
   const checkout = readFileSync(join(root, "components", "checkout-form.tsx"), "utf8");
   const quoteRoute = readFileSync(

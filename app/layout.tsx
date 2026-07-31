@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import "./globals.css";
 
 export const metadata: Metadata = {
-  metadataBase: new URL(process.env.NEXT_PUBLIC_SITE_URL ?? "https://bispastore.com.br"),
+  metadataBase: new URL(process.env.NEXT_PUBLIC_SITE_URL ?? "https://bispostorebr.com.br"),
   title: {
     default: "Bispo Store | Tênis, Calças & Conjuntos",
     template: "%s | Bispo Store",
