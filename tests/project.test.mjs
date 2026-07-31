@@ -263,6 +263,8 @@ test("consultas de produtos usam formatos e caches separados", () => {
   assert.match(route, /searchParams\.has\("ids"\)/);
   assert.match(route, /if \(hasIdsParameter\)/);
   assert.match(route, /const products = ids\.length[\s\S]*: \[\]/);
+  assert.match(route, /const productApiHeaders = \{[\s\S]*"private, no-store"/);
+  assert.doesNotMatch(route, /s-maxage/);
 });
 
 test("consulta seletiva do carrinho exige array e não reutiliza catálogo paginado", () => {

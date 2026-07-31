@@ -18,6 +18,10 @@ import type {
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
 
+const productApiHeaders = {
+  "Cache-Control": "private, no-store",
+};
+
 export async function GET(request: NextRequest) {
   const includeInactive = request.nextUrl.searchParams.get("includeInactive") === "true";
   if (includeInactive) await requireAdmin();
@@ -49,9 +53,7 @@ export async function GET(request: NextRequest) {
       ? await fetchProducts({ includeInactive, ids })
       : [];
     return NextResponse.json(products, {
-      headers: {
-        "Cache-Control": "private, no-store",
-      },
+      headers: productApiHeaders,
     });
   }
 
@@ -75,11 +77,7 @@ export async function GET(request: NextRequest) {
       sort,
     });
     return NextResponse.json({ ...result, page, pageSize }, {
-      headers: {
-        "Cache-Control": includeInactive
-          ? "private, no-store"
-          : "public, s-maxage=60, stale-while-revalidate=300",
-      },
+      headers: productApiHeaders,
     });
   }
 
@@ -89,11 +87,7 @@ export async function GET(request: NextRequest) {
     status,
     search,
   }), {
-    headers: {
-      "Cache-Control": includeInactive
-        ? "private, no-store"
-        : "public, s-maxage=60, stale-while-revalidate=300",
-    },
+    headers: productApiHeaders,
   });
 }
 
