@@ -4,6 +4,10 @@ import { assertSameOrigin, readJsonBody, validationErrorResponse } from "@/lib/s
 import { createSupabaseServerClient } from "@/lib/supabase/server";
 import { orderRepository } from "@/repositories/order-repository";
 import { createPagBankCheckoutForOrder } from "@/services/pagbank/payment-service";
+import {
+  cancelManualPaymentAndReleaseReservation,
+  confirmManualPagBankPayment,
+} from "@/services/orders/manual-payment";
 import type { OrderStatus } from "@/types/commerce";
 
 export const runtime = "nodejs";
@@ -36,16 +40,17 @@ export async function PATCH(request: NextRequest, { params }: { params: Promise<
   const supabase = await createSupabaseServerClient();
   const { data: row } = await supabase
     .from("orders")
-    .select("id, status, subtotal, shipping_amount, delivery_choice, addresses!inner(state)")
+    .select("id, status, payment_status, stock_deducted_at, subtotal, shipping_amount, delivery_choice, addresses!inner(state)")
     .eq("order_number", id)
     .single();
   if (!row) return NextResponse.json({ error: "Pedido não encontrado." }, { status: 404 });
 
   let input: {
-    action?: "approve_local" | "reject_local" | "choose_conventional" | "set_shipping" | "enable_payment" | "update_status";
+    action?: "approve_local" | "reject_local" | "choose_conventional" | "set_shipping" | "enable_payment" | "confirm_manual_payment" | "update_status";
     note?: string;
     shippingAmount?: number;
     status?: OrderStatus;
+    paymentChecked?: boolean;
   };
   try {
     input = await readJsonBody<typeof input>(request, 16 * 1024);
@@ -56,6 +61,31 @@ export async function PATCH(request: NextRequest, { params }: { params: Promise<
   if (!note) return NextResponse.json({ error: "A observação é obrigatória." }, { status: 400 });
   if (note.length > 2000) {
     return NextResponse.json({ error: "A observação deve ter no máximo 2.000 caracteres." }, { status: 400 });
+  }
+
+  if (input.action === "confirm_manual_payment") {
+    if (input.paymentChecked !== true) {
+      return NextResponse.json({
+        error: "Confirme que o pagamento foi conferido no aplicativo PagBank.",
+      }, { status: 400 });
+    }
+    try {
+      const confirmation = await confirmManualPagBankPayment({
+        orderNumber: id,
+        actorUserId: user.id,
+        note,
+      });
+      const order = await orderRepository.findById(id);
+      return NextResponse.json({
+        ...order,
+        manualPaymentConfirmation: confirmation,
+        decisionActor: admin.display_name ?? admin.email,
+      });
+    } catch (error) {
+      return NextResponse.json({
+        error: error instanceof Error ? error.message : "Não foi possível confirmar o pagamento.",
+      }, { status: 409 });
+    }
   }
 
   let orderUpdate: Record<string, unknown> = {};
@@ -101,6 +131,14 @@ export async function PATCH(request: NextRequest, { params }: { params: Promise<
         error: "O status pago somente pode ser confirmado pelo webhook verificado do PagBank.",
       }, { status: 400 });
     }
+    if (
+      input.status === "cancelled"
+      && (row.payment_status === "paid" || row.stock_deducted_at)
+    ) {
+      return NextResponse.json({
+        error: "Pedido pago não pode ser cancelado por esta ação.",
+      }, { status: 409 });
+    }
     orderUpdate = {
       status: input.status,
       ...(input.status === "shipped" ? { shipping_status: "shipped" } : {}),
@@ -113,6 +151,15 @@ export async function PATCH(request: NextRequest, { params }: { params: Promise<
 
   const { error: updateError } = await supabase.from("orders").update(orderUpdate).eq("id", row.id);
   if (updateError) return NextResponse.json({ error: updateError.message }, { status: 400 });
+  if (input.action === "update_status" && input.status === "cancelled") {
+    try {
+      await cancelManualPaymentAndReleaseReservation(row.id);
+    } catch (error) {
+      return NextResponse.json({
+        error: error instanceof Error ? error.message : "Pedido cancelado, mas a reserva exige revisão.",
+      }, { status: 500 });
+    }
+  }
   if (decision) {
     const { error } = await supabase.from("shipping_decisions").insert({
       order_id: row.id,

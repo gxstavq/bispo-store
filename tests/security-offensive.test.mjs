@@ -188,7 +188,9 @@ test("checkout rejeita total zero e URL de pagamento não HTTPS", () => {
 test("falha posterior ao pedido não cria pedido duplicado no checkout", () => {
   const checkout = source("components", "checkout-form.tsx");
   assert.match(checkout, /createdOrderId/);
-  assert.match(checkout, /createdOrderId \|\| \(await createOrder/);
+  assert.match(checkout, /getOrCreateOrderIdempotencyKey/);
+  assert.match(checkout, /createOrder\(items, data, idempotencyKey\)/);
+  assert.match(checkout, /setCreatedOrderId\(order\.id\)/);
   assert.match(checkout, /pedido-recebido\?pedido=\$\{orderId\}&pagamento=pendente/);
 });
 

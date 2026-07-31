@@ -1,6 +1,6 @@
 "use client";
 
-import { Check, CircleX, CreditCard, RefreshCw, Save, Truck } from "lucide-react";
+import { Check, CircleX, ClipboardCopy, CreditCard, MessageCircle, RefreshCw, Save, Truck } from "lucide-react";
 import { useState } from "react";
 import {
   localReviewLabels,
@@ -10,6 +10,8 @@ import {
   shippingStatusLabels,
 } from "@/lib/order-status";
 import { formatCurrency } from "@/lib/format";
+import { whatsappUrlFor } from "@/lib/format";
+import { orderWhatsappSummary } from "@/lib/orders/whatsapp-summary";
 import type { OrderStatus, StoreOrder } from "@/types/commerce";
 import type { PagBankEnvironment } from "@/lib/integrations/pagbank-environment";
 
@@ -19,6 +21,7 @@ type OrderAction =
   | "choose_conventional"
   | "set_shipping"
   | "enable_payment"
+  | "confirm_manual_payment"
   | "update_status";
 
 export function OrderManagementPanel({
@@ -40,7 +43,9 @@ export function OrderManagementPanel({
   const [pagBankOrderId, setPagBankOrderId] = useState(
     initial.payment?.providerOrderId ?? "",
   );
+  const [paymentChecked, setPaymentChecked] = useState(false);
   const pagBankLabel = pagBankEnvironment === "sandbox" ? "PagBank Sandbox" : "PagBank";
+  const whatsappSummary = orderWhatsappSummary(order);
 
   async function apply(action: OrderAction) {
     setSaving(true);
@@ -53,6 +58,7 @@ export function OrderManagementPanel({
         note,
         shippingAmount: shippingAmount ? Number(shippingAmount) : undefined,
         status: selectedStatus,
+        paymentChecked,
       }),
     });
     const result = await response.json() as StoreOrder & { error?: string };
@@ -63,8 +69,24 @@ export function OrderManagementPanel({
     }
     setOrder(result);
     setSelectedStatus(result.status);
-    setMessage(action === "enable_payment" ? `Checkout ${pagBankLabel} criado.` : "Alteração registrada no histórico.");
+    setMessage(
+      action === "enable_payment"
+        ? `Checkout ${pagBankLabel} criado.`
+        : action === "confirm_manual_payment"
+          ? "Pagamento confirmado, estoque processado uma única vez e histórico registrado."
+          : "Alteração registrada no histórico.",
+    );
+    if (action === "confirm_manual_payment") setPaymentChecked(false);
     setNote("");
+  }
+
+  async function copySummary() {
+    try {
+      await navigator.clipboard.writeText(whatsappSummary);
+      setMessage("Resumo do pedido copiado.");
+    } catch {
+      setMessage("Não foi possível copiar automaticamente. Abra o WhatsApp para usar o resumo.");
+    }
   }
 
   async function labelAction(action: "purchase" | "print" | "track") {
@@ -150,6 +172,10 @@ export function OrderManagementPanel({
         <div><span>Envio</span><strong>{shippingStatusLabels[order.shippingStatus]}</strong></div>
         <div><span>Frete</span><strong>{order.shippingAmount === null ? "Não definido" : formatCurrency(order.shippingAmount)}</strong></div>
       </div>
+      <div className="decision-actions">
+        <button type="button" className="button button--dark" onClick={() => void copySummary()}><ClipboardCopy size={17} /> Copiar resumo do pedido</button>
+        <a className="button button--dark" href={whatsappUrlFor(order.customer.whatsapp, whatsappSummary)} target="_blank" rel="noreferrer"><MessageCircle size={17} /> Abrir WhatsApp do cliente</a>
+      </div>
       <div className="admin-form-grid decision-fields">
         <label>Valor do frete convencional<input type="number" min="0" step="0.01" value={shippingAmount} onChange={(event) => setShippingAmount(event.target.value)} placeholder="0,00" /></label>
         <label className="span-2">Observação obrigatória<textarea required rows={3} value={note} onChange={(event) => setNote(event.target.value)} placeholder="Registre o motivo. O responsável será a conta autenticada." /></label>
@@ -163,6 +189,10 @@ export function OrderManagementPanel({
         {rejected && <button className="button button--dark" disabled={saving} onClick={() => void apply("choose_conventional")}><Truck size={17} /> Escolher frete convencional</button>}
         {(awaitingShipping || order.deliveryChoice === "shipping_quote") && order.shippingAmount === null && <button className="button button--red" disabled={saving} onClick={() => void apply("set_shipping")}><Truck size={17} /> Registrar frete selecionado</button>}
         {approved && order.paymentStatus === "not_generated" && <button className="button button--red" disabled={saving || !pagBankEnvironment} onClick={() => void apply("enable_payment")}><CreditCard size={17} /> Gerar Checkout {pagBankLabel}</button>}
+        {order.status === "awaiting_payment" && order.paymentStatus !== "paid" && <div className="admin-inline-field">
+          <label><input type="checkbox" checked={paymentChecked} onChange={(event) => setPaymentChecked(event.target.checked)} /> Confirmo que conferi o pagamento no aplicativo PagBank.</label>
+          <button type="button" className="button button--red" disabled={saving || !paymentChecked} onClick={() => void apply("confirm_manual_payment")}><Check size={17} /> Marcar como pago</button>
+        </div>}
       </div>
       <div className="manual-status-control">
         <label>Status operacional<select value={selectedStatus} onChange={(event) => setSelectedStatus(event.target.value as OrderStatus)}>{selectedStatus === "paid" && <option value="paid" disabled>Pago — confirmado pelo PagBank</option>}{orderStatuses.filter((status) => status !== "paid").map((status) => <option value={status} key={status}>{orderStatusLabels[status]}</option>)}</select></label>
@@ -206,7 +236,7 @@ export function OrderManagementPanel({
           {order.shipmentLabel?.providerOrderId && <button className="button button--dark" disabled={saving} onClick={() => void labelAction("track")}>Atualizar rastreamento</button>}
         </div>
       </div> : <small>Compra e impressão ocultas: dependem de <code>ENABLE_MELHOR_ENVIO_LABEL_PURCHASE=true</code> e configuração fiscal.</small>}
-      <small>Ambiente PagBank: {pagBankEnvironment === "production" ? "produção" : pagBankEnvironment === "sandbox" ? "Sandbox" : "configuração inválida"}. O status “pago” só é aplicado após consulta confirmada ao PagBank.</small>
+      <small>Ambiente PagBank: {pagBankEnvironment === "production" ? "produção" : pagBankEnvironment === "sandbox" ? "Sandbox" : "configuração inválida"}. O status “pago” só é aplicado após consulta oficial ou confirmação administrativa registrada depois da conferência no aplicativo PagBank.</small>
       {message && <div className="admin-feedback" role="status">{message}</div>}
     </div>
   );

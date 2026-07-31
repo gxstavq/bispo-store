@@ -122,6 +122,19 @@ export async function POST(request: NextRequest) {
   const orderNumber = Array.isArray(data) ? data[0]?.order_number : data?.order_number;
   if (orderNumber) {
     const service = createSupabaseServiceClient();
+    if (input.customer.deliveryChoice === "shipping_quote") {
+      const { error: paymentStateError } = await service
+        .from("orders")
+        .update({ payment_status: "awaiting_payment" })
+        .eq("order_number", orderNumber)
+        .eq("status", "awaiting_payment")
+        .neq("payment_status", "paid");
+      if (paymentStateError) {
+        return NextResponse.json({
+          error: "Pedido criado, mas o estado de pagamento não pôde ser preparado.",
+        }, { status: 500 });
+      }
+    }
     const { data: createdOrder, error: createdOrderError } = await service
       .from("orders")
       .select("customer_id")

@@ -5,6 +5,8 @@ import { useRouter } from "next/navigation";
 import { FormEvent, useEffect, useMemo, useState } from "react";
 import { brazilianStates } from "@/lib/brazilian-states";
 import { formatCurrency, whatsappUrl } from "@/lib/format";
+import type { CheckoutCompletionMode } from "@/lib/checkout-mode";
+import { orderWhatsappSummary } from "@/lib/orders/whatsapp-summary";
 import {
   clearOrderIdempotencyKey,
   getOrCreateOrderIdempotencyKey,
@@ -40,8 +42,10 @@ function formatPostalCode(value: string) {
 }
 
 export function CheckoutForm({
+  completionMode,
   pagBankEnvironment,
 }: {
+  completionMode: CheckoutCompletionMode;
   pagBankEnvironment: PagBankEnvironment | null;
 }) {
   const router = useRouter();
@@ -202,15 +206,22 @@ export function CheckoutForm({
     }
     setSubmitting(true);
     setError("");
-    let orderId = createdOrderId;
+    let orderId = "";
     try {
       const attemptFingerprint = JSON.stringify({ items, customer: data });
       const idempotencyKey = getOrCreateOrderIdempotencyKey(
         window.sessionStorage,
         attemptFingerprint,
       );
-      orderId = createdOrderId || (await createOrder(items, data, idempotencyKey)).id;
-      if (!createdOrderId) setCreatedOrderId(orderId);
+      const order = await createOrder(items, data, idempotencyKey);
+      orderId = order.id;
+      if (!createdOrderId) setCreatedOrderId(order.id);
+      if (completionMode === "whatsapp") {
+        clearOrderIdempotencyKey(window.sessionStorage);
+        clearCart();
+        window.location.assign(whatsappUrl(orderWhatsappSummary(order)));
+        return;
+      }
       if (data.deliveryChoice === "shipping_quote") {
         const payment = await createPaymentCheckout(orderId);
         clearOrderIdempotencyKey(window.sessionStorage);
@@ -250,7 +261,7 @@ export function CheckoutForm({
   return (
     <form className="checkout-layout" onSubmit={submit}>
       <div className="checkout-form">
-        <div className="demo-banner"><LockKeyhole /><div><strong>{pagBankIsSandbox ? "Ambiente Sandbox — nenhum pagamento real será processado." : "Pagamento seguro processado pelo PagBank."}</strong><span>{pagBankIsSandbox ? "O pagamento acontece somente na página segura de testes do PagBank." : "Você será redirecionado ao checkout hospedado oficial do PagBank."} A Bispo Store não coleta dados de cartão.</span></div></div>
+        <div className="demo-banner"><LockKeyhole /><div><strong>{completionMode === "whatsapp" ? "Finalização temporária pelo WhatsApp." : pagBankIsSandbox ? "Ambiente Sandbox — nenhum pagamento real será processado." : "Pagamento seguro processado pelo PagBank."}</strong><span>{completionMode === "whatsapp" ? "Nossa equipe enviará o link seguro de pagamento após receber seu pedido." : pagBankIsSandbox ? "O pagamento acontece somente na página segura de testes do PagBank." : "Você será redirecionado ao checkout hospedado oficial do PagBank."} A Bispo Store não coleta dados de cartão.</span></div></div>
         <section className="form-section">
           <div className="form-section__title"><span>01</span><div><h2>Contato</h2><p>Usaremos seus dados apenas para processar este pedido.</p></div></div>
           <div className="form-grid">
@@ -334,8 +345,9 @@ export function CheckoutForm({
         })}
         <div className="shipping-alert"><Truck /><p><strong>{data.deliveryChoice === "local_delivery_review" ? "Análise local pendente." : selectedQuote ? `${selectedQuote.carrier} · ${selectedQuote.service}` : "Selecione o frete."}</strong> {data.deliveryChoice === "local_delivery_review" ? "Nenhuma cobrança será criada agora." : selectedQuote ? formatCurrency(selectedQuote.amount) : "Cotação necessária."}</p></div>
         <div className="summary-total"><span>Total {selectedQuote ? "com frete" : "sem frete"}</span><strong>{formatCurrency(subtotal + (selectedQuote?.amount ?? 0))}</strong></div>
-        <button className="button button--red button--full" disabled={submitting || (data.deliveryChoice === "shipping_quote" && !selectedQuote) || !pagBankEnvironment}>{submitting ? "Processando..." : <>{data.deliveryChoice === "local_delivery_review" ? "Solicitar análise local" : pagBankIsSandbox ? "Ir ao PagBank Sandbox" : "Ir ao PagBank"} <ArrowRight size={18} /></>}</button>
-        <small className="checkout-legal">Produtos, preços, frete e estoque serão recalculados no servidor. Para frete normal, você será redirecionado ao Checkout PagBank {pagBankIsSandbox ? "Sandbox" : "oficial"}.</small>
+        {completionMode === "whatsapp" && <p className="checkout-legal"><strong>Após finalizar, nossa equipe enviará o link seguro de pagamento do PagBank pelo WhatsApp.</strong></p>}
+        <button className="button button--red button--full" disabled={submitting || (data.deliveryChoice === "shipping_quote" && !selectedQuote) || (completionMode === "pagbank" && !pagBankEnvironment)}>{submitting ? "Processando..." : <>{completionMode === "whatsapp" ? "Finalizar pedido pelo WhatsApp" : data.deliveryChoice === "local_delivery_review" ? "Solicitar análise local" : pagBankIsSandbox ? "Ir ao PagBank Sandbox" : "Ir ao PagBank"} <ArrowRight size={18} /></>}</button>
+        <small className="checkout-legal">Produtos, preços, frete e estoque serão recalculados no servidor. {completionMode === "whatsapp" ? "O pedido ficará aguardando pagamento até a conferência da equipe." : `Para frete normal, você será redirecionado ao Checkout PagBank ${pagBankIsSandbox ? "Sandbox" : "oficial"}.`}</small>
       </aside>
     </form>
   );

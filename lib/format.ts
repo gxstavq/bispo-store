@@ -5,3 +5,6 @@ export const whatsappNumber = process.env.NEXT_PUBLIC_WHATSAPP_NUMBER ?? "551197
 
 export const whatsappUrl = (message: string) =>
   `https://wa.me/${whatsappNumber.replace(/\D/g, "")}?text=${encodeURIComponent(message)}`;
+
+export const whatsappUrlFor = (number: string, message: string) =>
+  `https://wa.me/${number.replace(/\D/g, "")}?text=${encodeURIComponent(message)}`;

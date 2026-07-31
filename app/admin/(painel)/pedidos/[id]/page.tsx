@@ -54,7 +54,7 @@ export default async function OrderDetailsPage({ params }: { params: Promise<{ i
               <div><span>Análise local</span><strong>{localReviewLabels[order.localDeliveryReview.status]}</strong></div>
               <div><span>Pagamento</span><strong>{paymentStatusLabels[order.paymentStatus]}</strong></div>
               <div><span>Envio</span><strong>{shippingStatusLabels[order.shippingStatus]}</strong></div>
-              <div><span>ID do Checkout</span><strong>{order.payment?.checkoutId ?? "Não gerado"}</strong></div>
+              <div><span>ID do Checkout</span><strong>{order.payment?.checkoutId?.startsWith("WHATSAPP:") ? "Confirmação manual pelo WhatsApp" : order.payment?.checkoutId ?? "Não gerado"}</strong></div>
               <div><span>Forma</span><strong>{order.payment?.method ?? "Aguardando escolha"}</strong></div>
               <div><span>Status do provedor</span><strong>{order.payment?.providerStatus ?? "Sem retorno"}</strong></div>
               <div><span>Total</span><strong>{formatCurrency(total)}</strong></div>
