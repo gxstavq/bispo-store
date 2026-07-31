@@ -12,7 +12,7 @@ export const metadata: Metadata = {
   title: "Moda urbana com presença",
   description: "Descubra a coleção de tênis, calças e conjuntos da Bispo Store.",
 };
-export const revalidate = 60;
+export const dynamic = "force-dynamic";
 
 export default async function Home() {
   const [sneakers, pants, sets, launches, offers, bestSellers] = await Promise.all([

@@ -7,7 +7,7 @@ export const metadata: Metadata = {
   title: "Tênis",
   description: "Sneakers de demonstração com estética urbana e curadoria Bispo Store.",
 };
-export const revalidate = 60;
+export const dynamic = "force-dynamic";
 
 export default async function SneakersPage() {
   const { products, total } = await fetchProductPage({

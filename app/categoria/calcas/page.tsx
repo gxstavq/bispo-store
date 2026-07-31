@@ -7,7 +7,7 @@ export const metadata: Metadata = {
   title: "Calças",
   description: "Calças da curadoria urbana Bispo Store.",
 };
-export const revalidate = 60;
+export const dynamic = "force-dynamic";
 
 export default async function PantsPage() {
   const { products, total } = await fetchProductPage({

@@ -280,6 +280,23 @@ test("catálogo e painéis evitam carregar todos os produtos de uma vez", () => 
   assert.match(proxy, /"\/admin\/:path\*"/);
 });
 
+test("páginas públicas com catálogo não consultam o Supabase durante o build", () => {
+  for (const file of [
+    "app/page.tsx",
+    "app/categoria/tenis/page.tsx",
+    "app/categoria/calcas/page.tsx",
+    "app/categoria/conjuntos/page.tsx",
+  ]) {
+    const fileSource = readFileSync(join(root, ...file.split("/")), "utf8");
+    assert.match(fileSource, /export const dynamic = "force-dynamic"/);
+  }
+  const repository = readFileSync(
+    join(root, "repositories", "supabase-product-repository.ts"),
+    "utf8",
+  );
+  assert.match(repository, /\{ revalidate: 60, tags: \["public-products"\] \}/);
+});
+
 test("consultas de produtos usam formatos e caches separados", () => {
   const repository = readFileSync(
     join(root, "repositories", "supabase-product-repository.ts"),
