@@ -245,3 +245,45 @@ test("catálogo e painéis evitam carregar todos os produtos de uma vez", () => 
   assert.doesNotMatch(proxy, /_next\/static\|_next\/image/);
   assert.match(proxy, /"\/admin\/:path\*"/);
 });
+
+test("consultas de produtos usam formatos e caches separados", () => {
+  const repository = readFileSync(
+    join(root, "repositories", "supabase-product-repository.ts"),
+    "utf8",
+  );
+  const route = readFileSync(join(root, "app", "api", "products", "route.ts"), "utf8");
+
+  assert.match(repository, /\["public-product-list-v3", cacheKey\]/);
+  assert.match(repository, /\["public-product-page-v3", cacheKey\]/);
+  assert.match(repository, /ids: options\.ids \? \[\.\.\.new Set\(options\.ids\)\]\.sort\(\)/);
+  assert.match(repository, /offset: Math\.max\(0, options\.offset\)/);
+  assert.match(repository, /limit: Math\.max\(1, options\.limit\)/);
+  assert.match(repository, /category: options\.category/);
+  assert.match(repository, /search: options\.search/);
+  assert.match(route, /searchParams\.has\("ids"\)/);
+  assert.match(route, /if \(hasIdsParameter\)/);
+  assert.match(route, /const products = ids\.length[\s\S]*: \[\]/);
+});
+
+test("consulta seletiva do carrinho exige array e não reutiliza catálogo paginado", () => {
+  const cartProducts = readFileSync(
+    join(root, "components", "use-cart-products.ts"),
+    "utf8",
+  );
+  assert.match(cartProducts, /\/api\/products\?ids=/);
+  assert.match(cartProducts, /Array\.isArray\(result\)/);
+  assert.match(cartProducts, /Formato inesperado ao carregar os itens do carrinho/);
+  assert.match(cartProducts, /new Set\(items\.map\(\(item\) => item\.productId\)\)\]\.sort\(\)/);
+});
+
+test("produto de teste Sandbox fica oculto somente nas consultas públicas", () => {
+  const repository = readFileSync(
+    join(root, "repositories", "supabase-product-repository.ts"),
+    "utf8",
+  );
+  assert.match(
+    repository,
+    /if \(publicRead\) query = query\.not\("name", "ilike", "%\[TESTE SANDBOX\]%"\)/,
+  );
+  assert.match(repository, /executeProductQuery\(options, false\)/);
+});

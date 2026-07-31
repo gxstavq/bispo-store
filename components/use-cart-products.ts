@@ -10,8 +10,16 @@ export function useCartProducts(items: CartItem[]) {
     () => [...new Set(items.map((item) => item.productId))].sort().join(","),
     [items],
   );
-  const [resolved, setResolved] = useState<{ key: string; products: Product[] }>(
-    () => ({ key, products: productCache.get(key) ?? [] }),
+  const [resolved, setResolved] = useState<{
+    key: string;
+    products: Product[];
+    loading: boolean;
+  }>(
+    () => ({
+      key,
+      products: productCache.get(key) ?? [],
+      loading: Boolean(key) && !productCache.has(key),
+    }),
   );
 
   useEffect(() => {
@@ -23,14 +31,21 @@ export function useCartProducts(items: CartItem[]) {
     })
       .then(async (response) => {
         if (!response.ok) throw new Error("Falha ao carregar os itens do carrinho.");
-        return response.json() as Promise<Product[]>;
+        const result: unknown = await response.json();
+        if (!Array.isArray(result)) {
+          throw new Error("Formato inesperado ao carregar os itens do carrinho.");
+        }
+        return result as Product[];
       })
       .then((result) => {
+        if (controller.signal.aborted) return;
         productCache.set(key, result);
-        setResolved({ key, products: result });
+        setResolved({ key, products: result, loading: false });
       })
       .catch(() => {
-        if (!controller.signal.aborted) setResolved({ key, products: [] });
+        if (!controller.signal.aborted) {
+          setResolved({ key, products: [], loading: false });
+        }
       });
 
     return () => controller.abort();
@@ -41,6 +56,6 @@ export function useCartProducts(items: CartItem[]) {
     : [];
   const loading = Boolean(key)
     && !productCache.has(key)
-    && resolved.key !== key;
+    && (resolved.key !== key || resolved.loading);
   return { products, loading };
 }

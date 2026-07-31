@@ -21,10 +21,12 @@ export const dynamic = "force-dynamic";
 export async function GET(request: NextRequest) {
   const includeInactive = request.nextUrl.searchParams.get("includeInactive") === "true";
   if (includeInactive) await requireAdmin();
-  const ids = (request.nextUrl.searchParams.get("ids") ?? "")
+  const hasIdsParameter = request.nextUrl.searchParams.has("ids");
+  const ids = [...new Set((request.nextUrl.searchParams.get("ids") ?? "")
     .split(",")
     .map((value) => value.trim())
-    .filter((value) => /^[0-9a-f]{8}-[0-9a-f-]{27}$/i.test(value))
+    .filter((value) => /^[0-9a-f]{8}-[0-9a-f-]{27}$/i.test(value)))]
+    .sort()
     .slice(0, 30);
   const categoryValue = request.nextUrl.searchParams.get("category");
   const category = ["tenis", "calcas", "conjuntos"].includes(categoryValue ?? "")
@@ -42,13 +44,13 @@ export async function GET(request: NextRequest) {
     : "newest";
   const search = request.nextUrl.searchParams.get("search") ?? undefined;
 
-  if (ids.length) {
-    const products = await fetchProducts({ includeInactive, ids });
+  if (hasIdsParameter) {
+    const products = ids.length
+      ? await fetchProducts({ includeInactive, ids })
+      : [];
     return NextResponse.json(products, {
       headers: {
-        "Cache-Control": includeInactive
-          ? "private, no-store"
-          : "private, max-age=60",
+        "Cache-Control": "private, no-store",
       },
     });
   }

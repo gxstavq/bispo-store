@@ -177,6 +177,7 @@ async function executeProductQuery(
     .from("products")
     .select(productSelect, count ? { count: "exact" } : undefined)
     .is("deleted_at", null);
+  if (publicRead) query = query.not("name", "ilike", "%[TESTE SANDBOX]%");
   if (!options?.includeInactive) query = query.eq("status", "active");
   if (options?.id) query = query.eq("id", options.id);
   if (options?.ids?.length) query = query.in("id", options.ids);
@@ -207,22 +208,64 @@ async function executeProductQuery(
   return { products, total: count ? total ?? products.length : products.length };
 }
 
-const fetchCachedPublicProducts = unstable_cache(
-  async (serializedOptions: string, count: boolean) =>
-    executeProductQuery(
-      JSON.parse(serializedOptions) as ProductQueryOptions,
-      true,
-      count,
-    ),
-  ["public-products-v2"],
-  { revalidate: 60, tags: ["public-products"] },
-);
+function normalizedListOptions(options: ProductQueryOptions): ProductQueryOptions {
+  return {
+    id: options.id,
+    ids: options.ids ? [...new Set(options.ids)].sort() : undefined,
+    slug: options.slug,
+    category: options.category,
+    search: options.search,
+    status: options.status,
+    isNew: options.isNew,
+    featured: options.featured,
+    onSale: options.onSale,
+    sort: options.sort,
+  };
+}
+
+function normalizedPageOptions(
+  options: ProductQueryOptions & { offset: number; limit: number },
+): ProductQueryOptions & { offset: number; limit: number } {
+  return {
+    offset: Math.max(0, options.offset),
+    limit: Math.max(1, options.limit),
+    category: options.category,
+    search: options.search,
+    status: options.status,
+    isNew: options.isNew,
+    featured: options.featured,
+    onSale: options.onSale,
+    sort: options.sort,
+  };
+}
+
+async function fetchCachedPublicProductList(options: ProductQueryOptions) {
+  const normalized = normalizedListOptions(options);
+  const cacheKey = JSON.stringify(normalized);
+  return unstable_cache(
+    () => executeProductQuery(normalized, true, false),
+    ["public-product-list-v3", cacheKey],
+    { revalidate: 60, tags: ["public-products"] },
+  )();
+}
+
+async function fetchCachedPublicProductPage(
+  options: ProductQueryOptions & { offset: number; limit: number },
+) {
+  const normalized = normalizedPageOptions(options);
+  const cacheKey = JSON.stringify(normalized);
+  return unstable_cache(
+    () => executeProductQuery(normalized, true, true),
+    ["public-product-page-v3", cacheKey],
+    { revalidate: 60, tags: ["public-products"] },
+  )();
+}
 
 export async function fetchProducts(options: ProductQueryOptions = {}) {
   if (!hasSupabasePublicEnv()) return [];
   const result = options.includeInactive
     ? await executeProductQuery(options, false)
-    : await fetchCachedPublicProducts(JSON.stringify(options), false);
+    : await fetchCachedPublicProductList(options);
   return result.products;
 }
 
@@ -232,7 +275,7 @@ export async function fetchProductPage(
   if (!hasSupabasePublicEnv()) return { products: [], total: 0 };
   return options.includeInactive
     ? executeProductQuery(options, false, true)
-    : fetchCachedPublicProducts(JSON.stringify(options), true);
+    : fetchCachedPublicProductPage(options);
 }
 export async function saveSupabaseProduct(input: Product, id?: string) {
   const supabase = await createSupabaseServerClient();
