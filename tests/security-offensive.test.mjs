@@ -147,7 +147,7 @@ test("domínios oficiais e origens Netlify autorizadas são exatos", () => {
   const official = "https://bispostorebr.com.br";
   const www = "https://www.bispostorebr.com.br";
   const main = "https://bispo-store-homologacao.netlify.app";
-  const preview = "https://deploy-preview-1--bispo-store-homologacao.netlify.app";
+  const preview = "https://deploy-preview-2--bispo-store-homologacao.netlify.app";
   const allowed = allowedRequestOrigins(www, {
     NEXT_PUBLIC_SITE_URL: official,
     URL: main,
