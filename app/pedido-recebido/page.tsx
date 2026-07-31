@@ -16,7 +16,7 @@ import {
   findOrderForVerifiedReturn,
   orderRepository,
 } from "@/repositories/order-repository";
-import { reconcilePagBankPayment } from "@/services/pagbank/reconciliation";
+import { reconcilePagBankDirectPayment } from "@/services/pagbank/reconciliation";
 
 export const metadata: Metadata = { title: "Pedido recebido", robots: { index: false } };
 export const dynamic = "force-dynamic";
@@ -33,10 +33,9 @@ export default async function OrderReceivedPage({ searchParams }: {
     redirect(`/entrar?next=${encodeURIComponent(`/acompanhar-pedido?pedido=${pedido}`)}`);
   }
   if (signedReturn) {
-    await reconcilePagBankPayment({
+    await reconcilePagBankDirectPayment({
       orderNumber: pedido,
       source: "signed_return",
-      applyNonPaid: false,
     }).catch(() => null);
   }
   const order = user

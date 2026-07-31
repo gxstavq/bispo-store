@@ -17,6 +17,10 @@ import {
 } from "../services/pagbank/consistency.ts";
 import { pagBankShippingServiceType } from "../services/pagbank/shipping.ts";
 import {
+  checkoutPagBankProviderAssociation,
+  storedPagBankProviderAssociation,
+} from "../services/pagbank/provider-association.ts";
+import {
   createCapabilityToken,
   verifyCapabilityToken,
 } from "../lib/security/capability-token.ts";
@@ -139,11 +143,93 @@ test("página de retorno não considera o redirecionamento uma aprovação", () 
   assert.match(returnPage, /expired:/);
   assert.match(returnPage, /isValidOrderNumber\(pedido\)/);
   assert.match(returnPage, /verifyOrderReturnToken\(pedido, retorno\)/);
-  assert.match(returnPage, /reconcilePagBankPayment/);
+  assert.match(returnPage, /reconcilePagBankDirectPayment/);
   assert.match(returnPage, /source: "signed_return"/);
-  assert.match(returnPage, /applyNonPaid: false/);
   assert.match(returnPage, /findOrderForVerifiedReturn\(pedido\)/);
   assert.doesNotMatch(returnPage, /if \(!user\) redirect/);
+});
+
+test("consulta direta descobre e preserva associação ORDE e CHAR verificada", () => {
+  const providerOrderId = "ORDE_3DD05D7C-FEA5-42BE-B2CD-5BCEA10B25E9";
+  const providerChargeId = "CHAR_11111111-2222-3333-4444-555555555555";
+  assert.deepEqual(
+    checkoutPagBankProviderAssociation({
+      id: "CHEC_1EE03C59-53FC-4DB8-95B7-02982D697E41",
+      reference_id: "BSP-34BADA21",
+      orders: [{
+        id: providerOrderId,
+        reference_id: "BSP-34BADA21",
+        charges: [{ id: providerChargeId, status: "PAID" }],
+      }],
+    }, "BSP-34BADA21"),
+    { providerOrderId, providerChargeId },
+  );
+  assert.deepEqual(
+    storedPagBankProviderAssociation({
+      verified_order_id: providerOrderId,
+      verified_charge_id: providerChargeId,
+      customer: "não deve influenciar a associação",
+    }),
+    { providerOrderId, providerChargeId },
+  );
+  assert.deepEqual(
+    checkoutPagBankProviderAssociation({
+      orders: [
+        { id: providerOrderId, reference_id: "BSP-DIVERGENTE" },
+      ],
+    }, "BSP-34BADA21"),
+    { providerOrderId: undefined, providerChargeId: undefined },
+  );
+});
+
+test("painel e retorno usam reconciliação direta sem confiar no navegador", () => {
+  const panel = readFileSync(
+    join(root, "components", "order-status-select.tsx"),
+    "utf8",
+  );
+  const adminRoute = readFileSync(
+    join(
+      root,
+      "app",
+      "api",
+      "integrations",
+      "pagbank",
+      "orders",
+      "[id]",
+      "status",
+      "route.ts",
+    ),
+    "utf8",
+  );
+  assert.match(panel, /Verificar pagamento no PagBank/);
+  assert.match(panel, /\/api\/integrations\/pagbank\/orders\//);
+  assert.match(panel, /providerOrderId: pagBankOrderId\.trim\(\) \|\| undefined/);
+  assert.match(adminRoute, /getAdminSession/);
+  assert.match(adminRoute, /assertSameOrigin/);
+  assert.match(adminRoute, /pagbank-admin-direct-reconciliation/);
+  assert.match(adminRoute, /reconcilePagBankDirectPayment/);
+  assert.match(reconciliation, /consultPagBankOrderByCharge/);
+  assert.match(reconciliation, /verified_order_id/);
+  assert.match(reconciliation, /verified_charge_id/);
+  assert.match(reconciliation, /applyNonPaid: false/);
+  assert.match(reconciliation, /normalized\.status === "paid"/);
+});
+
+test("consulta direta mantém estados não pagos como pendentes", () => {
+  for (const status of ["ACTIVE", "WAITING", "IN_ANALYSIS", "DECLINED", "CANCELED"]) {
+    assert.notEqual(
+      normalizePagBankStatus({ charges: [{ status }] }).status,
+      "paid",
+      status,
+    );
+  }
+  assert.equal(
+    normalizePagBankStatus({ charges: [{ status: "PAID" }] }).status,
+    "paid",
+  );
+  const directCall = reconciliation.indexOf("export async function reconcilePagBankDirectPayment");
+  const directSource = reconciliation.slice(directCall);
+  assert.match(directSource, /applyNonPaid: false/);
 });
 
 test("webhook usa checkout_id explícito e ignora id transacional", () => {

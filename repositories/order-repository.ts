@@ -3,6 +3,7 @@ import "server-only";
 import { createSupabaseServerClient } from "@/lib/supabase/server";
 import { createSupabaseServiceClient } from "@/lib/supabase/admin";
 import { hasSupabasePublicEnv } from "@/lib/supabase/env";
+import { storedPagBankProviderAssociation } from "@/services/pagbank/provider-association";
 import type { StoreOrder } from "@/types/commerce";
 
 const orderSelect = `
@@ -22,7 +23,7 @@ const orderSelect = `
   shipping_decisions(id, decision, note, decided_at, decided_by),
   payments(
     id, status, external_reference, checkout_id, payment_url, payment_method,
-    raw_status, expires_at, created_at,
+    raw_status, expires_at, provider_payload, created_at,
     payment_events(id, event_type, provider_status, verified, verification_error, received_at)
   ),
   selected_quote:shipping_quotes!orders_selected_shipping_quote_id_fkey(
@@ -86,6 +87,7 @@ type OrderRecord = {
     payment_method: string | null;
     raw_status: string | null;
     expires_at: string | null;
+    provider_payload: unknown;
     created_at: string;
     payment_events: Array<{
       id: string;
@@ -150,6 +152,9 @@ function mapOrder(row: OrderRecord): StoreOrder {
   const decisions = [...(row.shipping_decisions ?? [])].sort((a, b) => b.decided_at.localeCompare(a.decided_at));
   const lastDecision = decisions[0];
   const latestPayment = [...(row.payments ?? [])].sort((a, b) => b.created_at.localeCompare(a.created_at))[0];
+  const pagBankAssociation = storedPagBankProviderAssociation(
+    latestPayment?.provider_payload,
+  );
   const selectedQuote = row.selected_quote ? one(row.selected_quote) : null;
   const latestLabel = [...(row.shipment_labels ?? [])].sort((a, b) => b.created_at.localeCompare(a.created_at))[0];
   const localStatus = lastDecision?.decision === "local_approved"
@@ -215,6 +220,8 @@ function mapOrder(row: OrderRecord): StoreOrder {
     paymentReference: latestPayment?.external_reference ?? undefined,
     payment: latestPayment ? {
       checkoutId: latestPayment.checkout_id ?? undefined,
+      providerOrderId: pagBankAssociation.providerOrderId,
+      providerChargeId: pagBankAssociation.providerChargeId,
       paymentUrl: latestPayment.payment_url ?? undefined,
       method: latestPayment.payment_method ?? undefined,
       providerStatus: latestPayment.raw_status ?? undefined,

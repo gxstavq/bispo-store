@@ -7,6 +7,7 @@ import {
   consultPagBankCharge,
   consultPagBankCheckout,
   consultPagBankOrder,
+  consultPagBankOrderByCharge,
   normalizePagBankStatus,
   pagBankCheckoutTotalCents,
   type PagBankCharge,
@@ -18,6 +19,11 @@ import {
   pagBankChargeAmountCents,
 } from "@/services/pagbank/consistency";
 import { pagBankTransactionSummary } from "@/services/pagbank/status";
+import {
+  checkoutPagBankProviderAssociation,
+  isPagBankOrderId,
+  storedPagBankProviderAssociation,
+} from "@/services/pagbank/provider-association";
 
 export type PagBankReconciliationSource =
   | "webhook"
@@ -31,6 +37,7 @@ type PaymentRow = {
   amount: number | string;
   status: string;
   confirmed_at: string | null;
+  provider_payload: unknown;
   orders: {
     order_number: string;
     total: number | string;
@@ -112,7 +119,7 @@ async function resolveStoredPayment(input: {
   let query = supabase
     .from("payments")
     .select(`
-      id, order_id, checkout_id, amount, status, confirmed_at,
+      id, order_id, checkout_id, amount, status, confirmed_at, provider_payload,
       orders!inner(
         order_number, total, status, payment_status,
         stock_deducted_at, stock_deduction_error
@@ -307,6 +314,53 @@ async function finishOfficialStateEvent(input: {
   }
 }
 
+async function persistVerifiedProviderAssociation(input: {
+  payment: PaymentRow;
+  providerOrderId: string;
+  providerChargeId: string;
+}) {
+  const stored = storedPagBankProviderAssociation(input.payment.provider_payload);
+  if (
+    (stored.providerOrderId && stored.providerOrderId !== input.providerOrderId)
+    || (stored.providerChargeId && stored.providerChargeId !== input.providerChargeId)
+  ) {
+    throw new PagBankReconciliationError(
+      "O pagamento já está associado a outra transação PagBank.",
+      409,
+      "stored_provider_association_mismatch",
+    );
+  }
+  if (
+    stored.providerOrderId === input.providerOrderId
+    && stored.providerChargeId === input.providerChargeId
+  ) {
+    return;
+  }
+  const currentPayload = input.payment.provider_payload
+    && typeof input.payment.provider_payload === "object"
+    && !Array.isArray(input.payment.provider_payload)
+    ? input.payment.provider_payload as Record<string, unknown>
+    : {};
+  const supabase = createSupabaseServiceClient();
+  const { error } = await supabase
+    .from("payments")
+    .update({
+      provider_payload: {
+        ...currentPayload,
+        verified_order_id: input.providerOrderId,
+        verified_charge_id: input.providerChargeId,
+      },
+    })
+    .eq("id", input.payment.id);
+  if (error) {
+    throw new PagBankReconciliationError(
+      "Não foi possível guardar a associação verificada do PagBank.",
+      503,
+      "provider_association_persist_failed",
+    );
+  }
+}
+
 export async function reconcilePagBankPayment(input: {
   checkoutId?: string;
   orderNumber?: string;
@@ -479,7 +533,7 @@ export async function reconcilePagBankOrderPayment(input: {
   source: PagBankReconciliationSource;
   applyNonPaid?: boolean;
 }) {
-  if (!input.providerOrderId.startsWith("ORDE_")) {
+  if (!isPagBankOrderId(input.providerOrderId)) {
     throw new PagBankReconciliationError(
       "Identificador de pedido PagBank inválido.",
       400,
@@ -522,6 +576,11 @@ export async function reconcilePagBankOrderPayment(input: {
       "official_order_mismatch",
     );
   }
+  await persistVerifiedProviderAssociation({
+    payment,
+    providerOrderId: providerOrder.id,
+    providerChargeId: charge.id,
+  });
 
   const normalized = normalizePagBankStatus({ charges: [charge] });
   const transaction = pagBankTransactionSummary({ charges: [charge] });
@@ -654,4 +713,88 @@ export async function reconcilePagBankOrderPayment(input: {
     internalPaymentStatus: current.order.payment_status,
     confirmedAt: current.payment.confirmed_at,
   };
+}
+
+function orderFromChargeLookup(
+  lookup: Awaited<ReturnType<typeof consultPagBankOrderByCharge>>,
+) {
+  if ("id" in lookup && isPagBankOrderId(lookup.id)) return lookup;
+  const orders = "orders" in lookup && Array.isArray(lookup.orders)
+    ? lookup.orders.filter((order) => isPagBankOrderId(order.id))
+    : [];
+  if (orders.length === 1) return orders[0];
+  throw new PagBankReconciliationError(
+    "A cobrança não está associada a um único pedido PagBank.",
+    409,
+    "ambiguous_charge_order",
+  );
+}
+
+export async function reconcilePagBankDirectPayment(input: {
+  orderNumber: string;
+  providerOrderId?: string;
+  source: Exclude<PagBankReconciliationSource, "webhook">;
+}) {
+  const { payment, order } = await resolveStoredPayment({
+    orderNumber: input.orderNumber,
+  });
+  const stored = storedPagBankProviderAssociation(payment.provider_payload);
+  if (
+    input.providerOrderId
+    && stored.providerOrderId
+    && input.providerOrderId !== stored.providerOrderId
+  ) {
+    throw new PagBankReconciliationError(
+      "O pedido informado diverge da associação PagBank já verificada.",
+      409,
+      "provided_order_mismatch",
+    );
+  }
+
+  let providerOrderId = input.providerOrderId ?? stored.providerOrderId;
+  let providerChargeId = stored.providerChargeId;
+  if (!providerOrderId) {
+    const checkout = await consultPagBankCheckout(payment.checkout_id!);
+    const totalCents = pagBankCheckoutTotalCents(checkout);
+    if (!consultedPagBankCheckoutMatchesPayment({
+      checkoutId: checkout.id,
+      referenceId: checkout.reference_id,
+      totalCents,
+      expectedCheckoutId: payment.checkout_id!,
+      expectedOrderNumber: order.order_number,
+      expectedAmount: payment.amount,
+    })) {
+      throw new PagBankReconciliationError(
+        "Checkout, referência ou valor divergente.",
+        409,
+        "official_checkout_mismatch",
+      );
+    }
+    const associated = checkoutPagBankProviderAssociation(
+      checkout as unknown as Record<string, unknown>,
+      order.order_number,
+    );
+    providerOrderId = associated.providerOrderId;
+    providerChargeId = associated.providerChargeId;
+    if (!providerOrderId && providerChargeId) {
+      const lookup = await consultPagBankOrderByCharge(providerChargeId);
+      providerOrderId = orderFromChargeLookup(lookup).id;
+    }
+  }
+
+  if (!providerOrderId) {
+    return reconcilePagBankPayment({
+      checkoutId: payment.checkout_id!,
+      orderNumber: order.order_number,
+      source: input.source,
+      applyNonPaid: false,
+    });
+  }
+  return reconcilePagBankOrderPayment({
+    providerOrderId,
+    chargeId: providerChargeId,
+    orderNumber: order.order_number,
+    source: input.source,
+    applyNonPaid: false,
+  });
 }

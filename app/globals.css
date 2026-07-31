@@ -519,6 +519,9 @@ textarea { resize: vertical; }
 .order-history p { margin: 5px 0 0; color: var(--muted); font-size: 11px; }
 .category-hero--sets { background: linear-gradient(120deg, #101014 55%, #632029); color: white; }
 .admin-feedback { margin-bottom: 14px; padding: 12px 14px; border-left: 3px solid var(--green); background: #e5f5ed; color: #246b4a; font-size: 11px; font-weight: 700; }
+.admin-inline-field { display: grid; gap: 6px; margin: 14px 0; max-width: 620px; color: var(--ink); }
+.admin-inline-field input { width: 100%; min-height: 44px; border: 1px solid #b9d7c8; border-radius: 8px; background: #fff; padding: 0 12px; color: var(--ink); font: inherit; }
+.admin-inline-field small { color: #47705d; font-weight: 500; line-height: 1.5; }
 .review-badge { display: inline-flex; padding: 5px 7px; background: #fff0d7; color: #8b5a0d; font-size: 8px; font-weight: 900; text-transform: uppercase; }
 .review-badge.is-reviewed { background: #ddf5e9; color: #1a6b48; }
 .status-draft { background: #e7e5e0; color: #66666d !important; }

@@ -73,6 +73,9 @@ test("diagnóstico PagBank é Sandbox, server-side e exclusivo de administradore
   const route = source(
     "app", "api", "integrations", "pagbank", "checkouts", "[id]", "status", "route.ts",
   );
+  const directRoute = source(
+    "app", "api", "integrations", "pagbank", "orders", "[id]", "status", "route.ts",
+  );
   const reconciliation = source("services", "pagbank", "reconciliation.ts");
   const config = source("lib", "integrations", "config.ts");
   assert.match(route, /getAdminSession/);
@@ -81,12 +84,16 @@ test("diagnóstico PagBank é Sandbox, server-side e exclusivo de administradore
   assert.match(route, /reconcilePagBankPayment/);
   assert.match(route, /Cache-Control": "no-store"/);
   assert.doesNotMatch(route, /process\.env\.CONTEXT|Authorization|PAGBANK_TOKEN/);
+  assert.match(directRoute, /getAdminSession/);
+  assert.match(directRoute, /assertSameOrigin/);
+  assert.match(directRoute, /reconcilePagBankDirectPayment/);
+  assert.doesNotMatch(directRoute, /process\.env\.CONTEXT|Authorization|PAGBANK_TOKEN/);
   assert.match(reconciliation, /consultPagBankCheckout/);
   assert.match(config, /baseUrl: "https:\/\/sandbox\.api\.pagseguro\.com"/);
   assert.match(config, /sandboxOnly\("PAGBANK_ENV"\)/);
   const panel = source("components", "order-status-select.tsx");
   assert.match(panel, /Verificar pagamento no PagBank/);
-  assert.match(panel, /\/api\/integrations\/pagbank\/checkouts\//);
+  assert.match(panel, /\/api\/integrations\/pagbank\/orders\//);
 });
 
 test("webhook registra somente metadados seguros antes da validação", () => {

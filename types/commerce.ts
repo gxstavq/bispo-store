@@ -121,6 +121,8 @@ export interface PaymentEventView {
 
 export interface OrderPaymentView {
   checkoutId?: string;
+  providerOrderId?: string;
+  providerChargeId?: string;
   paymentUrl?: string;
   method?: string;
   providerStatus?: string;

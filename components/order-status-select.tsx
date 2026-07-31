@@ -34,6 +34,9 @@ export function OrderManagementPanel({
   const [message, setMessage] = useState("");
   const [saving, setSaving] = useState(false);
   const [invoiceKey, setInvoiceKey] = useState("");
+  const [pagBankOrderId, setPagBankOrderId] = useState(
+    initial.payment?.providerOrderId ?? "",
+  );
 
   async function apply(action: OrderAction) {
     setSaving(true);
@@ -83,8 +86,14 @@ export function OrderManagementPanel({
     setSaving(true);
     setMessage("");
     const response = await fetch(
-      `/api/integrations/pagbank/checkouts/${encodeURIComponent(order.payment.checkoutId)}/status`,
-      { method: "POST" },
+      `/api/integrations/pagbank/orders/${encodeURIComponent(order.id)}/status`,
+      {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          providerOrderId: pagBankOrderId.trim() || undefined,
+        }),
+      },
     );
     const result = await response.json() as {
       error?: string;
@@ -108,7 +117,11 @@ export function OrderManagementPanel({
       + `${result.method ? ` · ${result.method}` : ""}`,
     );
     const refreshed = await fetch(`/api/orders/${order.id}`, { cache: "no-store" });
-    if (refreshed.ok) setOrder(await refreshed.json() as StoreOrder);
+    if (refreshed.ok) {
+      const nextOrder = await refreshed.json() as StoreOrder;
+      setOrder(nextOrder);
+      setPagBankOrderId(nextOrder.payment?.providerOrderId ?? pagBankOrderId);
+    }
   }
 
   const pendingReview = order.localDeliveryReview.status === "pending";
@@ -147,6 +160,19 @@ export function OrderManagementPanel({
         ID: {order.payment.checkoutId}<br />
         <a href={order.payment.paymentUrl} target="_blank" rel="noreferrer">Abrir link</a>
         {" · "}<a href={`https://wa.me/${order.customer.whatsapp.replace(/\D/g, "")}?text=${encodeURIComponent(`Olá! Segue o link de pagamento Sandbox do pedido ${order.id}: ${order.payment.paymentUrl}`)}`} target="_blank" rel="noreferrer">Enviar pelo WhatsApp</a>
+        <label className="admin-inline-field">
+          ID do pedido PagBank
+          <input
+            value={pagBankOrderId}
+            onChange={(event) => setPagBankOrderId(event.target.value)}
+            placeholder="ORDE_..."
+            autoComplete="off"
+          />
+          <small>
+            Opcional quando o Checkout consegue listar a transação. O ID informado
+            só será guardado após referência e valor serem confirmados pela API oficial.
+          </small>
+        </label>
         <div className="decision-actions">
           <button
             type="button"

@@ -22,6 +22,7 @@ export type PagBankCheckout = {
   additional_amount?: number;
   discount_amount?: number;
   payments?: Array<Record<string, unknown>>;
+  orders?: Array<Record<string, unknown>>;
   charges?: Array<Record<string, unknown>>;
   links?: PagBankLink[];
 };
@@ -139,6 +140,17 @@ export function consultPagBankCharge(
 ) {
   return pagBankRequest<PagBankCharge>(
     `/charges/${encodeURIComponent(chargeId)}`,
+    { method: "GET" },
+    fetchImpl,
+  );
+}
+
+export function consultPagBankOrderByCharge(
+  chargeId: string,
+  fetchImpl: FetchImplementation = fetch,
+) {
+  return pagBankRequest<PagBankOrder | { orders?: PagBankOrder[] }>(
+    `/orders?charge_id=${encodeURIComponent(chargeId)}`,
     { method: "GET" },
     fetchImpl,
   );
