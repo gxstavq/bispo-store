@@ -8,6 +8,7 @@ import {
   validatePagBankWebhookSignature,
   verifyPagBankWebhookSignature,
 } from "../services/pagbank/webhook-signature.ts";
+import { allowedRequestOrigins } from "../lib/security/allowed-origin.ts";
 
 const root = process.cwd();
 const source = (...parts) => readFileSync(join(root, ...parts), "utf8");
@@ -140,6 +141,33 @@ test("mutações autenticadas têm origem e payload limitados", () => {
   }
   assert.match(source("app", "api", "orders", "route.ts"), /readJsonBody/);
   assert.match(source("app", "api", "admin", "uploads", "route.ts"), /validImageSignature/);
+});
+
+test("origens Netlify são exatas e reconhecidas pelas variáveis oficiais", () => {
+  const main = "https://bispo-store-homologacao.netlify.app";
+  const preview = "https://deploy-preview-1--bispo-store-homologacao.netlify.app";
+  const allowed = allowedRequestOrigins("https://internal.netlify", {
+    NEXT_PUBLIC_SITE_URL: main,
+    URL: main,
+    DEPLOY_PRIME_URL: preview,
+    NODE_ENV: "production",
+  });
+
+  assert.deepEqual([...allowed].sort(), [main, preview].sort());
+  assert.equal(allowed.has("https://evil.netlify.app"), false);
+  assert.equal(allowed.has("https://other--bispo-store-homologacao.netlify.app"), false);
+  assert.equal(allowed.has("https://internal.netlify"), false);
+});
+
+test("origem oficial inesperada não amplia a allowlist", () => {
+  const allowed = allowedRequestOrigins("https://localhost.internal", {
+    NEXT_PUBLIC_SITE_URL: "https://evil.netlify.app",
+    URL: "https://other-site.netlify.app",
+    DEPLOY_PRIME_URL: "https://6a6c--bispo-store-homologacao.netlify.app",
+    NODE_ENV: "production",
+  });
+
+  assert.deepEqual([...allowed], []);
 });
 
 test("checkout rejeita total zero e URL de pagamento não HTTPS", () => {

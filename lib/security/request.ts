@@ -1,6 +1,7 @@
 import "server-only";
 
 import { NextRequest, NextResponse } from "next/server";
+import { allowedRequestOrigins } from "./allowed-origin";
 export { safeInternalPath, safeJsonForHtml } from "./safe-values";
 
 export class RequestValidationError extends Error {
@@ -17,15 +18,12 @@ export function assertSameOrigin(request: NextRequest) {
   const origin = request.headers.get("origin");
   if (!origin) return;
 
-  const allowedOrigins = new Set([request.nextUrl.origin]);
-  const configuredSite = process.env.NEXT_PUBLIC_SITE_URL?.trim();
-  if (configuredSite) {
-    try {
-      allowedOrigins.add(new URL(configuredSite).origin);
-    } catch {
-      throw new RequestValidationError("Origem configurada inválida.", 500);
-    }
-  }
+  const allowedOrigins = allowedRequestOrigins(request.nextUrl.origin, {
+    NEXT_PUBLIC_SITE_URL: process.env.NEXT_PUBLIC_SITE_URL,
+    URL: process.env.URL,
+    DEPLOY_PRIME_URL: process.env.DEPLOY_PRIME_URL,
+    NODE_ENV: process.env.NODE_ENV,
+  });
 
   let requestOrigin: string;
   try {
