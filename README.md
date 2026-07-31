@@ -222,4 +222,4 @@ data/products.local.json     origem preservada para migração e conferência
 
 O projeto mantém `netlify.toml` com build Next.js/OpenNext no ambiente Linux do Netlify. As variáveis de ambiente são cadastradas no Netlify e nunca em arquivos versionados.
 
-Enquanto a homologação estiver em revisão, `scripts/netlify-ignore-build.mjs` bloqueia o contexto `production` e permite somente Deploy Previews originados de pull requests. Remova essa trava apenas após autorização explícita para atualizar a URL principal.
+Enquanto a homologação estiver em revisão, `scripts/netlify-ignore-build.mjs` bloqueia o contexto `production` por padrão e permite somente releases cujo commit contenha a marca explícita `[deploy-production]`. Deploy Previews continuam permitidos normalmente.
