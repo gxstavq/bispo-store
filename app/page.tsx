@@ -7,6 +7,8 @@ import { PublicShell } from "@/components/public-shell";
 import { SectionTitle } from "@/components/section-title";
 import { whatsappUrl } from "@/lib/format";
 import { fetchProducts } from "@/repositories/supabase-product-repository";
+import { readPublicHomeBanner } from "@/repositories/home-banner-repository";
+import Image from "next/image";
 
 export const metadata: Metadata = {
   title: "Moda urbana com presença",
@@ -15,13 +17,14 @@ export const metadata: Metadata = {
 export const dynamic = "force-dynamic";
 
 export default async function Home() {
-  const [sneakers, pants, sets, launches, offers, bestSellers] = await Promise.all([
+  const [sneakers, pants, sets, launches, offers, bestSellers, banner] = await Promise.all([
     fetchProducts({ category: "tenis", limit: 4 }),
     fetchProducts({ category: "calcas", limit: 4 }),
     fetchProducts({ category: "conjuntos", limit: 4 }),
     fetchProducts({ isNew: true, limit: 4 }),
     fetchProducts({ onSale: true, limit: 4 }),
     fetchProducts({ featured: true, limit: 4 }),
+    readPublicHomeBanner(),
   ]);
   const heroProduct = launches[0] ?? sneakers[0] ?? pants[0] ?? sets[0];
 
@@ -41,7 +44,10 @@ export default async function Home() {
           </div>
           <div className="hero-art">
             <div className="hero-art__type">MOVE<br />WITH<br />PURPOSE</div>
-            {heroProduct
+            {banner?.active && banner.desktopImageUrl ? <>
+              {banner.link ? <Link href={banner.link} className="hero-banner-link" aria-label={banner.altText}><picture>{banner.mobileImageUrl && <source media="(max-width: 560px)" srcSet={banner.mobileImageUrl} />}<Image src={banner.desktopImageUrl} alt={banner.altText} fill sizes="(max-width: 820px) 100vw, 55vw" priority /></picture></Link> : <picture className="hero-banner-link">{banner.mobileImageUrl && <source media="(max-width: 560px)" srcSet={banner.mobileImageUrl} />}<Image src={banner.desktopImageUrl} alt={banner.altText} fill sizes="(max-width: 820px) 100vw, 55vw" priority /></picture>}
+              {banner.title && <strong className="hero-banner-title">{banner.title}</strong>}
+            </> : heroProduct
               ? <ProductVisual product={heroProduct} label={heroProduct.coverImage ?? "DROP 001"} priority showStatus={false} />
               : <div className="empty-state"><strong>Curadoria Bispo Store.</strong><p>Tênis, calças e conjuntos com identidade urbana.</p></div>}
             <span className="hero-art__note">CURADORIA BISPO STORE</span>

@@ -1,8 +1,9 @@
 import { NextRequest, NextResponse } from "next/server";
 import { requireAdmin } from "@/lib/auth/admin";
+import { humanAdminError, sanitizedAdminError } from "@/lib/admin-errors";
 import { assertSameOrigin, readJsonBody, validationErrorResponse } from "@/lib/security/request";
 import { createSupabaseServerClient } from "@/lib/supabase/server";
-import { orderRepository } from "@/repositories/order-repository";
+import { findAdminOrderById, orderRepository } from "@/repositories/order-repository";
 import { createPagBankCheckoutForOrder } from "@/services/pagbank/payment-service";
 import {
   cancelManualPaymentAndReleaseReservation,
@@ -75,15 +76,32 @@ export async function PATCH(request: NextRequest, { params }: { params: Promise<
         actorUserId: user.id,
         note,
       });
-      const order = await orderRepository.findById(id);
+      const order = await findAdminOrderById(id);
       return NextResponse.json({
         ...order,
         manualPaymentConfirmation: confirmation,
         decisionActor: admin.display_name ?? admin.email,
       });
     } catch (error) {
+      console.error("admin_manual_payment_confirmation_failed", sanitizedAdminError(error));
       return NextResponse.json({
-        error: error instanceof Error ? error.message : "Não foi possível confirmar o pagamento.",
+        error: humanAdminError(error, "Não foi possível confirmar o pagamento."),
+      }, { status: 409 });
+    }
+  }
+
+  if (input.action === "update_status" && input.status === "cancelled") {
+    try {
+      await cancelManualPaymentAndReleaseReservation({
+        orderNumber: id,
+        actorUserId: user.id,
+        note,
+      });
+      return NextResponse.json(await findAdminOrderById(id));
+    } catch (error) {
+      console.error("admin_order_cancellation_failed", sanitizedAdminError(error));
+      return NextResponse.json({
+        error: humanAdminError(error, "Não foi possível cancelar o pedido."),
       }, { status: 409 });
     }
   }
@@ -150,15 +168,9 @@ export async function PATCH(request: NextRequest, { params }: { params: Promise<
   }
 
   const { error: updateError } = await supabase.from("orders").update(orderUpdate).eq("id", row.id);
-  if (updateError) return NextResponse.json({ error: updateError.message }, { status: 400 });
-  if (input.action === "update_status" && input.status === "cancelled") {
-    try {
-      await cancelManualPaymentAndReleaseReservation(row.id);
-    } catch (error) {
-      return NextResponse.json({
-        error: error instanceof Error ? error.message : "Pedido cancelado, mas a reserva exige revisão.",
-      }, { status: 500 });
-    }
+  if (updateError) {
+    console.error("admin_order_update_failed", sanitizedAdminError(updateError));
+    return NextResponse.json({ error: humanAdminError(updateError, "Não foi possível atualizar o pedido.") }, { status: 400 });
   }
   if (decision) {
     const { error } = await supabase.from("shipping_decisions").insert({
@@ -167,7 +179,10 @@ export async function PATCH(request: NextRequest, { params }: { params: Promise<
       note,
       decided_by: user.id,
     });
-    if (error) return NextResponse.json({ error: error.message }, { status: 400 });
+    if (error) {
+      console.error("admin_shipping_decision_failed", sanitizedAdminError(error));
+      return NextResponse.json({ error: humanAdminError(error, "Não foi possível registrar a decisão de frete.") }, { status: 400 });
+    }
   }
   if (quote) {
     const { error } = await supabase.from("shipping_quotes").insert({
@@ -178,7 +193,10 @@ export async function PATCH(request: NextRequest, { params }: { params: Promise<
       selected: true,
       created_by: user.id,
     });
-    if (error) return NextResponse.json({ error: error.message }, { status: 400 });
+    if (error) {
+      console.error("admin_shipping_quote_failed", sanitizedAdminError(error));
+      return NextResponse.json({ error: humanAdminError(error, "Não foi possível registrar o frete.") }, { status: 400 });
+    }
   }
   if (input.action === "enable_payment") {
     try {
@@ -215,7 +233,7 @@ export async function PATCH(request: NextRequest, { params }: { params: Promise<
     });
   }
 
-  const order = await orderRepository.findById(id);
+  const order = await findAdminOrderById(id);
   return NextResponse.json({
     ...order,
     decisionActor: admin.display_name ?? admin.email,

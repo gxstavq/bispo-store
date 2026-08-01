@@ -22,7 +22,7 @@ type ProductImageRow = {
 };
 
 export async function GET() {
-  const { user } = await requireAdmin();
+  await requireAdmin();
   const supabase = await createSupabaseServerClient();
   const { data: associations, error: associationsError } = await supabase
     .from("product_images")
@@ -52,16 +52,28 @@ export async function GET() {
     }
   }
 
-  const adminPrefix = `admin/${user.id}`;
-  const { data: uploadedFiles, error: listError } = await supabase.storage
-    .from("product-images")
-    .list(adminPrefix, { limit: 1000, sortBy: { column: "created_at", order: "desc" } });
-  if (listError) {
-    return NextResponse.json({ error: "Não foi possível listar as imagens enviadas pelo painel." }, { status: 500 });
+  async function listFolder(folder = ""): Promise<string[]> {
+    const paths: string[] = [];
+    for (let offset = 0; ; offset += 1000) {
+      const { data: files, error: listError } = await supabase.storage.from("product-images")
+        .list(folder, { limit: 1000, offset, sortBy: { column: "name", order: "asc" } });
+      if (listError) throw listError;
+      for (const file of files ?? []) {
+        const path = folder ? `${folder}/${file.name}` : file.name;
+        if (!file.id && !file.metadata) paths.push(...await listFolder(path));
+        else if (/\.(?:jpe?g|png|webp|avif)$/iu.test(file.name)) paths.push(path);
+      }
+      if (!files || files.length < 1000) break;
+    }
+    return paths;
   }
-  for (const file of uploadedFiles ?? []) {
-    if (!file.id || !/\.(?:jpe?g|png|webp|avif)$/iu.test(file.name)) continue;
-    const storagePath = `${adminPrefix}/${file.name}`;
+  let storageFiles: string[];
+  try {
+    storageFiles = await listFolder();
+  } catch {
+    return NextResponse.json({ error: "Não foi possível listar o álbum Fotos Bispo Store." }, { status: 500 });
+  }
+  for (const storagePath of storageFiles) {
     if (album.has(storagePath)) continue;
     const { data } = supabase.storage.from("product-images").getPublicUrl(storagePath);
     album.set(storagePath, {

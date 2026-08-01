@@ -2,11 +2,11 @@
 
 import Image from "next/image";
 import Link from "next/link";
-import { Copy, EyeOff, Pencil, Search, Send, Trash2 } from "lucide-react";
+import { Archive, Copy, EyeOff, Pencil, Search, Send, Trash2, X } from "lucide-react";
 import { useCallback, useEffect, useState } from "react";
 import { formatCurrency } from "@/lib/format";
-import { allCategoryLabels as adminCategoryLabels } from "@/lib/product-rules";
-import type { Product, ProductCategory, ProductStatus } from "@/types/commerce";
+import { categoryLabel } from "@/lib/product-rules";
+import type { Product, ProductCategory, ProductCategoryRecord, ProductStatus } from "@/types/commerce";
 
 export function AdminProductsManager() {
   const [products, setProducts] = useState<Product[]>([]);
@@ -17,6 +17,10 @@ export function AdminProductsManager() {
   const [status, setStatus] = useState<ProductStatus | "all">("all");
   const [message, setMessage] = useState("");
   const [loading, setLoading] = useState(true);
+  const [deleteTarget, setDeleteTarget] = useState<Product | null>(null);
+  const [deleteConfirmation, setDeleteConfirmation] = useState("");
+  const [messageTone, setMessageTone] = useState<"success" | "error">("success");
+  const [categoryOptions, setCategoryOptions] = useState<ProductCategoryRecord[]>([]);
 
   const pageSize = 25;
 
@@ -60,25 +64,62 @@ export function AdminProductsManager() {
     };
   }, [load, search]);
 
-  async function action(product: Product, operation: "duplicate" | "publish" | "deactivate" | "delete") {
-    if (operation === "delete" && !window.confirm(`Excluir ${product.name}? O arquivo da foto não será apagado.`)) return;
-    const response = operation === "delete"
-      ? await fetch(`/api/products/${product.id}`, { method: "DELETE" })
+  useEffect(() => {
+    fetch("/api/admin/categories", { cache: "no-store" }).then((response) => response.json())
+      .then((result: { categories?: ProductCategoryRecord[] }) => setCategoryOptions(result.categories ?? []))
+      .catch(() => setCategoryOptions([]));
+  }, []);
+
+  async function action(product: Product, operation: "duplicate" | "publish" | "deactivate" | "archive") {
+    const response = operation === "archive"
+      ? await fetch(`/api/products/${product.id}`, {
+        method: "DELETE",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ mode: "archive" }),
+      })
       : await fetch(`/api/products/${product.id}/actions`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ action: operation }),
       });
     if (!response.ok) {
-      setMessage("Não foi possível concluir a ação.");
+      const result = await response.json().catch(() => ({})) as { error?: string };
+      setMessageTone("error");
+      setMessage(result.error ?? "Não foi possível concluir a ação.");
       return;
     }
+    setMessageTone("success");
     setMessage({
       duplicate: "Produto duplicado como rascunho.",
       publish: "Produto publicado e marcado como revisado.",
       deactivate: "Produto desativado.",
-      delete: "Produto arquivado no Supabase.",
+      archive: "Produto arquivado e removido do catálogo público.",
     }[operation]);
+    await load();
+  }
+
+  async function deletePermanently() {
+    if (!deleteTarget) return;
+    setLoading(true);
+    const response = await fetch(`/api/products/${deleteTarget.id}`, {
+      method: "DELETE",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ mode: "delete", confirmation: deleteConfirmation }),
+    });
+    const result = await response.json() as {
+      error?: string;
+      result?: { deleted?: boolean; archived?: boolean; had_dependencies?: boolean };
+    };
+    setLoading(false);
+    if (!response.ok) {
+      setMessageTone("error"); setMessage(result.error ?? "Não foi possível excluir o produto."); return;
+    }
+    setDeleteTarget(null);
+    setDeleteConfirmation("");
+    setMessageTone("success");
+    setMessage(result.result?.deleted
+      ? "Produto excluído definitivamente. Arquivos compartilhados foram preservados."
+      : "O produto possui dependências históricas e foi arquivado para preservar pedidos, reservas ou movimentações de estoque.");
     await load();
   }
 
@@ -88,7 +129,7 @@ export function AdminProductsManager() {
         <div className="admin-search"><Search size={17} /><input value={search} onChange={(event) => { setSearch(event.target.value); setPage(1); }} placeholder="Buscar produto ou código..." /></div>
         <select value={category} onChange={(event) => { setCategory(event.target.value as ProductCategory | "all"); setPage(1); }}>
           <option value="all">Todas as categorias</option>
-          {Object.entries(adminCategoryLabels).map(([value, label]) => <option value={value} key={value}>{label}</option>)}
+          {categoryOptions.map((item) => <option value={item.slug} key={item.id}>{item.name}</option>)}
         </select>
         <select value={status} onChange={(event) => { setStatus(event.target.value as ProductStatus | "all"); setPage(1); }}>
           <option value="all">Todos os status</option>
@@ -102,7 +143,7 @@ export function AdminProductsManager() {
         <span>{loading ? "Carregando..." : `${products.length} de ${total} produtos`}</span>
         <span>Dados persistidos no <strong>Supabase Postgres</strong></span>
       </div>
-      {message && <div className="admin-feedback" role="status">{message}</div>}
+      {message && <div className={`admin-feedback is-${messageTone}`} role={messageTone === "error" ? "alert" : "status"}>{message}</div>}
       <section className="admin-panel">
         <div className="admin-table-wrap">
           <table className="admin-table admin-products-table">
@@ -123,7 +164,7 @@ export function AdminProductsManager() {
                         <div><strong>{product.name}</strong><small>{product.code} · {product.images.length} imagens</small></div>
                       </div>
                     </td>
-                    <td>{adminCategoryLabels[product.category]}</td>
+                    <td>{categoryLabel(product.category)}</td>
                     <td>{formatCurrency(product.promotionalPrice ?? product.price)}</td>
                     <td><strong className={product.stock <= 5 ? "stock-low" : ""}>{product.stock}</strong></td>
                     <td>{product.needsReview ? <span className="review-badge">Pendente</span> : <span className="review-badge is-reviewed">Revisado</span>}</td>
@@ -134,7 +175,8 @@ export function AdminProductsManager() {
                         <button onClick={() => void action(product, "duplicate")} title="Duplicar"><Copy size={16} /><span>Duplicar</span></button>
                         {productStatus !== "active" && <button onClick={() => void action(product, "publish")} title="Publicar"><Send size={16} /><span>Publicar</span></button>}
                         {productStatus === "active" && <button onClick={() => void action(product, "deactivate")} title="Desativar"><EyeOff size={16} /><span>Desativar</span></button>}
-                        <button className="is-danger" onClick={() => void action(product, "delete")} title="Excluir"><Trash2 size={16} /><span>Excluir</span></button>
+                        {productStatus !== "archived" && <button onClick={() => void action(product, "archive")} title="Arquivar"><Archive size={16} /><span>Arquivar</span></button>}
+                        <button className="is-danger" onClick={() => setDeleteTarget(product)} title="Excluir definitivamente"><Trash2 size={16} /><span>Excluir</span></button>
                       </div>
                     </td>
                   </tr>
@@ -151,6 +193,15 @@ export function AdminProductsManager() {
           <button type="button" className="button button--dark" disabled={loading || page * pageSize >= total} onClick={() => setPage((current) => current + 1)}>Próxima</button>
         </div>
       )}
+      {deleteTarget && <div className="admin-modal-backdrop" role="presentation">
+        <section className="admin-modal" role="dialog" aria-modal="true" aria-label="Excluir produto definitivamente">
+          <div className="admin-panel__header"><div><span>EXCLUSÃO DEFINITIVA</span><h2>{deleteTarget.name}</h2></div><button type="button" onClick={() => setDeleteTarget(null)} aria-label="Fechar"><X /></button></div>
+          <p>Código: <strong>{deleteTarget.code}</strong></p>
+          <p>Se houver pedido, reserva ou dependência histórica, o produto será apenas arquivado.</p>
+          <label>Digite <strong>EXCLUIR</strong> para confirmar<input value={deleteConfirmation} onChange={(event) => setDeleteConfirmation(event.target.value)} autoComplete="off" /></label>
+          <div className="decision-actions"><button type="button" className="button button--dark" onClick={() => setDeleteTarget(null)}>Cancelar</button><button type="button" className="button button--outline-danger" disabled={deleteConfirmation !== "EXCLUIR" || loading} onClick={() => void deletePermanently()}>Excluir definitivamente</button></div>
+        </section>
+      </div>}
     </>
   );
 }

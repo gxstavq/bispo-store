@@ -38,6 +38,7 @@ export function OrderManagementPanel({
   const [shippingAmount, setShippingAmount] = useState("");
   const [selectedStatus, setSelectedStatus] = useState<OrderStatus>(initial.status);
   const [message, setMessage] = useState("");
+  const [messageTone, setMessageTone] = useState<"success" | "error">("success");
   const [saving, setSaving] = useState(false);
   const [invoiceKey, setInvoiceKey] = useState("");
   const [pagBankOrderId, setPagBankOrderId] = useState(
@@ -48,6 +49,8 @@ export function OrderManagementPanel({
   const whatsappSummary = orderWhatsappSummary(order);
 
   async function apply(action: OrderAction) {
+    if (action === "confirm_manual_payment" && !window.confirm("Confirma que o pagamento foi conferido no aplicativo PagBank? O estoque será baixado uma única vez.")) return;
+    if (action === "update_status" && selectedStatus === "cancelled" && !window.confirm("Cancelar este pedido e liberar a reserva de estoque?")) return;
     setSaving(true);
     setMessage("");
     const response = await fetch(`/api/orders/${order.id}`, {
@@ -64,10 +67,12 @@ export function OrderManagementPanel({
     const result = await response.json() as StoreOrder & { error?: string };
     setSaving(false);
     if (!response.ok) {
+      setMessageTone("error");
       setMessage(result.error ?? "Não foi possível registrar a alteração.");
       return;
     }
     setOrder(result);
+    setMessageTone("success");
     setSelectedStatus(result.status);
     setMessage(
       action === "enable_payment"
@@ -83,8 +88,10 @@ export function OrderManagementPanel({
   async function copySummary() {
     try {
       await navigator.clipboard.writeText(whatsappSummary);
+      setMessageTone("success");
       setMessage("Resumo do pedido copiado.");
     } catch {
+      setMessageTone("error");
       setMessage("Não foi possível copiar automaticamente. Abra o WhatsApp para usar o resumo.");
     }
   }
@@ -100,9 +107,11 @@ export function OrderManagementPanel({
     const result = await response.json() as { error?: string; printUrl?: string };
     setSaving(false);
     if (!response.ok) {
+      setMessageTone("error");
       setMessage(result.error ?? "Não foi possível processar a etiqueta.");
       return;
     }
+    setMessageTone("success");
     setMessage(action === "purchase" ? "Etiqueta comprada e geração solicitada no Sandbox." : action === "print" ? "Link de impressão atualizado." : "Rastreamento atualizado.");
     if (result.printUrl) window.open(result.printUrl, "_blank", "noopener,noreferrer");
   }
@@ -133,6 +142,7 @@ export function OrderManagementPanel({
     };
     setSaving(false);
     if (!response.ok) {
+      setMessageTone("error");
       setMessage(
         order.paymentStatus === "paid"
           ? `Pagamento já confirmado pelo PagBank. Não foi possível realizar uma nova consulta neste momento.${order.payment?.confirmedAt ? ` Última confirmação: ${order.payment.confirmedAt}.` : ""}`
@@ -146,6 +156,7 @@ export function OrderManagementPanel({
       : result.duplicate
         ? "Este estado oficial já havia sido processado."
         : "Status consultado sem alteração do pedido.");
+    setMessageTone("success");
     setMessage(
       `${outcome} Status: ${result.paymentStatus ?? "não informado"}`
       + `${result.method ? ` · ${result.method}` : ""}`
@@ -237,7 +248,7 @@ export function OrderManagementPanel({
         </div>
       </div> : <small>Compra e impressão ocultas: dependem de <code>ENABLE_MELHOR_ENVIO_LABEL_PURCHASE=true</code> e configuração fiscal.</small>}
       <small>Ambiente PagBank: {pagBankEnvironment === "production" ? "produção" : pagBankEnvironment === "sandbox" ? "Sandbox" : "configuração inválida"}. O status “pago” só é aplicado após consulta oficial ou confirmação administrativa registrada depois da conferência no aplicativo PagBank.</small>
-      {message && <div className="admin-feedback" role="status">{message}</div>}
+      {message && <div className={`admin-feedback is-${messageTone}`} role={messageTone === "error" ? "alert" : "status"}>{message}</div>}
     </div>
   );
 }

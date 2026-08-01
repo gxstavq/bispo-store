@@ -3,7 +3,7 @@ import { ArrowLeft, Mail, MapPin, MessageCircle, Phone } from "lucide-react";
 import { notFound } from "next/navigation";
 import { AdminPageHeader } from "@/components/admin-page-header";
 import { OrderManagementPanel } from "@/components/order-status-select";
-import { formatCurrency, whatsappUrl } from "@/lib/format";
+import { formatCurrency, whatsappUrlFor } from "@/lib/format";
 import {
   deliveryChoiceLabels,
   localReviewLabels,
@@ -11,14 +11,14 @@ import {
   paymentStatusLabels,
   shippingStatusLabels,
 } from "@/lib/order-status";
-import { orderRepository } from "@/repositories/order-repository";
+import { findAdminOrderById } from "@/repositories/order-repository";
 import { safeIntegrationConfiguration } from "@/lib/integrations/config";
 
 export const dynamic = "force-dynamic";
 
 export default async function OrderDetailsPage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = await params;
-  const order = await orderRepository.findById(id);
+  const order = await findAdminOrderById(id);
   if (!order) notFound();
   const total = order.subtotal + (order.shippingAmount ?? 0);
   const integrations = safeIntegrationConfiguration();
@@ -29,7 +29,7 @@ export default async function OrderDetailsPage({ params }: { params: Promise<{ i
         eyebrow="DETALHES DO PEDIDO"
         title={order.id}
         description={`Criado em ${order.createdAt} · ${orderStatusLabels[order.status]}`}
-        action={<a href={whatsappUrl(`Olá, ${order.customer.fullName}! Estou falando sobre seu pedido ${order.id} na Bispo Store.`)} target="_blank" rel="noreferrer" className="button button--dark"><MessageCircle size={18} /> Falar com o cliente no WhatsApp</a>}
+        action={<a href={whatsappUrlFor(order.customer.whatsapp, `Olá, ${order.customer.fullName}! Estou falando sobre seu pedido ${order.id} na Bispo Store.`)} target="_blank" rel="noopener noreferrer" className="button button--dark"><MessageCircle size={18} /> Falar com o cliente no WhatsApp</a>}
       />
       <div className="admin-detail-grid">
         <div>
@@ -58,6 +58,10 @@ export default async function OrderDetailsPage({ params }: { params: Promise<{ i
               <div><span>Forma</span><strong>{order.payment?.method ?? "Aguardando escolha"}</strong></div>
               <div><span>Status do provedor</span><strong>{order.payment?.providerStatus ?? "Sem retorno"}</strong></div>
               <div><span>Total</span><strong>{formatCurrency(total)}</strong></div>
+              <div><span>Transportadora e serviço</span><strong>{order.shippingQuote ? `${order.shippingQuote.carrier} · ${order.shippingQuote.service}` : "Não informado"}</strong></div>
+              <div><span>Prazo estimado</span><strong>{order.shippingQuote ? `${order.shippingQuote.deliveryDays} dia(s)` : "Não informado"}</strong></div>
+              <div><span>Finalização</span><strong>WhatsApp · link PagBank enviado pela equipe</strong></div>
+              <div><span>Reserva de estoque</span><strong>{order.reservation ? `${order.reservation.quantity} un. · ${order.reservation.status}${order.reservation.expiresAt ? ` · até ${new Date(order.reservation.expiresAt).toLocaleString("pt-BR")}` : ""}` : "Sem reserva"}</strong></div>
             </div>
             {order.payment?.events?.length ? <div className="order-history">
               {order.payment.events.map((event) => <div key={event.id}><i /><div><strong>{event.type?.includes("reconciliation") ? "Reconciliação direta verificada" : event.verified ? "Notificação verificada" : "Notificação não confirmada"}{event.status ? ` · ${event.status}` : ""}</strong><span>{event.date}</span>{event.error && <p>{event.error}</p>}</div></div>)}
@@ -71,7 +75,7 @@ export default async function OrderDetailsPage({ params }: { params: Promise<{ i
         <aside>
           <section className="admin-panel customer-card">
             <div className="admin-panel__header"><div><span>CLIENTE</span><h2>{order.customer.fullName}</h2></div></div>
-            <a href={whatsappUrl(`Olá, ${order.customer.fullName}!`)} target="_blank" rel="noreferrer"><Phone size={17} /> {order.customer.whatsapp}</a>
+            <a href={whatsappUrlFor(order.customer.whatsapp, `Olá, ${order.customer.fullName}!`)} target="_blank" rel="noopener noreferrer"><Phone size={17} /> {order.customer.whatsapp}</a>
             <span><Mail size={17} /> {order.customer.email}</span>
             <div className="address-box"><MapPin size={18} /><p>{order.customer.street}, {order.customer.number}{order.customer.complement ? ` · ${order.customer.complement}` : ""}<br />{order.customer.district} · {order.customer.city}/{order.customer.state}<br />CEP {order.customer.cep}{order.customer.reference ? <><br />Ref.: {order.customer.reference}</> : null}</p></div>
             {order.customer.notes && <div className="admin-note"><span>Observações do cliente</span><p>{order.customer.notes}</p></div>}

@@ -2,8 +2,7 @@
 
 import { SlidersHorizontal } from "lucide-react";
 import { useCallback, useEffect, useRef, useState } from "react";
-import { publicCategoryLabels } from "@/lib/product-rules";
-import type { Product, SellableProductCategory } from "@/types/commerce";
+import type { Product, ProductCategoryRecord, SellableProductCategory } from "@/types/commerce";
 import { ProductGrid } from "./product-grid";
 
 const PAGE_SIZE = 24;
@@ -21,11 +20,13 @@ export function CatalogView({
   initialTotal,
   initialFilter,
   initialCategory = "todos",
+  categories = [],
 }: {
   initialProducts: Product[];
   initialTotal: number;
   initialFilter?: string;
   initialCategory?: SellableProductCategory | "todos";
+  categories?: ProductCategoryRecord[];
 }) {
   const [products, setProducts] = useState(initialProducts);
   const [total, setTotal] = useState(initialTotal);
@@ -87,8 +88,8 @@ export function CatalogView({
         <div className="filter-group">
           <SlidersHorizontal size={18} />
           <button type="button" className={category === "todos" ? "is-active" : ""} onClick={() => setCategory("todos")}>Todos</button>
-          {(Object.entries(publicCategoryLabels) as Array<[SellableProductCategory, string]>).map(([key, label]) => (
-            <button type="button" key={key} className={category === key ? "is-active" : ""} onClick={() => setCategory(key)}>{label}</button>
+          {categories.map((item) => (
+            <button type="button" key={item.id} className={category === item.slug ? "is-active" : ""} onClick={() => setCategory(item.slug)}>{item.name}</button>
           ))}
         </div>
         <label>Ordenar

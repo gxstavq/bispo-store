@@ -4,7 +4,7 @@ import { notFound } from "next/navigation";
 import { ProductDetail } from "@/components/product-detail";
 import { ProductGrid } from "@/components/product-grid";
 import { PublicShell } from "@/components/public-shell";
-import { publicCategoryLabels } from "@/lib/product-rules";
+import { categoryLabel } from "@/lib/product-rules";
 import { isProductComplete } from "@/lib/products/completeness";
 import { SectionTitle } from "@/components/section-title";
 import { formatCurrency } from "@/lib/format";
@@ -62,7 +62,7 @@ export default async function ProductPage({ params }: ProductPageProps) {
   return (
     <PublicShell>
       <section className="product-page container">
-        <div className="breadcrumbs">Início / {publicCategoryLabels[product.category as keyof typeof publicCategoryLabels]} / <strong>{product.name}</strong></div>
+        <div className="breadcrumbs">Início / {categoryLabel(product.category)} / <strong>{product.name}</strong></div>
         <ProductDetail product={product} />
       </section>
       <section className="section section--muted">

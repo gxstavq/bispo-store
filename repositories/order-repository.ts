@@ -299,6 +299,29 @@ export class SupabaseOrderRepository implements OrderRepository {
 
 export const orderRepository: OrderRepository = new SupabaseOrderRepository();
 
+export async function findAdminOrderById(orderNumber: string) {
+  if (!hasSupabasePublicEnv()) return null;
+  const db = createSupabaseServiceClient();
+  const { data, error } = await db.from("orders").select(orderSelect)
+    .eq("order_number", orderNumber).maybeSingle();
+  if (error) throw new Error(error.message);
+  if (!data) return null;
+  const order = mapOrder(data as unknown as OrderRecord);
+  const { data: reservations, error: reservationError } = await db.from("inventory_reservations")
+    .select("status,quantity,expires_at").eq("order_id", (data as { id: string }).id);
+  if (reservationError) throw new Error(reservationError.message);
+  if (!reservations?.length) return order;
+  const active = reservations.filter((item) => item.status === "active");
+  return {
+    ...order,
+    reservation: {
+      status: (active.length ? "active" : reservations[0].status) as "active" | "consumed" | "released" | "expired",
+      quantity: reservations.reduce((sum, item) => sum + item.quantity, 0),
+      expiresAt: active.sort((left, right) => right.expires_at.localeCompare(left.expires_at))[0]?.expires_at,
+    },
+  };
+}
+
 export async function findOrderForVerifiedReturn(orderNumber: string) {
   if (!hasSupabasePublicEnv()) return null;
   const supabase = createSupabaseServiceClient();

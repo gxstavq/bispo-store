@@ -6,21 +6,20 @@ import { Menu, Search, ShoppingBag, X } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { FormEvent, useState } from "react";
 import { useStore } from "./store-provider";
+import type { ProductCategoryRecord } from "@/types/commerce";
 
-const links = [
+const fixedLinks = [
   { href: "/catalogo", label: "Todos" },
-  { href: "/categoria/tenis", label: "Tênis" },
-  { href: "/categoria/calcas", label: "Calças" },
-  { href: "/categoria/conjuntos", label: "Conjuntos" },
   { href: "/catalogo?filtro=ofertas", label: "Ofertas" },
   { href: "/sobre", label: "Nossa história" },
 ];
 
-export function Header() {
+export function Header({ categories = [] }: { categories?: ProductCategoryRecord[] }) {
   const router = useRouter();
   const { cartCount } = useStore();
   const [mobileOpen, setMobileOpen] = useState(false);
   const [search, setSearch] = useState("");
+  const links = [fixedLinks[0], ...categories.map((category) => ({ href: `/categoria/${category.slug}`, label: category.name })), ...fixedLinks.slice(1)];
 
   const submitSearch = (event: FormEvent) => {
     event.preventDefault();

@@ -25,7 +25,8 @@ const productSelect = `
   is_new,
   status,
   needs_review,
-  categories!inner(slug),
+  images_confirmed,
+  categories!inner(slug, name, active),
   product_images(id, storage_path, public_url, thumbnail_storage_path, thumbnail_public_url, alt_text, position, is_cover),
   product_variants(id, sku, size, color, stock, active)
 `;
@@ -49,7 +50,8 @@ type ProductRecord = {
   is_new: boolean;
   status: "active" | "inactive" | "draft" | "archived";
   needs_review: boolean;
-  categories: { slug: ProductCategory } | Array<{ slug: ProductCategory }>;
+  images_confirmed: boolean | null;
+  categories: { slug: ProductCategory; name: string; active: boolean } | Array<{ slug: ProductCategory; name: string; active: boolean }>;
   product_images: Array<{
     id: string;
     storage_path: string;
@@ -77,7 +79,11 @@ function numberOrUndefined(value: number | string | null) {
 export function mapProductRecord(row: ProductRecord): Product {
   const category = Array.isArray(row.categories) ? row.categories[0]?.slug : row.categories.slug;
   const images = [...(row.product_images ?? [])].sort((a, b) => a.position - b.position);
-  const variants = (row.product_variants ?? []).filter((variant) => variant.active);
+  const allVariants = [...(row.product_variants ?? [])].sort((left, right) =>
+    left.size.localeCompare(right.size, "pt-BR", { numeric: true })
+    || left.color.localeCompare(right.color, "pt-BR")
+  );
+  const variants = allVariants.filter((variant) => variant.active);
   const sizes = [...new Set(variants.map((variant) => variant.size))];
   const colors = [...new Set(variants.map((variant) => variant.color))];
   const cover = images.find((image) => image.is_cover) ?? images[0];
@@ -97,6 +103,7 @@ export function mapProductRecord(row: ProductRecord): Product {
     sizes,
     colors,
     stock: variants.reduce((sum, variant) => sum + variant.stock, 0),
+    variants: allVariants,
     weightKg: numberOrUndefined(row.weight_kg),
     lengthCm: numberOrUndefined(row.length_cm),
     widthCm: numberOrUndefined(row.width_cm),
@@ -108,7 +115,7 @@ export function mapProductRecord(row: ProductRecord): Product {
     active: row.status === "active",
     status: row.status,
     needsReview: row.needs_review,
-    imagesConfirmed: !row.needs_review && images.length > 0,
+    imagesConfirmed: row.images_confirmed ?? (!row.needs_review && images.length > 0),
     demo: true,
     visual: {
       accent: "#ef2b35",
@@ -124,19 +131,24 @@ function storagePathFromUrl(url: string) {
   return index >= 0 ? decodeURIComponent(url.slice(index + marker.length)) : url.replace(/^\/+/, "");
 }
 
-function variantRows(productId: string, product: Product) {
+function variantKey(value: string) {
+  return value.normalize("NFD").replace(/[\u0300-\u036f]/g, "")
+    .replace(/[^a-zA-Z0-9]+/g, "-").replace(/^-|-$/g, "").toUpperCase();
+}
+
+function variantRows(product: Product) {
+  if (product.variants?.length) {
+    return product.variants.map((variant, index) => ({
+      ...variant,
+      sku: variant.sku || `${product.code}-${variantKey(variant.size)}-${variantKey(variant.color)}-${index + 1}`,
+    }));
+  }
   const combinations = product.sizes.flatMap((size) =>
     product.colors.map((color) => ({ size, color }))
   );
   const count = Math.max(1, combinations.length);
   return combinations.map(({ size, color }, index) => ({
-    product_id: productId,
-    sku: `${product.code}-${size}-${color}`
-      .normalize("NFD")
-      .replace(/[\u0300-\u036f]/g, "")
-      .replace(/[^a-zA-Z0-9-]/g, "-")
-      .replace(/-+/g, "-")
-      .toUpperCase(),
+    sku: `${product.code}-${variantKey(size)}-${variantKey(color)}-${index + 1}`,
     size,
     color,
     stock: Math.floor(product.stock / count) + (index < product.stock % count ? 1 : 0),
@@ -179,6 +191,7 @@ async function executeProductQuery(
     .select(productSelect, count ? { count: "exact" } : undefined)
     .is("deleted_at", null);
   if (publicRead) query = query.not("name", "ilike", "%[TESTE SANDBOX]%");
+  if (publicRead) query = query.eq("categories.active", true);
   if (!options?.includeInactive) query = query.eq("status", "active");
   if (options?.id) query = query.eq("id", options.id);
   if (options?.ids?.length) query = query.in("id", options.ids);
@@ -280,83 +293,74 @@ export async function fetchProductPage(
 }
 export async function saveSupabaseProduct(input: Product, id?: string) {
   const supabase = await createSupabaseServerClient();
-  const { data: category, error: categoryError } = await supabase
-    .from("categories")
-    .select("id")
-    .eq("slug", input.category)
-    .single();
-  if (categoryError || !category) throw new Error("Categoria não encontrada no Supabase.");
-
   const payload = {
-    category_id: category.id,
+    category_slug: input.category,
     name: input.name,
     slug: input.slug,
     code: input.code,
     description: input.description,
     price: input.price,
-    promotional_price: input.promotionalPrice ?? null,
-    weight_kg: input.weightKg ?? null,
-    length_cm: input.lengthCm ?? null,
-    width_cm: input.widthCm ?? null,
-    height_cm: input.heightCm ?? null,
+    promotional_price: input.promotionalPrice ?? "",
+    weight_kg: input.weightKg ?? "",
+    length_cm: input.lengthCm ?? "",
+    width_cm: input.widthCm ?? "",
+    height_cm: input.heightCm ?? "",
     packaging_category: input.packagingCategory ?? "a-definir",
     shipping_enabled: input.shippingEnabled ?? false,
     featured: input.featured,
     is_new: input.isNew,
     status: input.status ?? (input.active ? "active" : "draft"),
     needs_review: input.needsReview ?? true,
-    published_at: input.status === "active" ? new Date().toISOString() : null,
+    images_confirmed: input.imagesConfirmed ?? false,
   };
-  const productMutation = id
-    ? supabase.from("products").update(payload).eq("id", id).select(productSelect).single()
-    : supabase.from("products").insert(payload).select(productSelect).single();
-  const { data: saved, error: productError } = await productMutation;
-  if (productError || !saved) throw new Error(productError?.message ?? "Produto não salvo.");
-  const productId = saved.id as string;
-
-  const { error: deleteImagesError } = await supabase.from("product_images").delete().eq("product_id", productId);
-  if (deleteImagesError) throw new Error(deleteImagesError.message);
-  if (input.images.length) {
-    const { error: imagesError } = await supabase.from("product_images").insert(
-      input.images.map((url, position) => ({
-        product_id: productId,
-        storage_path: storagePathFromUrl(url),
-        public_url: url,
-        thumbnail_storage_path: input.thumbnails?.[position] ? storagePathFromUrl(input.thumbnails[position]) : storagePathFromUrl(url),
-        thumbnail_public_url: input.thumbnails?.[position] ?? url,
-        alt_text: `${input.name} — imagem ${position + 1}`,
-        position,
-        is_cover: (input.coverImage ?? input.images[0]) === url,
-      }))
-    );
-    if (imagesError) throw new Error(imagesError.message);
-  }
-
-  const variants = variantRows(productId, input);
-  const { error: variantsError } = await supabase.rpc("replace_product_variants", {
-    target_product_id: productId,
-    variants_data: variants.map(({ sku, size, color, stock, active }) => ({
-      sku,
-      size,
-      color,
-      stock,
-      active,
-    })),
+  const images = input.images.map((url, position) => ({
+    storage_path: storagePathFromUrl(url),
+    public_url: url,
+    thumbnail_storage_path: input.thumbnails?.[position] ? storagePathFromUrl(input.thumbnails[position]) : storagePathFromUrl(url),
+    thumbnail_public_url: input.thumbnails?.[position] ?? url,
+    alt_text: `${input.name} — imagem ${position + 1}`,
+    position,
+    is_cover: (input.coverImage ?? input.images[0]) === url,
+  }));
+  const variants = variantRows(input).map((variant) => ({
+    id: "id" in variant ? variant.id ?? null : null,
+    sku: variant.sku,
+    size: variant.size,
+    color: variant.color,
+    stock: variant.stock,
+    active: variant.active,
+  }));
+  const { data: productId, error } = await supabase.rpc("save_admin_product", {
+    target_product_id: id ?? null,
+    product_data: payload,
+    images_data: images,
+    variants_data: variants,
   });
-  if (variantsError) throw new Error(variantsError.message);
+  if (error || !productId) throw new Error(error?.message ?? "Produto não salvo.");
 
   revalidateTag("public-products", { expire: 0 });
-  const [result] = await fetchProducts({ includeInactive: true, slug: input.slug });
+  const [result] = await fetchProducts({ includeInactive: true, id: String(productId) });
   if (!result) throw new Error("Produto salvo, mas não pôde ser recarregado.");
   return result;
 }
 
-export async function softDeleteSupabaseProduct(id: string) {
+export async function deleteOrArchiveSupabaseProduct(id: string, permanent = false) {
   const supabase = await createSupabaseServerClient();
-  const { error } = await supabase
-    .from("products")
-    .update({ status: "archived", shipping_enabled: false, published_at: null })
-    .eq("id", id);
+  const { data, error } = await supabase.rpc("delete_or_archive_admin_product", {
+    target_product_id: id,
+    delete_permanently: permanent,
+  });
   if (error) throw new Error(error.message);
+  const result = data as { deleted?: boolean; archived?: boolean; had_dependencies?: boolean; storage_paths?: string[] };
+  if (result.deleted && result.storage_paths?.length) {
+    const removable: string[] = [];
+    for (const path of result.storage_paths) {
+      const { count } = await supabase.from("product_images")
+        .select("id", { count: "exact", head: true }).eq("storage_path", path);
+      if (!count) removable.push(path);
+    }
+    if (removable.length) await supabase.storage.from("product-images").remove(removable);
+  }
   revalidateTag("public-products", { expire: 0 });
+  return result;
 }

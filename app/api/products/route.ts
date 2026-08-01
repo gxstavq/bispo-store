@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { requireAdmin } from "@/lib/auth/admin";
+import { humanAdminError, sanitizedAdminError } from "@/lib/admin-errors";
 import { defaultsForCategory } from "@/lib/product-rules";
 import { productCompleteness } from "@/lib/products/completeness";
 import { assertSameOrigin, readJsonBody, validationErrorResponse } from "@/lib/security/request";
@@ -34,7 +35,7 @@ export async function GET(request: NextRequest) {
     .sort()
     .slice(0, 30);
   const categoryValue = request.nextUrl.searchParams.get("category");
-  const category = ["tenis", "calcas", "conjuntos"].includes(categoryValue ?? "")
+  const category = /^[a-z0-9]+(?:-[a-z0-9]+)*$/.test(categoryValue ?? "")
     ? categoryValue as SellableProductCategory
     : undefined;
   const statusValue = request.nextUrl.searchParams.get("status");
@@ -143,6 +144,7 @@ export async function POST(request: NextRequest) {
       needsReview: !completeness.complete,
     }), { status: 201 });
   } catch (error) {
-    return NextResponse.json({ error: error instanceof Error ? error.message : "Produto não salvo." }, { status: 400 });
+    console.error("admin_product_create_failed", sanitizedAdminError(error));
+    return NextResponse.json({ error: humanAdminError(error, "Não foi possível salvar o produto.") }, { status: 400 });
   }
 }

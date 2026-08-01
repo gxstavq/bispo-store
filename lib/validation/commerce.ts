@@ -5,16 +5,12 @@ import type {
   CheckoutData,
   PackagingCategory,
   Product,
-  ProductCategory,
   ProductStatus,
 } from "@/types/commerce";
 import { isBrazilianState } from "@/lib/brazilian-states";
 import { RequestValidationError } from "@/lib/security/request";
 
 const uuidPattern = /^[0-9a-f]{8}-[0-9a-f]{4}-[1-8][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
-const productCategories = new Set<ProductCategory>([
-  "tenis", "calcas", "conjuntos", "camisetas", "moletons", "calcas-shorts",
-]);
 const productStatuses = new Set<ProductStatus>(["active", "inactive", "draft", "archived"]);
 const packagingCategories = new Set<PackagingCategory>([
   "caixa-tenis", "pacote-roupa", "caixa-conjunto", "a-definir",
@@ -140,7 +136,7 @@ export function validateCheckoutData(value: unknown): CheckoutData {
 }
 
 export function validateProduct(input: Product): Product {
-  if (!productCategories.has(input.category)) throw new RequestValidationError("Categoria inválida.");
+  if (!/^[a-z0-9]+(?:-[a-z0-9]+)*$/.test(input.category)) throw new RequestValidationError("Categoria inválida.");
   const status = input.status ?? (input.active ? "active" : "draft");
   if (!productStatuses.has(status)) throw new RequestValidationError("Status inválido.");
   const price = finiteNumber(input.price, "Preço", 0, 10_000_000);
@@ -150,6 +146,9 @@ export function validateProduct(input: Product): Product {
   const promotionalPrice = input.promotionalPrice === undefined || input.promotionalPrice === null
     ? undefined
     : finiteNumber(input.promotionalPrice, "Preço promocional", 0.01, price);
+  if (promotionalPrice !== undefined && promotionalPrice >= price) {
+    throw new RequestValidationError("O preço promocional deve ser menor que o preço normal.");
+  }
   const stock = finiteNumber(input.stock, "Estoque", 0, 1_000_000);
   if (!Number.isInteger(stock)) throw new RequestValidationError("Estoque deve ser inteiro.");
   const slug = textValue(input.slug, "Slug", 180);
@@ -179,6 +178,18 @@ export function validateProduct(input: Product): Product {
     sizes: stringArray(input.sizes, "Tamanhos"),
     colors: stringArray(input.colors, "Cores"),
     stock,
+    variants: input.variants?.slice(0, 250).map((variant) => {
+      const variantStock = finiteNumber(variant.stock, "Estoque da variante", 0, 1_000_000);
+      if (!Number.isInteger(variantStock)) throw new RequestValidationError("Estoque da variante deve ser inteiro.");
+      return {
+        id: variant.id,
+        sku: textValue(variant.sku, "SKU", 120),
+        size: textValue(variant.size, "Tamanho", 64),
+        color: textValue(variant.color, "Cor", 64),
+        stock: variantStock,
+        active: Boolean(variant.active),
+      };
+    }),
     weightKg: dimension(input.weightKg, "Peso"),
     lengthCm: dimension(input.lengthCm, "Comprimento"),
     widthCm: dimension(input.widthCm, "Largura"),

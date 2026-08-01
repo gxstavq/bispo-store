@@ -2,8 +2,9 @@ import Image from "next/image";
 import Link from "next/link";
 import { Instagram, MapPin, MessageCircle } from "lucide-react";
 import { whatsappUrl } from "@/lib/format";
+import type { ProductCategoryRecord } from "@/types/commerce";
 
-export function Footer() {
+export function Footer({ categories = [] }: { categories?: ProductCategoryRecord[] }) {
   return (
     <footer className="site-footer">
       <div className="container footer-grid">
@@ -15,9 +16,7 @@ export function Footer() {
         <div>
           <h3>Comprar</h3>
           <Link href="/catalogo">Todos os produtos</Link>
-          <Link href="/categoria/tenis">Tênis</Link>
-          <Link href="/categoria/calcas">Calças</Link>
-          <Link href="/categoria/conjuntos">Conjuntos</Link>
+          {categories.map((category) => <Link href={`/categoria/${category.slug}`} key={category.id}>{category.name}</Link>)}
           <Link href="/carrinho">Carrinho</Link>
         </div>
         <div>
@@ -30,7 +29,7 @@ export function Footer() {
         <div>
           <h3>Fale com a Bispo</h3>
           <a href={whatsappUrl("Olá! Preciso de ajuda com a loja.")} target="_blank" rel="noreferrer"><MessageCircle size={16} /> WhatsApp</a>
-          <a href="#" aria-label="Instagram da Bispo Store"><Instagram size={16} /> Instagram</a>
+          <a href="https://www.instagram.com/bispostorebr_" target="_blank" rel="noopener noreferrer" aria-label="Abrir Instagram oficial da Bispo Store em nova aba"><Instagram size={16} /> Instagram</a>
           <span><MapPin size={16} /> Avenida São Miguel, 5046</span>
         </div>
       </div>

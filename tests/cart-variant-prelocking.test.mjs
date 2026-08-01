@@ -27,6 +27,10 @@ const productRepository = readFileSync(
   "utf8",
 );
 const orderRoute = readFileSync(join(root, "app", "api", "orders", "route.ts"), "utf8");
+const adminMigration = readFileSync(
+  join(root, "supabase", "migrations", "20260731210000_admin_final_review.sql"),
+  "utf8",
+);
 
 test("migration bloqueia variantes agregadas antes de inserir o pedido", () => {
   const lockPosition = migration.indexOf("perform private.lock_and_validate_cart_inventory(cart_items)");
@@ -78,14 +82,18 @@ test("idempotência é serializada antes dos row locks e preserva payload existe
 });
 
 test("atualização administrativa usa RPC transacional com locks determinísticos", () => {
-  assert.match(migration, /create function public\.replace_product_variants/);
+  assert.match(adminMigration, /create or replace function public\.save_admin_product/);
   assert.match(
-    migration,
-    /where variants\.product_id = target_product_id\s+order by variants\.id\s+for update/,
+    adminMigration,
+    /where variants\.product_id = saved_product_id\s+order by variants\.id\s+for update/,
   );
-  assert.match(migration, /on conflict \(product_id, size, color\) do update/);
-  assert.match(migration, /not private\.is_admin\(auth\.uid\(\)\)/);
-  assert.match(productRepository, /\.rpc\("replace_product_variants"/);
+  assert.match(adminMigration, /variants\.id = incoming\.id/);
+  assert.match(adminMigration, /where incoming\.id is null/);
+  assert.match(adminMigration, /on conflict \(product_id, size, color\) do update/);
+  assert.match(adminMigration, /inventory_reservations as reservations/);
+  assert.match(adminMigration, /not private\.is_admin\(auth\.uid\(\)\)/);
+  assert.match(productRepository, /\.rpc\("save_admin_product"/);
+  assert.match(productRepository, /id: "id" in variant/);
   assert.doesNotMatch(
     productRepository,
     /from\("product_variants"\)\.delete\(\)\.eq\("product_id"/,

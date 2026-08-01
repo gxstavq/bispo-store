@@ -107,7 +107,9 @@ test("painel administra o álbum sem apagar arquivos nem agrupar fotos automatic
   const repository = readFileSync(join(root, "repositories", "supabase-product-repository.ts"), "utf8");
   assert.match(uploadRoute, /export async function GET/);
   assert.match(uploadRoute, /\.from\("product_images"\)/);
-  assert.match(uploadRoute, /\.list\(adminPrefix/);
+  assert.match(uploadRoute, /async function listFolder/);
+  assert.match(uploadRoute, /listFolder\(path\)/);
+  assert.match(uploadRoute, /storageFiles = await listFolder\(\)/);
   assert.match(uploadRoute, /validImageSignature/);
   assert.match(uploadRoute, /12 \* 1024 \* 1024/);
   assert.doesNotMatch(uploadRoute, /storage[\s\S]*\.remove\(/);
@@ -126,6 +128,8 @@ test("produtos incompletos não entram no sitemap nem recebem dados estruturados
   const card = readFileSync(join(root, "components", "product-card.tsx"), "utf8");
   const detail = readFileSync(join(root, "components", "product-detail.tsx"), "utf8");
   assert.match(sitemap, /products\.filter\(isProductComplete\)/);
+  assert.match(sitemap, /productRepository\.list\(\)\.catch\(\(\) => \[\]\)/);
+  assert.match(sitemap, /fetchPublicCategories\(\)\.catch\(\(\) => \[\]\)/);
   assert.match(productPage, /index: false, follow: true/);
   assert.match(productPage, /isProductComplete\(product\) && <script/);
   assert.doesNotMatch(card, /DADO DEMO/);

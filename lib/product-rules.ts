@@ -5,9 +5,9 @@ import type {
   SellableProductCategory,
 } from "@/types/commerce";
 
-export const sellableCategories: SellableProductCategory[] = ["tenis", "calcas", "conjuntos"];
+export const sellableCategories = ["tenis", "calcas", "conjuntos"] as const;
 
-export const publicCategoryLabels: Record<SellableProductCategory, string> = {
+export const publicCategoryLabels: Record<string, string> = {
   tenis: "Tênis",
   calcas: "Calças",
   conjuntos: "Conjuntos",
@@ -19,12 +19,12 @@ export const archivedCategoryLabels = {
   "calcas-shorts": "Calças & shorts (legado)",
 } as const;
 
-export const allCategoryLabels: Record<ProductCategory, string> = {
+export const allCategoryLabels: Record<string, string> = {
   ...publicCategoryLabels,
   ...archivedCategoryLabels,
 };
 
-export const shippingDefaults: Record<SellableProductCategory, {
+export const shippingDefaults: Record<(typeof sellableCategories)[number], {
   weightKg: number;
   lengthCm: number;
   widthCm: number;
@@ -55,7 +55,7 @@ export const shippingDefaults: Record<SellableProductCategory, {
 };
 
 export function isSellableCategory(category: ProductCategory): category is SellableProductCategory {
-  return sellableCategories.includes(category as SellableProductCategory);
+  return Boolean(category) && !Object.prototype.hasOwnProperty.call(archivedCategoryLabels, category);
 }
 
 export function isPublicProduct(product: Product) {
@@ -63,5 +63,12 @@ export function isPublicProduct(product: Product) {
 }
 
 export function defaultsForCategory(category: ProductCategory) {
-  return isSellableCategory(category) ? shippingDefaults[category] : undefined;
+  return Object.prototype.hasOwnProperty.call(shippingDefaults, category)
+    ? shippingDefaults[category as keyof typeof shippingDefaults]
+    : undefined;
+}
+
+export function categoryLabel(slug: string) {
+  return allCategoryLabels[slug]
+    ?? slug.split("-").map((part) => part ? part[0].toLocaleUpperCase("pt-BR") + part.slice(1) : part).join(" ");
 }

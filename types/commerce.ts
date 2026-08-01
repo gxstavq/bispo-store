@@ -1,4 +1,4 @@
-export type SellableProductCategory = "tenis" | "calcas" | "conjuntos";
+export type SellableProductCategory = string;
 export type ArchivedProductCategory = "camisetas" | "moletons" | "calcas-shorts";
 export type ProductCategory = SellableProductCategory | ArchivedProductCategory;
 export type ProductStatus = "active" | "inactive" | "draft" | "archived";
@@ -20,6 +20,7 @@ export interface Product {
   sizes: string[];
   colors: string[];
   stock: number;
+  variants?: ProductVariant[];
   weightKg?: number;
   lengthCm?: number;
   widthCm?: number;
@@ -40,6 +41,35 @@ export interface Product {
     secondary: string;
     type: "shoe" | "shirt" | "hoodie" | "bottom";
   };
+}
+
+export interface ProductVariant {
+  id?: string;
+  sku: string;
+  size: string;
+  color: string;
+  stock: number;
+  active: boolean;
+}
+
+export interface ProductCategoryRecord {
+  id: string;
+  slug: string;
+  name: string;
+  description?: string;
+  imageUrl?: string;
+  active: boolean;
+  sortOrder: number;
+  productCount?: number;
+}
+
+export interface HomeBannerSettings {
+  desktopImageUrl: string;
+  mobileImageUrl?: string;
+  altText: string;
+  title?: string;
+  link?: string;
+  active: boolean;
 }
 
 export interface CartItem {
@@ -174,6 +204,11 @@ export interface StoreOrder {
   shippingQuote?: ShippingQuote;
   shipmentLabel?: ShipmentLabelView;
   localDeliveryReview: LocalDeliveryReview;
+  reservation?: {
+    status: "active" | "consumed" | "released" | "expired";
+    quantity: number;
+    expiresAt?: string;
+  };
   history: OrderHistoryEntry[];
 }
 

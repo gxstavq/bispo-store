@@ -1,14 +1,24 @@
 import type { MetadataRoute } from "next";
 import { isProductComplete } from "@/lib/products/completeness";
 import { productRepository } from "@/repositories/product-repository";
+import { fetchPublicCategories } from "@/repositories/category-repository";
 
 export const revalidate = 3600;
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const baseUrl = process.env.NEXT_PUBLIC_SITE_URL ?? "https://bispostorebr.com.br";
-  const products = await productRepository.list();
+  const [products, categories] = await Promise.all([
+    productRepository.list().catch(() => []),
+    fetchPublicCategories().catch(() => []),
+  ]);
+  const categorySlugs = [...new Set([
+    "tenis",
+    "calcas",
+    "conjuntos",
+    ...categories.map((category) => category.slug),
+  ])];
   const staticRoutes = [
-    "", "/catalogo", "/categoria/tenis", "/categoria/calcas", "/categoria/conjuntos", "/sobre", "/contato",
+    "", "/catalogo", ...categorySlugs.map((slug) => `/categoria/${slug}`), "/sobre", "/contato",
     "/trocas-e-devolucoes", "/privacidade", "/termos", "/acompanhar-pedido",
   ];
   return [

@@ -72,3 +72,4 @@ next-env.d.ts
 # Local Windows launch shortcuts
 /Abrir20Store.bat
 /Fechar20Store.bat
+.env.local

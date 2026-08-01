@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { requireAdmin } from "@/lib/auth/admin";
+import { humanAdminError, sanitizedAdminError } from "@/lib/admin-errors";
 import { defaultsForCategory } from "@/lib/product-rules";
 import { productCompleteness } from "@/lib/products/completeness";
 import { assertSameOrigin, readJsonBody, validationErrorResponse } from "@/lib/security/request";
@@ -7,7 +8,7 @@ import { validateProduct } from "@/lib/validation/commerce";
 import {
   fetchProducts,
   saveSupabaseProduct,
-  softDeleteSupabaseProduct,
+  deleteOrArchiveSupabaseProduct,
 } from "@/repositories/supabase-product-repository";
 import type { Product } from "@/types/commerce";
 
@@ -62,7 +63,8 @@ export async function PUT(request: NextRequest, { params }: { params: Promise<{ 
       needsReview: !completeness.complete,
     }, id));
   } catch (error) {
-    return NextResponse.json({ error: error instanceof Error ? error.message : "Produto não salvo." }, { status: 400 });
+    console.error("admin_product_update_failed", sanitizedAdminError(error));
+    return NextResponse.json({ error: humanAdminError(error, "Não foi possível salvar o produto.") }, { status: 400 });
   }
 }
 
@@ -75,9 +77,15 @@ export async function DELETE(request: NextRequest, { params }: { params: Promise
   }
   const { id } = await params;
   try {
-    await softDeleteSupabaseProduct(id);
-    return NextResponse.json({ ok: true });
+    const input = await readJsonBody<{ mode?: "archive" | "delete"; confirmation?: string }>(request, 4096);
+    const permanent = input.mode === "delete";
+    if (permanent && input.confirmation !== "EXCLUIR") {
+      return NextResponse.json({ error: "Digite EXCLUIR para confirmar a exclusão definitiva." }, { status: 400 });
+    }
+    const result = await deleteOrArchiveSupabaseProduct(id, permanent);
+    return NextResponse.json({ ok: true, result });
   } catch (error) {
-    return NextResponse.json({ error: error instanceof Error ? error.message : "Produto não arquivado." }, { status: 400 });
+    console.error("admin_product_delete_failed", sanitizedAdminError(error));
+    return NextResponse.json({ error: humanAdminError(error, "Não foi possível excluir ou arquivar o produto.") }, { status: 400 });
   }
 }

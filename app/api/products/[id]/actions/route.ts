@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { requireAdmin } from "@/lib/auth/admin";
+import { humanAdminError, sanitizedAdminError } from "@/lib/admin-errors";
 import { isSellableCategory } from "@/lib/product-rules";
 import { productCompleteness } from "@/lib/products/completeness";
 import { assertSameOrigin, readJsonBody, validationErrorResponse } from "@/lib/security/request";
@@ -67,6 +68,7 @@ export async function POST(request: NextRequest, { params }: { params: Promise<{
     }
     return NextResponse.json({ error: "Ação inválida." }, { status: 400 });
   } catch (error) {
-    return NextResponse.json({ error: error instanceof Error ? error.message : "Ação não concluída." }, { status: 400 });
+    console.error("admin_product_action_failed", sanitizedAdminError(error));
+    return NextResponse.json({ error: humanAdminError(error, "Não foi possível concluir a ação.") }, { status: 400 });
   }
 }

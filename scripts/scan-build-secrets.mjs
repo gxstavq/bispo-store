@@ -19,7 +19,10 @@ function files(directory) {
   });
 }
 
-const buildFiles = files(buildRoot);
+const localOnlyRoots = [join(buildRoot, "dev"), join(buildRoot, "cache")];
+const buildFiles = files(buildRoot).filter((file) =>
+  !localOnlyRoots.some((directory) => file.startsWith(`${directory}\\`) || file.startsWith(`${directory}/`)),
+);
 const publicBundleFiles = buildFiles.filter((file) =>
   file.startsWith(join(buildRoot, "static")),
 );

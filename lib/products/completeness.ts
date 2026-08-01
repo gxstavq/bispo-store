@@ -24,7 +24,7 @@ export function productCompleteness(product: Product): ProductCompleteness {
   if (!description || provisionalDescriptionPattern.test(description)) {
     missing.push("descrição definitiva");
   }
-  if (!["tenis", "calcas", "conjuntos"].includes(product.category)) {
+  if (!product.category.trim()) {
     missing.push("categoria ativa");
   }
   if (!Number.isFinite(product.price) || product.price <= 0) {

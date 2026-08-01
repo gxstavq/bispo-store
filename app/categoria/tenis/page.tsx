@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { CatalogView } from "@/components/catalog-view";
 import { PublicShell } from "@/components/public-shell";
+import { fetchPublicCategories } from "@/repositories/category-repository";
 import { fetchProductPage } from "@/repositories/supabase-product-repository";
 
 export const metadata: Metadata = {
@@ -10,6 +11,7 @@ export const metadata: Metadata = {
 export const dynamic = "force-dynamic";
 
 export default async function SneakersPage() {
+  const categories = await fetchPublicCategories();
   const { products, total } = await fetchProductPage({
     category: "tenis",
     offset: 0,
@@ -25,7 +27,7 @@ export default async function SneakersPage() {
         </div>
       </section>
       <section className="section container">
-        <CatalogView initialProducts={products} initialTotal={total} initialCategory="tenis" />
+        <CatalogView initialProducts={products} initialTotal={total} initialCategory="tenis" categories={categories} />
       </section>
     </PublicShell>
   );

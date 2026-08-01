@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { CatalogView } from "@/components/catalog-view";
 import { PublicShell } from "@/components/public-shell";
 import { fetchProductPage } from "@/repositories/supabase-product-repository";
+import { fetchPublicCategories } from "@/repositories/category-repository";
 
 export const metadata: Metadata = {
   title: "Catálogo completo",
@@ -11,12 +12,12 @@ export const revalidate = 60;
 
 export default async function CatalogPage({ searchParams }: { searchParams: Promise<{ filtro?: string }> }) {
   const { filtro } = await searchParams;
-  const { products, total } = await fetchProductPage({
+  const [{ products, total }, categories] = await Promise.all([fetchProductPage({
     offset: 0,
     limit: 24,
     isNew: filtro === "lancamentos" ? true : undefined,
     onSale: filtro === "ofertas",
-  });
+  }), fetchPublicCategories()]);
   return (
     <PublicShell>
       <section className="page-hero page-hero--catalog">
@@ -31,6 +32,7 @@ export default async function CatalogPage({ searchParams }: { searchParams: Prom
           initialProducts={products}
           initialTotal={total}
           initialFilter={filtro}
+          categories={categories}
         />
       </section>
     </PublicShell>
